@@ -61,7 +61,7 @@ print(frac)
 print(find_avg_I_at_L(P, W))
 print(find_avg_I_over_sail(frac, P, A))
 
-#hello
+
 W = find_width_at_L(L2,wavelength, D)
 print(W)
 frac = find_frac_of_P_incident(A, W)
