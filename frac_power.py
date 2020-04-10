@@ -51,36 +51,43 @@ def find_fraction_incident(surface_area, beam_width):
     Assumes circular Gaussian beam.
     """
     return (special.erf(np.sqrt(surface_area / 2*np.pi) / beam_width))**2
-
-def find_peak_intensity(laser_power, beam_width):
-    """
-    Finds the peak intensity of the circular Gaussian beam.
-    """
-
-    return 2 * laser_power / (np.pi * beam_width ** 2)
-
-def plot_intensity(distance, wavelength, diameter, laser_power):
-    """
-    Plots the radial intensity pattern at a distance away from the transmitter.
-    Plots from x = -5 to x = 5 since the sail is likely not going to have a
-    diameter of over 10m.
-    Accepts distances at least 10000 m, as this is where diffraction effects
-    are appreciable.
-    """
-    if distance < 10000:
-        print("Distance must be at least 10000m for diffraction to be appreciable")
-        return None
-    beam_width = find_beam_width(distance, wavelength, diameter)
-    peak_I = find_peak_intensity(laser_power, beam_width)
-
-    radius = np.linspace(-5,5,500)
-    i = 0
-    intensity = []
-    while i < len(radius):
-        r = radius[i]
-        I = peak_I * ((diameter / beam_width)**2) * np.exp(-2 * r**2 / beam_width**2)
-        intensity.append(I)
-        i += 1
-    plt.plot(radius,intensity)
-    plt.show()
-    return None
+#
+#The code below is incorrect because, for some reason, I assumed that the diameter
+#of the transmitter is the same as the beam waist. It is actually assumed to be
+#far from the beam waist. In order to find the intensity distribution, I require
+#at least the peak intensity at the transmitter.
+#
+# def find_peak_intensity(laser_power, beam_width):
+#     """
+#     Finds the peak intensity of the circular Gaussian beam.
+#     """
+#
+#     return 2 * laser_power / (np.pi * beam_width ** 2)
+#
+# def plot_intensity(distance, wavelength, diameter, laser_power):
+#     """
+#     Plots the radial intensity pattern at a distance away from the transmitter.
+#     Plots from x = -5 to x = 5 since the sail is likely not going to have a
+#     diameter of over 10m.
+#     Accepts distances at least 10000 m, as this is where diffraction effects
+#     are appreciable.
+#     """
+#     if distance < 10000:
+#         print("Distance must be at least 10000m for diffraction to be appreciable")
+#         return None
+#     beam_width = find_beam_width(distance, wavelength, diameter)
+#     peak_I = find_peak_intensity(laser_power, beam_width)
+#
+#     radius = np.linspace(-5,5,200)
+#     i = 0
+#     intensity = []
+#     while i < len(radius):
+#         r = radius[i]
+#         I = peak_I * (diameter / beam_width)**2 * np.exp(-2 * r**2 / beam_width**2)
+#         intensity.append(I)
+#         i += 1
+#     plt.plot(radius,intensity)
+#     return None
+#
+# plot_intensity(10000000, 650e-9, 10, 500e9)
+# plt.show()
