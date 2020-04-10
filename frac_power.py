@@ -3,7 +3,7 @@ from scipy import special
 from scipy.optimize import fsolve
 import matplotlib.pyplot as plt
 
-np.seterr(divide='ignore', invalid='ignore')
+np.seterr(all='ignore', invalid='ignore')
 
 c = 2.998e8
 stefan_boltzmann = 5.67037e-8
@@ -51,3 +51,36 @@ def find_fraction_incident(surface_area, beam_width):
     Assumes circular Gaussian beam.
     """
     return (special.erf(np.sqrt(surface_area / 2*np.pi) / beam_width))**2
+
+def find_peak_intensity(laser_power, beam_width):
+    """
+    Finds the peak intensity of the circular Gaussian beam.
+    """
+
+    return 2 * laser_power / (np.pi * beam_width ** 2)
+
+def plot_intensity(distance, wavelength, diameter, laser_power):
+    """
+    Plots the radial intensity pattern at a distance away from the transmitter.
+    Plots from x = -5 to x = 5 since the sail is likely not going to have a
+    diameter of over 10m.
+    Accepts distances at least 10000 m, as this is where diffraction effects
+    are appreciable.
+    """
+    if distance < 10000:
+        print("Distance must be at least 10000m for diffraction to be appreciable")
+        return None
+    beam_width = find_beam_width(distance, wavelength, diameter)
+    peak_I = find_peak_intensity(laser_power, beam_width)
+
+    radius = np.linspace(-5,5,500)
+    i = 0
+    intensity = []
+    while i < len(radius):
+        r = radius[i]
+        I = peak_I * ((diameter / beam_width)**2) * np.exp(-2 * r**2 / beam_width**2)
+        intensity.append(I)
+        i += 1
+    plt.plot(radius,intensity)
+    plt.show()
+    return None
