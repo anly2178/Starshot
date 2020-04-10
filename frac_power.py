@@ -3,6 +3,8 @@ from scipy import special
 from scipy.optimize import fsolve
 import matplotlib.pyplot as plt
 
+np.seterr(divide='ignore', invalid='ignore')
+
 c = 2.998e8
 stefan_boltzmann = 5.67037e-8
 
