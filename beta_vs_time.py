@@ -1,7 +1,9 @@
 #Used https://www.youtube.com/watch?v=1FYrnwqWQNY
 import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.ticker import MultipleLocator
 
-def beta_vs_time(beta):
+def beta_vs_t_on_trel(beta):
     """
     Defines the differential equation as in Kulkarni 2018 equation (10).
     Relates beta (= fraction of speed of light) to t/t_rel, where
@@ -12,7 +14,7 @@ def beta_vs_time(beta):
     return beta_dot
 
 #Fourth order Runge Kutta method.
-def RungeKutta4(f, x0, t0, tf, dt):
+def runge_kutta4(f, x0, t0, tf, dt):
     """
     Implementation of fourth order Runge Kutta method.
     f is the function, x0 is the initial state, t0 is the initial time, dt is the step size.
@@ -32,3 +34,42 @@ def RungeKutta4(f, x0, t0, tf, dt):
         dx = (k1 + 2*k2 + 2*k3 + k4)/6
         x[i+1] = x[i] + dx
     return x, t
+
+def plot_beta_vs_t_on_trel():
+    """
+    Plots the graph for beta as a function of t/t_rel, where
+    t_rel = mc^2 / P.
+    """
+    f = lambda t, beta : beta_vs_t_on_trel(beta) #Differential equation
+    beta0 = 0  #Initial state
+    t0 = 0  #Initial t/t_rel
+    tf = 2.5  #Final t/t_rel
+    dt = tf * 1e-4  #Step size
+
+    #Solution
+    beta, t = runge_kutta4(f, beta0, t0, tf, dt)
+
+    #Plot relativistic results
+    fig, ax = plt.subplots()
+    ax.plot(t, beta, label = 'Relativistic')
+
+    #Plot non-relativistic results
+    nonrel_beta = 2 * t
+    ax.plot(t, nonrel_beta, '--', label = 'Non-relativistic')
+
+    #Plot design
+    ax.tick_params(which = 'both', direction = 'in', left = True, right = True, bottom = True, top = True)
+    ax.tick_params(labelleft = True, labelright = False, labelbottom = True, labeltop = False)
+
+    ax.set_xlim(0,2.5)
+    ax.xaxis.set_minor_locator(MultipleLocator(0.1))
+
+    ax.set_ylim(0,1)
+    ax.yaxis.set_minor_locator(MultipleLocator(0.05))
+
+    ax.set_ylabel(r'$\frac{v}{c}$', fontsize = 16, rotation = 0)
+    ax.set_xlabel('t/t$_{rel}$', fontsize = 13)
+
+    ax.legend()
+
+    plt.show()
