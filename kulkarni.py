@@ -13,7 +13,6 @@ def beta_vs_t_on_trel(beta):
     beta_dot = 2*(1-beta)*(1 - beta**2)**1.5 /(1+beta)
     return beta_dot
 
-#Fourth order Runge Kutta method.
 def runge_kutta4(f, x0, t0, tf, dt):
     """
     Implementation of fourth order Runge Kutta method.
@@ -69,6 +68,45 @@ def plot_beta_vs_t_on_trel():
 
     ax.set_ylabel(r'$\frac{v}{c}$', fontsize = 16, rotation = 0)
     ax.set_xlabel('t/t$_{rel}$', fontsize = 13)
+
+    ax.legend()
+
+    plt.show()
+
+def plot_power_changes():
+    """
+    Plots figure 3 of Kulkarni 2018, which is the graph of the efficiency
+    of the transfer of laser power as a function of beta.
+    """
+    betas = np.linspace(0,1,100)
+    pi_forward = betas
+    pi_sail = np.zeros(100)
+    pi_backward = np.zeros(100)
+
+    i = 0
+    while i < 100:
+        beta = betas[i]
+        pi_sail[i] = 2*beta*(1-beta)/(1+beta)
+        pi_backward[i] = (1-beta)**2 / (1+beta)
+        i += 1
+
+    #Plot results
+    fig, ax = plt.subplots()
+    ax.plot(betas, pi_forward,':', label = r'$\pi_{\rightarrow}$')
+    ax.plot(betas, pi_backward,'--', label = r'$\pi_{\leftarrow}$')
+    ax.plot(betas, pi_sail, label = r'$\pi_{sc}$')
+
+    #Plot design
+    ax.tick_params(which = 'both', direction = 'in', left = True, right = True, bottom = True, top = True)
+    ax.tick_params(labelleft = True, labelright = False, labelbottom = True, labeltop = False)
+
+    ax.set_xlim(0,1)
+    ax.xaxis.set_minor_locator(MultipleLocator(0.05))
+
+    ax.set_ylim(0,1)
+    ax.yaxis.set_minor_locator(MultipleLocator(0.05))
+
+    ax.set_xlabel(r'$\beta$', fontsize = 13)
 
     ax.legend()
 
