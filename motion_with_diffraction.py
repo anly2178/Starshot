@@ -7,16 +7,14 @@ def with_diff_beta_dot(x, params):
     Assume diffraction effects past a critical distance.
     Assume optimal mass condition: sail_mass = payload_mass.
     x is a state vector containing beta and the position/distance.
-    k is a constant related to the shape of the sail.
-        k = 1 for square sail
-        k = pi / 4 for circular sail
-    alpha is a constant related to the shape of the DE system.
     """
     c = 2.998e8 #ms^-1
 
+    #Get state
     beta = x[0]
     dist = x[1]
 
+    #Get parameters
     m_sail = params["m_sail"]
     thickness = params["thickness"]
     density = params["density"]
@@ -26,6 +24,7 @@ def with_diff_beta_dot(x, params):
     wavelength = params["wavelength"]
     alpha = params["alpha"]
 
+    #Calculates the rate of change of beta
     sail_size = np.sqrt(m_sail / (k*density*thickness))
     critical_dist = laser_size * sail_size / (2*wavelength*alpha)
     m_tot = 2*m_sail
@@ -49,6 +48,12 @@ def with_diff_state_vs_t(params):
     Parameters must be defined (in SI units) and passed into function. For example:
         params = {"m_sail": 1e-3, "thickness": 1e-6, "density": 1400, "k": 1,\
                   "power": 1e11, "laser_size": 1e4, "wavelength": 1064e-9, "alpha": 1}
+    k is a constant related to the shape of the sail.
+        k = 1 for square sail
+        k = pi / 4 for circular sail
+    alpha is a constant related to the shape of the DE system.
+        alpha = 1 for square DE system
+        alpha = 1.22 for circular DE system
     """
     c = 2.998e8
 
