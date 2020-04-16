@@ -18,6 +18,7 @@ def with_diff_beta_dot(x, params):
     m_sail = params["m_sail"]
     thickness = params["thickness"]
     density = params["density"]
+    reflectivity = params["reflectivity"]
     k = params["k"]
     power = params["power"]
     laser_size = params["laser_size"]
@@ -30,9 +31,9 @@ def with_diff_beta_dot(x, params):
     m_tot = 2*m_sail
 
     if dist <= critical_dist:
-        beta_dot = 2 * power * (1-beta**2)**1.5 * (1-beta) / (m_tot * c**2 * (1+beta))
+        beta_dot = 2 * reflectivity * power * (1-beta**2)**1.5 * (1-beta) / (m_tot * c**2 * (1+beta))
     else:
-        beta_dot = 2 * power * (1-beta**2)**1.5 * (1-beta) * critical_dist**2\
+        beta_dot = 2 * reflectivity * power * (1-beta**2)**1.5 * (1-beta) * critical_dist**2\
         / (m_tot * c**2 * (1+beta) * dist**2)
 
     return beta_dot
