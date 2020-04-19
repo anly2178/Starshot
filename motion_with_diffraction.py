@@ -1,4 +1,5 @@
 import numpy as np
+from .frac_power import find_total_relative_energy, find_temp
 
 def with_diff_beta_dot(x, params):
     """
@@ -43,6 +44,7 @@ def with_diff_state_vs_t(params):
     Returns an array of states
         First row contains the speed of sail as a fraction of the speed of light
         Second row contains the distance from the DE system
+        Third row contains the equilibrium temperature
     and an array of corresponding times.
     Assumes diffraction effects.
 
@@ -70,22 +72,30 @@ def with_diff_state_vs_t(params):
     nt = t.size
     nx = x0.size
     x = np.zeros((nx,1000))
-    x[:,0] = x0
+    x[:,0] = x0 #Speed and distance
+    # T = np.zeros(1000)
 
     #Runge Kutta method to find states as a function of time
     for i in range(nt - 1):
         dt = t[i+1] - t[i]
 
+        #Find next beta
         k1 = dt * f(t[i], x[:,i])
         k2 = dt * f(t[i] + dt/2, x[:,i] + np.array([k1/2,0]))
         k3 = dt * f(t[i] + dt/2, x[:,i] + np.array([k2/2,0]))
         k4 = dt * f(t[i] + dt, x[:,i] + np.array([k3,0]))
         dbeta = (k1 + 2*k2 + 2*k3 + k4)/6
-
         x[0,i+1] = x[0,i] + dbeta
 
+        #Find next position
         velocity = c * (x[0,i+1] + x[0,i])/2 #Trapezoidal rule
         dposition = velocity * dt
         x[1,i+1] = x[1,i] + dposition
+
+        #Find next temperature
+        # T[i+1] = find_temp(params, x[0,i+1], t[i+1])
+
+    # T[0] = T[1] #find_temp cannot solve for t=0, so we assume negligible change in first time step.
+    # x = np.vstack((x,T))
 
     return x, t
