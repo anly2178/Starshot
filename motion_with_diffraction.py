@@ -1,5 +1,5 @@
 import numpy as np
-from .frac_power import find_total_relative_energy, find_temp
+# from .frac_power import find_total_relative_energy, find_temp
 
 def with_diff_beta_dot(x, params):
     """
@@ -68,7 +68,7 @@ def with_diff_state_vs_t(params):
     dt = 1  #Initial step size
 
     #Create arrays to fill
-    t = np.logspace(0,4,200)
+    t = np.append(np.linspace(0,0.8,5), np.logspace(0,4,195)) #Create time, starts off linear and transitions into logarithmic
     nt = t.size
     nx = x0.size
     x = np.zeros((nx,200))
