@@ -1,5 +1,5 @@
 import numpy as np
-# from .frac_power import find_total_relative_energy, find_temp
+from .frac_power import find_total_relative_energy, find_temp
 
 def with_diff_beta_dot(x, params):
     """
@@ -73,7 +73,7 @@ def with_diff_state_vs_t(params):
     nx = x0.size
     x = np.zeros((nx,200))
     x[:,0] = x0 #Speed and distance
-    # T = np.zeros(1000)
+    # T = np.zeros(200)
 
     #Runge Kutta method to find states as a function of time
     for i in range(nt - 1):

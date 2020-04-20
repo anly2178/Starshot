@@ -1,13 +1,15 @@
 from tabulate import tabulate
 from .motion_with_diffraction import *
 
-def write_data(params, filepath):
+def write_data(params, state, time, filepath):
     """
     Writes data to a txt file in tabulated form.
+    The data is given in the form of a state and time, where:
+        state[0,:] = speed
+        state[1,:] = distance
+        state[2,:] = temperatures (Optional)
     Data is formatted as:
         Time (s) | Beta (c) | Distance (m) | Temperature (K)
-
-    Currently there's no temperature, will update soon.
     """
     #Extract parameters
     m_sail = params["m_sail"]
@@ -23,12 +25,16 @@ def write_data(params, filepath):
     table_params = tabulate([["m_sail (kg)","thickness (m)","density (kgm^-3)","reflectivity","k","power (W)","laser_size (m)","wavelength (m)","alpha"]\
                             ,[m_sail,thickness,density,reflectivity,k,power,laser_size,wavelength,alpha]])
 
-    #Solve for state vs time
-    x,t = with_diff_state_vs_t(params)
-    beta = x[0,:]
-    dist = x[1,:]
+    #Extract states
+    beta = state[0,:]
+    dist = state[1,:]
+    #Checks if there is temperature data
+    if len(state) == 3:
+        temp = state[2,:]
+        table_data = tabulate({"Time (s)": time,"Beta (c)": beta, "Distance (m)": dist, "Temperature (K)": temp}, headers="keys", showindex = "always")
+    else:
+        table_data = tabulate({"Time (s)": time,"Beta (c)": beta, "Distance (m)": dist}, headers="keys", showindex = "always")
 
-    table_data = tabulate({"Time (s)": t,"Beta (c)": beta, "Distance (m)": dist}, headers="keys", showindex = "always")
     f = open(filepath,'w')
     f.write(table_params + '\n\n')
     f.write(table_data)

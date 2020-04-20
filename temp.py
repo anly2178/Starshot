@@ -1,5 +1,13 @@
 from .TMM_analysis_sail.find_eq_temp import *
 from .TMM_analysis_sail.optical_constants import n_silica
+import time
+
+"""
+This is an adapted version of Justin's function, which originally solved
+the equilibrium temperature for different absorption coefficients. It has been
+adapted to solve equilibrium temperature for a given beta and absorption coefficient.
+This function is SPECIFIC TO SILICON.
+"""
 
 def solveTemp(params, abs_coeff, beta):
     # Absorbance is measured as 1-R-T where R, T are reflectance and transmittance.
@@ -14,6 +22,7 @@ def solveTemp(params, abs_coeff, beta):
     laser_power = params["power"] #W
     m_sail = params["m_sail"] * 1e3 #g
     ratio = laser_power/m_sail #W/g
+    abs_coeff = [abs_coeff]
 
     thickness = params["thickness"] #m
     wavelength_0 = params["wavelength"] #m
