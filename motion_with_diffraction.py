@@ -68,10 +68,10 @@ def with_diff_state_vs_t(params):
     dt = 1  #Initial step size
 
     #Create arrays to fill
-    t = np.logspace(0,4,1000)
+    t = np.logspace(0,4,200)
     nt = t.size
     nx = x0.size
-    x = np.zeros((nx,1000))
+    x = np.zeros((nx,200))
     x[:,0] = x0 #Speed and distance
     # T = np.zeros(1000)
 

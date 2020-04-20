@@ -19,24 +19,24 @@ def find_total_relative_energy(target_beta, reflectivity):
     r_tot = (-(1+R)*(1-B)+np.sqrt(8*B*R*(1-B)+((1-B)**2) * ((1+R)**2)))/(4*R*(1-B))
     return r_tot
 
-def find_temp(params, beta, time):
-    """
-    Find the equilibrium temperature at a specific velocity and firing time.
-    Using Kipping 2017 equation (37).
-    """
-    m_s = params["m_sail"]
-    t = params["thickness"]
-    rho = params["density"]
-    R = params["reflectivity"]
-    A = 1 - R #Absorption
-    m_tot = 2*m_s
-    area = m_s / (rho * t)
-    sigma = m_tot / area #Effective surface density
-    r_tot = find_total_relative_energy(beta, R)
-
-    T = (r_tot * sigma * A * c**2 / (2 * stefan_boltzmann * time))**0.25
-    # print(T)
-    return T
+# def find_temp(params, beta, time):
+#     """
+#     Find the equilibrium temperature at a specific velocity and firing time.
+#     Using Kipping 2017 equation (37).
+#     """
+#     m_s = params["m_sail"]
+#     t = params["thickness"]
+#     rho = params["density"]
+#     R = params["reflectivity"]
+#     A = 1 - R #Absorption
+#     m_tot = 2*m_s
+#     area = m_s / (rho * t)
+#     sigma = m_tot / area #Effective surface density
+#     r_tot = find_total_relative_energy(beta, R)
+#
+#     T = (r_tot * sigma * A * c**2 / (2 * stefan_boltzmann * time))**0.25
+#     # print(T)
+#     return T
 
 def find_firing_time(total_mass, surface_area, absorptivity, total_rel_energy,\
     max_temp, emissivity):

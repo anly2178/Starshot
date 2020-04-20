@@ -6,9 +6,9 @@ import numpy as np
 from numpy import sin, cos, pi
 from sympy.solvers import solve
 from sympy import Symbol
-from tmm import tmm, general_tmm
-from make_transfer_matrix import make_transfer_matrix
-from optical_constants import n_silica
+from .tmm import tmm, general_tmm
+from .make_transfer_matrix import make_transfer_matrix
+from .optical_constants import n_silica
 import time
 
 " ============================================================================ "
@@ -130,7 +130,7 @@ def spectral_power_flux(wavelength, structure, temperature):
     c = 299792458             # speed of light in SI
     k_B = 1.38064852e-23        # Boltzmann constant in SI
     sigma = 5.67e-8
-    I = ((2*h*c**2)/wavelength**5)*(1/(np.exp(h*c/(wavelength*k_B*temperature))-1))         # Planck's Law
+    I = ((2*h*c**2)/wavelength.astype(float)**5)*(1/(np.exp(h*c/(wavelength.astype(float)*k_B*temperature.astype(float)))-1))         # Planck's Law
 
     # Now give expression for hemispherical emissivity. Note factor of 4: 2 comes
     # from integrating wrt phi, the other to account for both faces of sail
