@@ -1,7 +1,7 @@
 import numpy as np
 from .temp import find_temp
 
-def with_diff_beta_dot(x, params):
+def differential_eq(x, params):
     """
     Defines the differential equations as in Kulkarni 2018 equation (23).
     Relates beta (= fraction of speed of light) to time t in seconds.
@@ -39,7 +39,7 @@ def with_diff_beta_dot(x, params):
 
     return beta_dot
 
-def with_diff_state_vs_t(params):
+def state_vs_t(params):
     """
     Returns an array of states
         First row contains the speed of sail as a fraction of the speed of light
@@ -61,7 +61,7 @@ def with_diff_state_vs_t(params):
     c = 2.998e8
 
     #Initialise conditions
-    f = lambda t, x : with_diff_beta_dot(x, params) #Differential equation
+    f = lambda t, x : differential_eq(x, params) #Differential equation
     x0 = np.array([0,0])  #Initial state
     t0 = 0  #Initial t
     tf = 1e4  #Final t
