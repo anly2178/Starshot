@@ -1,6 +1,9 @@
 """
 This is a template showing how to use the scripts.
 NOTE: This file would be run in the parent directory.
+
+One could easily move this file into the parent directory,
+replace the values in here and use this as a 'calculator'.
 """
 #Import modules
 from starshot_lib.temp import *
