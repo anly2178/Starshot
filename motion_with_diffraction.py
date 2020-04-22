@@ -1,5 +1,5 @@
 import numpy as np
-from .frac_power import find_total_relative_energy, find_temp
+from .temp import find_temp
 
 def with_diff_beta_dot(x, params):
     """
@@ -49,8 +49,8 @@ def with_diff_state_vs_t(params):
     Assumes diffraction effects.
 
     Parameters must be defined (in SI units) and passed into function. For example:
-        params = {"m_sail": 1e-3, "thickness": 1e-6, "density": 1400, "k": 1,\
-                  "power": 1e11, "laser_size": 1e4, "wavelength": 1064e-9, "alpha": 1}
+        params = {"m_sail": 1e-3, "thickness": 1e-6, "density": 1400, "reflectivity": 1, "absorptance": 9e-8,
+                    "k": 1, "power": 1e11, "laser_size": 1e4, "wavelength": 1064e-9, "alpha": 1}
     k is a constant related to the shape of the sail.
         k = 1 for square sail
         k = pi / 4 for circular sail
@@ -73,7 +73,7 @@ def with_diff_state_vs_t(params):
     nx = x0.size
     x = np.zeros((nx,200))
     x[:,0] = x0 #Speed and distance
-    # T = np.zeros(200)
+    T = np.zeros(200)
 
     #Runge Kutta method to find states as a function of time
     for i in range(nt - 1):
@@ -93,9 +93,9 @@ def with_diff_state_vs_t(params):
         x[1,i+1] = x[1,i] + dposition
 
         #Find next temperature
-        # T[i+1] = find_temp(params, x[0,i+1], t[i+1])
+        T[i+1] = find_temp(params, x[0,i+1], t[i+1])
 
-    # T[0] = T[1] #find_temp cannot solve for t=0, so we assume negligible change in first time step.
-    # x = np.vstack((x,T))
+    T[0] = T[1] #find_temp cannot solve for t=0, so we assume negligible change in first time step.
+    x = np.vstack((x,T))
 
     return x, t
