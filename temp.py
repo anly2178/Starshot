@@ -60,7 +60,7 @@ def find_temp_silica(params, abs_coeff, beta):
 
     thickness = params["thickness"] #m
     wavelength_0 = params["wavelength"] #m
-    n = 1.45
+    n = n_silica(wavelength_0)
     structure = [(n,-thickness)]
 
     density = params["density"]
@@ -122,5 +122,6 @@ def find_temp_silica(params, abs_coeff, beta):
         P_low = power_out(T_low)
     # Take the midpoints as the final result since this is the result from halving interval
     midpoint = (T_high+T_low)/2
+    print(midpoint)
     print("--- %s seconds ---" % (time.time() - start_time))
     return midpoint
