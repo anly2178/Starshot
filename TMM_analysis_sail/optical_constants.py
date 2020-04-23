@@ -104,3 +104,85 @@ def n_csi():
         n.append((point[0],get_n(point[0])+point[1]*1j))
 
     return n
+
+""" Calculating the complex refractive index of GeO2 at different
+    wavelengths. Valid from 1-50 um (with interpolation between 4.8-5 um
+    using Fleming's Sellmeier equation.
+"""
+
+def n_germania(wavelength):
+    # Working in um
+    wavelength = wavelength*1e6
+    # Functions for reading files
+    def get_list_n():
+        f = open('n_germania.txt', 'r')
+        points = f.readlines()
+        i = 0
+        n = []
+        while i < len(points):
+            string = points[i].strip()
+            point = string.split('\t')
+            n.append((float(point[0]), float(point[1])))
+            i += 1
+        f.close()
+        return n
+
+    def get_list_k():
+        f = open('k_germania.txt', 'r')
+        points = f.readlines()
+        i = 0
+        k = []
+        while i < len(points):
+            string = points[i].strip()
+            point = string.split('\t')
+            k.append((float(point[0]), float(point[1])))
+            i += 1
+        f.close()
+        return k
+
+    # Now to actually get what we need to return
+    def find_val_from_list(ls, wavelength):
+        # Each list is in descending order in terms of wavelength, so use this
+        # to our advantage. First, we need to find where the wavelength we want
+        # lies in the list:
+        i = 0
+        while i < len(ls):
+            if wavelength < ls[-1][0]:
+                return ls[-1][1]
+            if wavelength > ls[i][0]:
+                # Shouldn't be looking past the wavelength ranges that we have here anyways
+                if wavelength > ls[0][0]:
+                    return 0
+                else:
+                    val_interval = (ls[i][1],ls[i-1][1])   # (val at lower wl, val at higher wl)
+                    wl_interval = (ls[i][0],ls[i-1][0])
+                    m = (val_interval[1]-val_interval[0])/(wl_interval[1]-wl_interval[0])
+                    y0 = val_interval[0]
+                    x0 = wl_interval[0]
+                    val = m*(wavelength - x0) + y0
+                    return val
+            else:
+                i += 1
+
+    # And for the range where the above approximation does not hold, and we must
+    # instead use a Sellmeier relationship
+    def sellmeier(wavelength):
+        A1 = 0.80686642
+        A2 = 0.71815848
+        A3 = 0.85416831
+        l1 = 0.68972606e-1
+        l2 = 0.15396605
+        l3 = 0.11841931e2
+        wlsq = (wavelength)**2
+        nsq = 1 + (wlsq*A1)/(wlsq-l1**2) + (wlsq*A2)/(wlsq-l2**2) + (wlsq*A3)/(wlsq-l3**2)
+        return np.sqrt(nsq)
+
+    if wavelength > 5:
+        ns = get_list_n()
+        ks = get_list_k()
+        return find_val_from_list(ns, wavelength) + 1j*find_val_from_list(ks, wavelength)
+    # Need to implement for 1-5 um regime
+    elif wavelength <= 5:
+        return sellmeier(wavelength)
+    else:
+        return 0
