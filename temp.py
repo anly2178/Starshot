@@ -1,55 +1,7 @@
-from .TMM_analysis_sail.find_eq_temp import *
-from .TMM_analysis_sail.optical_constants import n_silica
-import time
+import numpy as np
 
 c = 2.998e8
 stefan_boltzmann = 5.67037e-8
-
-"""
-The following function is used if one has:
-    1. ABSORPTION COEFFICIENT of
-    2. MATERIAL that is either:
-            • silica
-            • silicon
-            • (This will continue to be updated)
-
-If material is not available in the list, one must include their own value
-of absorptance into their set of parameters.
-"""
-
-def find_absorptance(material, thickness, abs_coeff, wavelength):
-    """
-    Input:  material is a STRING representing the material of the sail.
-            thickness of the sail (m)
-            absorption coefficient
-            wavelength of laser (m)
-    =====================================================================
-    List of materials and their corresponding strings
-        Material              String
-        Silicon  ------------ 'Si'
-        Silica   ------------ 'SiO2'
-        Will be updated
-    =====================================================================
-    Output: Absorptance - fraction of intensity absorbed.
-
-    The list of parameters should be defined AFTER absorptance is found.
-    """
-
-    #Find the refractive index of the material at the wavelength
-    if material == 'Si02':
-        n = n_silica(wavelength)
-    else:
-        print("""List of materials available and their corresponding strings:
-                Material              String
-                Silicon  ------------ 'Si'
-                Silica   ------------ 'SiO2'""")
-
-    structure = [(n,-thickness)]
-    abs_coeff = [abs_coeff]
-
-    #Calculate absorptance
-    absorptance = find_absorption_from_coefficient(structure, abs_coeff, wavelength)
-    return absorptance[0]
 
 def find_total_relative_energy(target_beta, reflectivity):
     """

@@ -1,5 +1,4 @@
 from tabulate import tabulate
-from .motion_with_diffraction import *
 
 def write_data(params, state, time, filepath):
     """
@@ -12,10 +11,13 @@ def write_data(params, state, time, filepath):
         Time (s) | Beta (c) | Distance (m) | Temperature (K)
     """
     #Extract parameters
+    material = params["material"]
     m_sail = params["m_sail"]
     thickness = params["thickness"]
+    area = params["area"]
     density = params["density"]
     reflectivity = params["reflectivity"]
+    abs_coeff = params["abs_coeff"]
     absorptance = params["absorptance"]
     k = params["k"]
     power = params["power"]
@@ -23,8 +25,8 @@ def write_data(params, state, time, filepath):
     wavelength = params["wavelength"]
     alpha = params["alpha"]
 
-    table_params = tabulate([["m_sail (kg)","thickness (m)","density (kgm^-3)","reflectivity","absorptance","k","power (W)","laser_size (m)","wavelength (m)","alpha"]\
-                            ,[m_sail,thickness,density,reflectivity,absorptance,k,power,laser_size,wavelength,alpha]])
+    table_params = tabulate([["material","m_sail (kg)","thickness (m)","area (m^2)","density (kgm^-3)","reflectivity","abs_coeff","absorptance","k","power (W)","laser_size (m)","wavelength (m)","alpha"]\
+                            ,[material, m_sail,thickness, area, density,reflectivity,abs_coeff,absorptance,k,power,laser_size,wavelength,alpha]])
 
     #Extract states
     beta = state[0,:]
