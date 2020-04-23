@@ -92,8 +92,9 @@ def state_vs_t(params):
         dposition = velocity * dt
         x[1,i+1] = x[1,i] + dposition
 
-        #Find next temperature
-        T[i+1] = find_temp(params, x[0,i+1], t[i+1])
+        #Find next temperature if absorptance is available
+        if not params["absorptance"] == None:
+            T[i+1] = find_temp(params, x[0,i+1], t[i+1])
 
     T[0] = T[1] #find_temp cannot solve for t=0, so we assume negligible change in first time step.
     x = np.vstack((x,T))
