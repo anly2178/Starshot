@@ -1,5 +1,6 @@
 import numpy as np
 from .temp import find_temp
+from .critical_distance import find_crit_dist
 
 def differential_eq(x, params):
     """
@@ -10,26 +11,16 @@ def differential_eq(x, params):
     x is a state vector containing beta and the position/distance.
     """
     c = 2.998e8 #ms^-1
-
-    #Get state
+    #Get state of sail at that time
     beta = x[0]
     dist = x[1]
-
     #Get parameters
     m_sail = params["m_sail"]
-    thickness = params["thickness"]
-    density = params["density"]
-    reflectivity = params["reflectivity"]
-    k = params["k"]
-    power = params["power"]
-    laser_size = params["laser_size"]
-    wavelength = params["wavelength"]
-    alpha = params["alpha"]
-
-    #Calculates the rate of change of beta
-    sail_size = np.sqrt(m_sail / (k*density*thickness))
-    critical_dist = laser_size * sail_size / (2*wavelength*alpha)
     m_tot = 2*m_sail
+    reflectivity = params["reflectivity"]
+    power = params["power"]
+    critical_dist = find_crit_dist(params)
+    #Calculates the rate of change of beta
 
     if dist <= critical_dist:
         beta_dot = 2 * reflectivity * power * (1-beta**2)**1.5 * (1-beta) / (m_tot * c**2 * (1+beta))

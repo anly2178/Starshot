@@ -32,8 +32,9 @@ def write_data(params, state, time, filepath):
     beta = state[0,:]
     dist = state[1,:]
     temp_k = state[2,:]
-    temp_j = state[3,:]
-    table_data = tabulate({"Time (s)": time,"Beta (c)": beta, "Distance (m)": dist, "Kipping Temperature (K)": temp_k, "Justin Temperature (K)": temp_j}, headers="keys", showindex = "always")
+    # temp_j = state[3,:]
+    # table_data = tabulate({"Time (s)": time,"Beta (c)": beta, "Distance (m)": dist, "Kipping Temperature (K)": temp_k, "Justin Temperature (K)": temp_j}, headers="keys", showindex = "always")
+    table_data = tabulate({"Time (s)": time,"Beta (c)": beta, "Distance (m)": dist, "Kipping Temperature (K)": temp_k}, headers="keys", showindex = "always")
 
     f = open(filepath,'w')
     f.write(table_params + '\n\n')
