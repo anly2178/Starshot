@@ -60,11 +60,11 @@ def find_temp_silica(params, abs_coeff, beta):
 
     thickness = params["thickness"] #m
     wavelength_0 = params["wavelength"] #m
-    n = n_silica(wavelength_0)
+    n = 1.45
     structure = [(n,-thickness)]
 
     density = params["density"]
-    rho_S = density * thickness
+    rho_S = density * thickness * 1e3
 
     #Finding power absorbed, accouting for doppler shift
     wavelength = wavelength_0*np.sqrt((1+beta)/(1-beta))
@@ -120,9 +120,9 @@ def find_temp_silica(params, abs_coeff, beta):
 
         P_high = power_out(T_high)
         P_low = power_out(T_low)
+        print(midpoint)
     # Take the midpoints as the final result since this is the result from halving interval
     midpoint = (T_high+T_low)/2
-    print(midpoint)
     print("--- %s seconds ---" % (time.time() - start_time))
     return midpoint
 
