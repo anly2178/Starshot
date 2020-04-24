@@ -56,20 +56,24 @@ def find_one_temp_silica(params, beta, dist):
     """
 
     #Extracting the parameters
+    material = params["material"]
     laser_power = params["power"] #W
     m_sail = params["m_sail"] * 1e3 #g
     ratio = laser_power/m_sail #W/g
     abs_coeff = [params["abs_coeff"]]
-
     thickness = params["thickness"] #m
     wavelength_0 = params["wavelength"] #m
-    n = 1.45
-    structure = [(n,-thickness)]
-
     density = params["density"] #kgm^-3
     rho_S = density * thickness * 1e3 #gm^-3
 
+    #Determining which material to calculate absorption for
+    if material == 'SiO2':
+        n = 1.45
+    elif material == 'GeO2':
+        n = 1.6
+
     #Finding power absorbed, accounting for doppler shift and diffraction effects
+    structure = [(n,-thickness)]
     crit_dist = find_crit_dist(params)
     wavelength = wavelength_0*np.sqrt((1+beta)/(1-beta))
     A = find_absorption_from_coefficient(structure, abs_coeff, wavelength)
