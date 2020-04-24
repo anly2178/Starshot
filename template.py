@@ -1,5 +1,3 @@
-#This is now out of date - I will update soon.
-
 """
 This is a template showing how to use the scripts.
 NOTE: This file would be run in the parent directory.
@@ -9,6 +7,7 @@ replace the values in here and use this as a 'calculator'.
 """
 #Import modules
 from starshot_lib.motion import *
+from starshot_lib.temp import add_all_temp
 from starshot_lib.fill_params import fill_params
 import numpy as np
 import matplotlib.pyplot as plt
@@ -23,17 +22,18 @@ params = {  "material": 'SiO2',
             "reflectivity": 1,
             "abs_coeff": 1e-3,
             "absorptance": None,
-            "k": 1,
             "power": 1e11,
-            "laser_size": 1e4,
-            "wavelength": 1064e-9,
-            "alpha": 1}
+            "diameter": 1e4,
+            "wavelength": 1064e-9}
 
 #Fills the missing parameters, if possible - in this case, thickness and absorptance
 fill_params(params)
 
 #Calculate the state over time.
 state, time = state_vs_t(params)
+
+#Includes the temperature at each state
+state = add_all_temp(state)
 
 #Stores results in tabulated form in txt file
 filepath = 'sample.txt'

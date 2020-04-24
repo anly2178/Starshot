@@ -1,6 +1,6 @@
 import numpy as np
 from .temp import find_temp
-from .critical_distance import find_crit_dist
+from .laser import find_fraction_incident
 
 def differential_eq(x, params):
     """
@@ -19,14 +19,9 @@ def differential_eq(x, params):
     m_tot = 2*m_sail
     reflectivity = params["reflectivity"]
     power = params["power"]
-    critical_dist = find_crit_dist(params)
     #Calculates the rate of change of beta
-
-    if dist <= critical_dist:
-        beta_dot = 2 * reflectivity * power * (1-beta**2)**1.5 * (1-beta) / (m_tot * c**2 * (1+beta))
-    else:
-        beta_dot = 2 * reflectivity * power * (1-beta**2)**1.5 * (1-beta) * critical_dist**2\
-        / (m_tot * c**2 * (1+beta) * dist**2)
+    fraction = find_fraction_incident(params, dist)
+    beta_dot = 2 * reflectivity * power * fraction * (1-beta**2)**1.5 * (1-beta) / (m_tot * c**2 * (1+beta))
 
     return beta_dot
 
@@ -41,7 +36,7 @@ def state_vs_t(params):
 
     Parameters must be defined (in SI units) and passed into function. For example:
         params = {"m_sail": 1e-3, "thickness": 1e-6, "density": 1400, "reflectivity": 1, "absorptance": 9e-8,
-                    "k": 1, "power": 1e11, "laser_size": 1e4, "wavelength": 1064e-9, "alpha": 1}
+                    "k": 1, "power": 1e11, "diameter": 1e4, "wavelength": 1064e-9, "alpha": 1}
     k is a constant related to the shape of the sail.
         k = 1 for square sail
         k = pi / 4 for circular sail
@@ -64,7 +59,6 @@ def state_vs_t(params):
     nx = x0.size
     x = np.zeros((nx,200))
     x[:,0] = x0 #Speed and distance
-    T = np.zeros(200)
 
     #Runge Kutta method to find states as a function of time
     for i in range(nt - 1):
@@ -82,12 +76,5 @@ def state_vs_t(params):
         velocity = c * (x[0,i+1] + x[0,i])/2 #Trapezoidal rule
         dposition = velocity * dt
         x[1,i+1] = x[1,i] + dposition
-
-        #Find next temperature if absorptance is available
-        if not params["absorptance"] == None:
-            T[i+1] = find_temp(params, x[0,i+1], t[i+1])
-
-    T[0] = T[1] #find_temp cannot solve for t=0, so we assume negligible change in first time step.
-    x = np.vstack((x,T))
 
     return x, t

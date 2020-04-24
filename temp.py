@@ -2,43 +2,9 @@ import numpy as np
 import time
 from .TMM_analysis_sail.find_eq_temp import *
 from .TMM_analysis_sail.optical_constants import n_silica
-from .critical_distance import find_crit_dist
+from .laser import find_fraction_incident
 
 
-c = 2.998e8
-stefan_boltzmann = 5.67037e-8
-
-def find_total_relative_energy(target_beta, reflectivity):
-    """
-    'Relative energy' is the energy of each photon expressed as a ratio
-    of the sail's rest mass energy. Kipping 2017 eq 5
-    Function calculates the relative energy summed over all incident photons.
-    Assumes that photons are either absorbed or reflected, not transmitted.
-    """
-    B = target_beta
-    R = reflectivity
-    r_tot = (-(1+R)*(1-B)+np.sqrt(8*B*R*(1-B)+((1-B)**2) * ((1+R)**2)))/(4*R*(1-B))
-    return r_tot
-
-def find_temp(params, beta, time):
-    """
-    Find the equilibrium temperature at a specific velocity and firing time.
-    Using Kipping 2017 equation (37).
-    """
-    m_s = params["m_sail"]
-    t = params["thickness"]
-    rho = params["density"]
-    R = params["reflectivity"]
-    A = params["absorptance"]
-    m_tot = 2*m_s
-    area = m_s / (rho * t)
-    sigma = m_tot / area #Effective surface density
-    r_tot = find_total_relative_energy(beta, R)
-
-    T = (r_tot * sigma * A * c**2 / (2 * stefan_boltzmann * time))**0.25
-    return T
-
-#The function below was experimental and now out of use.
 """
 This is an adapted version of Justin's functions, which originally solved
 the equilibrium temperature for different absorption coefficients. It has been
@@ -46,7 +12,7 @@ adapted to solve equilibrium temperature for a given beta and absorption coeffic
 This function is SPECIFIC TO SILICA.
 """
 
-def find_one_temp_silica(params, beta, dist):
+def find_one_temp(params, beta, dist):
     """
     Returns the equilibrium temperature at a specific speed and distance,
     accounting for doppler shift and diffraction effects.
@@ -74,14 +40,11 @@ def find_one_temp_silica(params, beta, dist):
 
     #Finding power absorbed, accounting for doppler shift and diffraction effects
     structure = [(n,-thickness)]
-    crit_dist = find_crit_dist(params)
     wavelength = wavelength_0*np.sqrt((1+beta)/(1-beta))
     A = find_absorption_from_coefficient(structure, abs_coeff, wavelength)
 
-    if dist <= crit_dist:
-        power_in = ratio*A*rho_S*(1-beta)/(1+beta)
-    elif dist > crit_dist:
-        power_in = ratio*A*rho_S*(1-beta)/(1+beta) * (crit_dist/ dist)**2 #Using inverse square Law like Kulkarni eq (23)
+    fraction = find_fraction_incident(params, dist)
+    power_in = ratio*A*rho_S*(1-beta)/(1+beta) * fraction
 
     """ Note: Honestly, this below section should be made into its own function
         since it is a reusable block of code. Consider doing this at some point
@@ -139,7 +102,7 @@ def find_one_temp_silica(params, beta, dist):
     return midpoint
 
 
-def add_all_temp_silica(params, state):
+def add_all_temp(params, state):
     """
     Appends an array of equilibrium temperatures, corresponding to the state of
     the sail at each time (state includes speed and distance).
@@ -148,6 +111,9 @@ def add_all_temp_silica(params, state):
             state (multidimensional array)
     Output: The multidimensional array of states with the equilibrium temperatures
             appended as the third column.
+
+    Example input:      state = [[beta1,beta2,...,betan],
+                                  [dist1,dist2,...,distn]]
 
     Example output:     state = [[beta1,beta2,...,betan],
                                   [dist1,dist2,...,distn],
@@ -166,9 +132,46 @@ def add_all_temp_silica(params, state):
     while i < n:
         beta = betas[i]
         dist = dists[i]
-        temp = find_one_temp_silica(params, beta, dist)
+        temp = find_one_temp(params, beta, dist)
         temps[i] = temp
         i += 1
 
     new_state = np.vstack((state, temps))
     return new_state
+
+#The below functions underestimate the equilibrium temperature as they assume
+#the sail is a blackbody. To provide more accurate results, we opt for
+#functions that are material/structure specific such as the ones above.
+
+c = 2.998e8
+stefan_boltzmann = 5.67037e-8
+
+def find_total_relative_energy(target_beta, reflectivity):
+    """
+    'Relative energy' is the energy of each photon expressed as a ratio
+    of the sail's rest mass energy. Kipping 2017 eq 5
+    Function calculates the relative energy summed over all incident photons.
+    Assumes that photons are either absorbed or reflected, not transmitted.
+    """
+    B = target_beta
+    R = reflectivity
+    r_tot = (-(1+R)*(1-B)+np.sqrt(8*B*R*(1-B)+((1-B)**2) * ((1+R)**2)))/(4*R*(1-B))
+    return r_tot
+
+def find_temp(params, beta, time):
+    """
+    Find the equilibrium temperature at a specific velocity and firing time.
+    Using Kipping 2017 equation (37).
+    """
+    m_s = params["m_sail"]
+    t = params["thickness"]
+    rho = params["density"]
+    R = params["reflectivity"]
+    A = params["absorptance"]
+    m_tot = 2*m_s
+    area = m_s / (rho * t)
+    sigma = m_tot / area #Effective surface density
+    r_tot = find_total_relative_energy(beta, R)
+
+    T = (r_tot * sigma * A * c**2 / (2 * stefan_boltzmann * time))**0.25
+    return T

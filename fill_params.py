@@ -1,5 +1,5 @@
 from .TMM_analysis_sail.find_eq_temp import *
-from .TMM_analysis_sail.optical_constants import n_silica
+from .TMM_analysis_sail.optical_constants import n_silica, n_germania
 
 """
 Fills in missing parameters from the given ones, if possible.
@@ -42,7 +42,7 @@ The following function is used if one has:
     1. ABSORPTION COEFFICIENT of
     2. MATERIAL that is either:
             • silica
-            • silicon
+            • germania
             • (This will continue to be updated)
 
 If material is not available in the list, one must include their own value
@@ -53,16 +53,16 @@ def add_absorptance(params):
     """
     Input:  material is a STRING representing the material of the sail.
             thickness of the sail (m)
-            absorption coefficient
+            absorption coefficient (cm^-1)
             wavelength of laser (m)
     =====================================================================
     List of materials and their corresponding strings
         Material              String
-        Silicon  ------------ 'Si'
+        Germania ------------ 'GeO2'
         Silica   ------------ 'SiO2'
         Will be updated
     =====================================================================
-    Output: Absorptance - fraction of intensity absorbed.
+    Output: Absorptance - fraction of intensity absorbed. (absolute absorption)
 
     The list of parameters should be defined AFTER absorptance is found.
     """
@@ -75,10 +75,12 @@ def add_absorptance(params):
     #Find the refractive index of the material at the wavelength
     if material == 'SiO2':
         n = n_silica(wavelength)
+    elif material == 'GeO2':
+        n = n_germania(wavelength)
     else:
         print("""List of materials available and their corresponding strings:
                 Material              String
-                Silicon  ------------ 'Si'
+                Germania ------------ 'GeO2'
                 Silica   ------------ 'SiO2'""")
         return None
 

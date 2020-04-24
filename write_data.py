@@ -6,7 +6,7 @@ def write_data(params, state, time, filepath):
     The data is given in the form of a state and time, where:
         state[0,:] = speed
         state[1,:] = distance
-        state[2,:] = temperatures (Optional)
+        state[2,:] = temperatures
     Data is formatted as:
         Time (s) | Beta (c) | Distance (m) | Temperature (K)
     """
@@ -16,25 +16,22 @@ def write_data(params, state, time, filepath):
     thickness = params["thickness"]
     area = params["area"]
     density = params["density"]
-    reflectivity = params["reflectivity"]
+    reflectance = params["reflectance"]
     abs_coeff = params["abs_coeff"]
     absorptance = params["absorptance"]
-    k = params["k"]
     power = params["power"]
-    laser_size = params["laser_size"]
+    diameter = params["diameter"]
     wavelength = params["wavelength"]
-    alpha = params["alpha"]
 
-    table_params = tabulate([["material","m_sail (kg)","thickness (m)","area (m^2)","density (kgm^-3)","reflectivity","abs_coeff","absorptance","k","power (W)","laser_size (m)","wavelength (m)","alpha"]\
-                            ,[material, m_sail,thickness, area, density,reflectivity,abs_coeff,absorptance,k,power,laser_size,wavelength,alpha]])
+    table_params = tabulate([["material","m_sail (kg)","thickness (m)","area (m^2)","density (kgm^-3)","reflectance","abs_coeff (cm^-1)","absorptance","power (W)","diameter (m)","wavelength (m)"]\
+                            ,[material, m_sail,thickness, area, density,reflectance,abs_coeff,absorptance,power,diameter,wavelength]])
 
     #Extract states
     beta = state[0,:]
     dist = state[1,:]
-    temp_k = state[2,:]
-    # temp_j = state[3,:]
-    # table_data = tabulate({"Time (s)": time,"Beta (c)": beta, "Distance (m)": dist, "Kipping Temperature (K)": temp_k, "Justin Temperature (K)": temp_j}, headers="keys", showindex = "always")
-    table_data = tabulate({"Time (s)": time,"Beta (c)": beta, "Distance (m)": dist, "Kipping Temperature (K)": temp_k}, headers="keys", showindex = "always")
+    temp = state[2,:]
+
+    table_data = tabulate({"Time (s)": time,"Beta (c)": beta, "Distance (m)": dist, "Temperature (K)": temp}, headers="keys", showindex = "always")
 
     f = open(filepath,'w')
     f.write(table_params + '\n\n')

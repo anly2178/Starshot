@@ -31,9 +31,9 @@ Parameter							Defintion
 "material"  	---------------------------- 	sail material; see the list below
 								Input: 	string
 								List of materials and their corresponding strings
-       			 						Material              String
-        			 						Silicon  ------------ 'Si'
-        			 						Silica    ------------ 'SiO2'
+       			 						Material              	String
+        			 						Silica    	------------ 'SiO2'
+									Germania ------------ 'GeO2'
         			 						Will be updated
 									
 "m_sail"     	---------------------------- 	mass of the sail
@@ -57,34 +57,21 @@ Parameter							Defintion
 
 "abs_coeff"	----------------------------		absorption coefficient of the material
 								Input:	int, float
+								Units:	cm^-1
 								
 "absorptance"	----------------------------		fraction of radiant flux absorbed by the sail
 								Input:	int, float
-								
-"k"			----------------------------		constant relating to the shape of the sail; see the list below
-								Input:	int, float
-        								List of k constants
-        									Shape		Constant
-									Square ---------- 1
-									Circle   ---------- Pi/4
 								
 "power"		----------------------------		laser power from the DE (directed energy) system
 								Input:	int, float
 								Units:	W
 
-"laser_size"	----------------------------		width of the DE system
+"diameter"		----------------------------		diameter of the transmitter system
 								Input:	int, float
 								Units:	m
 
 "wavelength"	----------------------------		wavelength of the laser, not including relativistic doppler shift
 								Input:	int, float
 								Units:	m
-								
-"alpha"		----------------------------		constant relating to the shape of the DE system; see the list below
-								Input:	int, float
-								List of alpha constants
-									Shape		Constant
-									Square ---------- 1
-									Circle   ----------- 1.22
 ========================================================================================================
 
