@@ -27,7 +27,7 @@ To use the functions, one must define parameters for the spacecraft in this form
 
 ========================================================================================================
 Parameter							Defintion
---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------
 "material"  	---------------------------- 	sail material; see the list below
 								Input: 	string
 								List of materials and their corresponding strings
@@ -48,7 +48,7 @@ Parameter							Defintion
 								Input:	int, float
 								Units:		m^2
 								
-"density"		----------------------------		volume density of sail material (not including the payload)
+"density"	----------------------------		volume density of sail material (not including the payload)
 								Input:	int, float
 								Units:		kgm^-3
 								
@@ -61,12 +61,12 @@ Parameter							Defintion
 "absorptance"	----------------------------		fraction of radiant flux absorbed by the sail
 								Input:	int, float
 								
-"k"			----------------------------		constant relating to the shape of the sail; see the list below
+"k"		----------------------------		constant relating to the shape of the sail; see the list below
 								Input:	int, float
         								List of k constants
         									Shape		Constant
 									Square ---------- 1
-									Circle   ---------- Pi/4
+									Circle ---------- Pi/4
 								
 "power"		----------------------------		laser power from the DE (directed energy) system
 								Input:	int, float
@@ -85,6 +85,6 @@ Parameter							Defintion
 								List of alpha constants
 									Shape		Constant
 									Square ---------- 1
-									Circle   ----------- 1.22
+									Circle ---------- 1.22
 ========================================================================================================
 
