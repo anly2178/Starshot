@@ -4,14 +4,6 @@ from .TMM_analysis_sail.find_eq_temp import *
 from .TMM_analysis_sail.optical_constants import n_silica
 from .laser import find_fraction_incident
 
-
-"""
-This is an adapted version of Justin's functions, which originally solved
-the equilibrium temperature for different absorption coefficients. It has been
-adapted to solve equilibrium temperature for a given beta and absorption coefficient.
-This function is SPECIFIC TO SILICA.
-"""
-
 def find_one_temp(params, beta, dist):
     """
     Returns the equilibrium temperature at a specific speed and distance,
@@ -79,7 +71,7 @@ def find_one_temp(params, beta, dist):
     P_low = power_out(T_low)
 
     # Halving the interval for a result
-    while abs(P_high - P_low) >= 0.05*power_in:
+    while abs(P_high - P_low) >= 0.01*power_in:
 
     # The only issue we can really get is if P_high is too low - if this is
     # the case, just double P_high
@@ -146,7 +138,7 @@ def add_all_temp(params, state):
 c = 2.998e8
 stefan_boltzmann = 5.67037e-8
 
-def find_total_relative_energy(target_beta, reflectivity):
+def find_total_relative_energy(target_beta, reflectance):
     """
     'Relative energy' is the energy of each photon expressed as a ratio
     of the sail's rest mass energy. Kipping 2017 eq 5
@@ -154,7 +146,7 @@ def find_total_relative_energy(target_beta, reflectivity):
     Assumes that photons are either absorbed or reflected, not transmitted.
     """
     B = target_beta
-    R = reflectivity
+    R = reflectance
     r_tot = (-(1+R)*(1-B)+np.sqrt(8*B*R*(1-B)+((1-B)**2) * ((1+R)**2)))/(4*R*(1-B))
     return r_tot
 
@@ -166,7 +158,7 @@ def find_temp(params, beta, time):
     m_s = params["m_sail"]
     t = params["thickness"]
     rho = params["density"]
-    R = params["reflectivity"]
+    R = params["reflectance"]
     A = params["absorptance"]
     m_tot = 2*m_s
     area = m_s / (rho * t)

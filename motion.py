@@ -17,11 +17,11 @@ def differential_eq(x, params):
     #Get parameters
     m_sail = params["m_sail"]
     m_tot = 2*m_sail
-    reflectivity = params["reflectivity"]
+    reflectance = params["reflectance"]
     power = params["power"]
     #Calculates the rate of change of beta
     fraction = find_fraction_incident(params, dist)
-    beta_dot = 2 * reflectivity * power * fraction * (1-beta**2)**1.5 * (1-beta) / (m_tot * c**2 * (1+beta))
+    beta_dot = 2 * reflectance * power * fraction * (1-beta**2)**1.5 * (1-beta) / (m_tot * c**2 * (1+beta))
 
     return beta_dot
 
@@ -35,8 +35,8 @@ def state_vs_t(params):
     Assumes diffraction effects.
 
     Parameters must be defined (in SI units) and passed into function. For example:
-        params = {"m_sail": 1e-3, "thickness": 1e-6, "density": 1400, "reflectivity": 1, "absorptance": 9e-8,
-                    "k": 1, "power": 1e11, "diameter": 1e4, "wavelength": 1064e-9, "alpha": 1}
+        params = {"m_sail": 1e-3, "thickness": 1e-6, "density": 1400, "reflectance": 1, "absorptance": 9e-8,
+                    "power": 1e11, "diameter": 1e4, "wavelength": 1064e-9}
     k is a constant related to the shape of the sail.
         k = 1 for square sail
         k = pi / 4 for circular sail
