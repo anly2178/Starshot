@@ -7,7 +7,7 @@ from .TMM_analysis_sail.tmm import tmm
 Fills in missing parameters from the given ones, if possible.
 """
 
-def add_thickness(params):
+def fill_thickness(params):
     """
     Input:  Set of parameters that contains
                 • mass of sail
@@ -23,7 +23,7 @@ def add_thickness(params):
     params["thickness"] = thickness
     return params
 
-def add_area(params):
+def fill_area(params):
     """
     Input:  Set of parameters that contains
                 • mass of sail
@@ -116,9 +116,9 @@ def fill_params(params):
     for key, value in params.items():
         if value == None:
             if key == 'thickness':
-                add_thickness(params)
+                fill_thickness(params)
             elif key == 'area':
-                add_area(params)
+                fill_area(params)
             elif key == 'absorptance' or key == 'reflectance' or key == 'transmittance':
                 fill_abs_ref_tra(params)
     return params
