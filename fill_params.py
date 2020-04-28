@@ -1,5 +1,7 @@
-from .TMM_analysis_sail.find_eq_temp import *
+import numpy as np
+from numpy import sin, cos, pi
 from .TMM_analysis_sail.optical_constants import n_silica, n_germania
+from .TMM_analysis_sail.tmm import tmm
 
 """
 Fills in missing parameters from the given ones, if possible.
@@ -37,24 +39,10 @@ def add_area(params):
     params["area"] = area
     return params
 
-"""
-The following function is used if one has:
-    1. ABSORPTION COEFFICIENT of
-    2. MATERIAL that is either:
-            • silica
-            • germania
-            • (This will continue to be updated)
-
-If material is not available in the list, one must include their own value
-of absorptance into their set of parameters.
-"""
-
-def add_absorptance(params):
+def fill_abs_ref_tra(params):
     """
-    Input:  material is a STRING representing the material of the sail.
-            thickness of the sail (m)
-            absorption coefficient (cm^-1)
-            wavelength of laser (m)
+    Input:  Dictionary of parameters, that must include the matrial and absorption coefficient
+            and must have 'None' entered for absorptance, reflectance and transmittance
     =====================================================================
     List of materials and their corresponding strings
         Material              String
@@ -62,10 +50,10 @@ def add_absorptance(params):
         Silica   ------------ 'SiO2'
         Will be updated
     =====================================================================
-    Output: Absorptance - fraction of intensity absorbed. (absolute absorption)
-
-    The list of parameters should be defined AFTER absorptance is found.
+    Output: Dictionary of parameters with absorptance, reflectance and transmittance
+            included.
     """
+
     #Extract parameters
     wavelength = params["wavelength"]
     thickness = params["thickness"]
@@ -84,13 +72,42 @@ def add_absorptance(params):
                 Silica   ------------ 'SiO2'""")
         return None
 
+    #Set up arguments for tmm
     structure = [(n,-thickness)]
     abs_coeff = [abs_coeff]
 
-    absorptance = find_absorption_from_coefficient(structure, abs_coeff, wavelength)
-    absorptance = absorptance[0]
-    params["absorptance"] = absorptance
+    R = np.array([None]*len(abs_coeff))
+    T = np.array([None]*len(abs_coeff))
+
+    k = 0
+    while k < len(abs_coeff):
+        im_RI = 1j*wavelength*100*abs_coeff[k]/(4*pi)
+        # need to create temp_struc to be the same size as structure so it can be filled
+        # without accidentally overwriting structure, so we do this:
+        temp_struc = [None]*len(structure)
+        for l in range(len(structure)):
+            temp_struc[l] = [None]*2    # since each tuple is of form (n,d) only
+        i = 0
+        while i < len(structure):
+            if structure[i][0] != 1:
+                temp_struc[i][0] = structure[i][0] + im_RI   # structure in this iteration
+            else:
+                temp_struc[i][0] = structure[i][0]
+            temp_struc[i][1] = structure[i][1]      # width isnt going to change
+            i += 1
+
+        optical_parameters = tmm(temp_struc, wavelength)
+        R[k] = (optical_parameters[0]*np.conj(optical_parameters[0])).real
+        T[k] = (optical_parameters[1]*np.conj(optical_parameters[1])).real
+        k += 1
+
+    A = [1]*(len(abs_coeff)) - R - T
+
+    params["absorptance"] = A[0]
+    params["reflectance"] = R[0]
+    params["transmittance"] = T[0]
     return params
+
 
 def fill_params(params):
     """
@@ -102,6 +119,6 @@ def fill_params(params):
                 add_thickness(params)
             elif key == 'area':
                 add_area(params)
-            elif key == 'absorptance':
-                add_absorptance(params)
+            elif key == 'absorptance' or key == 'reflectance' or key == 'transmittance':
+                fill_abs_ref_tra(params)
     return params
