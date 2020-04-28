@@ -16,22 +16,26 @@ def write_data(params, state, time, filepath):
     thickness = params["thickness"]
     area = params["area"]
     density = params["density"]
-    reflectance = params["reflectance"]
     abs_coeff = params["abs_coeff"]
     absorptance = params["absorptance"]
+    reflectance = params["reflectance"]
+    transmittance = params["transmittance"]
     power = params["power"]
     diameter = params["diameter"]
     wavelength = params["wavelength"]
 
-    table_params = tabulate([["material","m_sail (kg)","thickness (m)","area (m^2)","density (kgm^-3)","reflectance","abs_coeff (cm^-1)","absorptance","power (W)","diameter (m)","wavelength (m)"]\
-                            ,[material, m_sail,thickness, area, density,reflectance,abs_coeff,absorptance,power,diameter,wavelength]])
+    table_params = tabulate([["material","m_sail (kg)","thickness (m)","area (m^2)","density (kgm^-3)","reflectance","abs_coeff (cm^-1)","absorptance","reflectance","transmittance","power (W)","diameter (m)","wavelength (m)"]\
+                            ,[material, m_sail,thickness, area, density,reflectance,abs_coeff,absorptance,reflectance,transmittance,power,diameter,wavelength]])
 
     #Extract states
     beta = state[0,:]
     dist = state[1,:]
-    temp = state[2,:]
 
-    table_data = tabulate({"Time (s)": time,"Beta (c)": beta, "Distance (m)": dist, "Temperature (K)": temp}, headers="keys", showindex = "always")
+    if len(state) == 2:
+        table_data = tabulate({"Time (s)": time,"Beta (c)": beta, "Distance (m)": dist}, headers="keys", showindex = "always")
+    elif len(state) == 3:
+        temp = state[2,:]
+        table_data = tabulate({"Time (s)": time,"Beta (c)": beta, "Distance (m)": dist, "Temperature (K)": temp}, headers="keys", showindex = "always")
 
     f = open(filepath,'w')
     f.write(table_params + '\n\n')

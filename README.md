@@ -16,9 +16,10 @@ To use the functions, one must define parameters for the spacecraft in this form
 			 "thickness": None,
 			 "area": 10,
 			 "density": 1400,
-			 "reflectivity": 1,
 			 "abs_coeff": 1e-3,
 			 "absorptance": None,
+			 "reflectance": None,
+			 "transmittance": None,
 			 "k": 1,
 			 "power": 1e11,
 			 "laser_size": 1e4, 
@@ -51,16 +52,19 @@ Parameter							Defintion
 "density"		----------------------------		volume density of sail material (not including the payload)
 								Input:	int, float
 								Units:		kgm^-3
-								
-"reflectivity"	----------------------------		fraction of radiant flux reflected off the sail
-								Input:	int, float
 
 "abs_coeff"	----------------------------		absorption coefficient of the material
 								Input:	int, float
 								Units:	cm^-1
 								
-"absorptance"	----------------------------		fraction of radiant flux absorbed by the sail
-								Input:	int, float
+"absorptance"	----------------------------		fraction of radiant flux absorbed by the sail, specifically at the non-doppler-shifted laser wavelength
+								Input:	None
+								
+"reflectance"	----------------------------		fraction of radiant flux reflected off the sail, specifically at the non-doppler-shifted laser wavelength
+								Input:	None
+								
+"transmittance"	----------------------------		fraction of radiant flux transmitted through sail, specifically at the non-doppler-shifted laser wavelength
+								Input:	None
 								
 "power"		----------------------------		laser power from the DE (directed energy) system
 								Input:	int, float
