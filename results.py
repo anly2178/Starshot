@@ -1,6 +1,6 @@
 from tabulate import tabulate
 
-def write_data(params, state, time, filepath):
+def write_results(params, state, time, filepath):
     """
     Writes data to a txt file in tabulated form.
     The data is given in the form of a state and time, where:

@@ -38,7 +38,7 @@ state = add_all_temp(state)
 
 #Stores results in tabulated form in txt file
 filepath = 'sample.txt'
-write_data(params, state, time, filepath)
+write_results(params, state, time, filepath)
 
 #Extract rows of state, which include speed (as fraction of c), distance, temperature
 betas = state[0,:]
