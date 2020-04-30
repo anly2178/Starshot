@@ -11,7 +11,7 @@ from starshot_lib.temp import add_all_temp
 from starshot_lib.fill_params import fill_params
 import numpy as np
 import matplotlib.pyplot as plt
-from starshot_lib.write_data import write_data
+from starshot_lib.results import write_data
 
 #Initialise parameters of sail and DE system. These terms are defined in README.md
 params = {  "material": 'SiO2',
