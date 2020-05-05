@@ -1,15 +1,67 @@
 import numpy as np
+from numpy import pi
 from scipy.special import erf
+
+def find_beam_waist(params):
+    """
+    Returns the beam waist (m) that maximises the distance over which the beam
+    is smaller than the sail.
+    """
+    radius = params["radius"]
+    beam_waist = radius / np.sqrt(2)
+    return beam_waist
+
+def find_rayleigh_length(params):
+    """
+    Returns rayleigh length (m) - distance from beam waist at which beam is equal to
+    the sail size.
+    Rayleigh length is maximised by choice of beam waist.
+    """
+    area = params["area"]
+    wavelength = params["wavelength"]
+    z_r = area/(2*wavelength) #rayleigh length
+    return z_r
+
+def find_focusing_length(params):
+    """
+    Returns the distance (m) from the laser array to the beam waist.
+    """
+    D = params["radius"]
+    d_0 = 0.5*params["diameter"] #radius of laser array
+    wavelength = params["wavelength"]
+    z_0 = pi*D*d_0/(np.sqrt(2)*wavelength) #focusing length
+    return z_0
+
+def find_launch_distance(params):
+    """
+    Returns the distance (m) away from the laser array that the sail should
+    be launched. At this distance the beam width is equal to the sail radius.
+    """
+    z_0 = find_focusing_length(params)
+    z_r = find_rayleigh_length(params)
+    launch_d = z_0 - z_r
+    return launch_d
 
 def find_beam_width(params, dist):
     """
     Finds beam width at some distance from the transmitter.
     Assumes circular Gaussian beam.
     """
-    wavelength = params["wavelength"]
-    diameter = params["diameter"]
-    beam_width = np.sqrt(2) * dist * wavelength / diameter #m
+    z_r = find_rayleigh_length(params) #sail starts at z_r behind the beam waist
+    d_waist = dist - z_r #Distance from beam waist
+    w_0 = find_beam_waist(params)
+    beam_width = w_0*(1+(d_waist/z_r)**2)**0.5
     return beam_width
+
+# def find_beam_width(params, dist):
+#     """
+#     Finds beam width at some distance from the transmitter.
+#     Assumes circular Gaussian beam.
+#     """
+#     wavelength = params["wavelength"]
+#     diameter = params["diameter"]
+#     beam_width = np.sqrt(2) * dist * wavelength / diameter #m
+#     return beam_width
 
 def find_fraction_incident(params, dist):
     """
@@ -22,7 +74,7 @@ def find_fraction_incident(params, dist):
     with np.errstate(divide='ignore'):
         beam_width = find_beam_width(params, dist)
         area = params["area"]
-        fraction = (erf(np.sqrt(area / (2*np.pi)) / beam_width))**2
+        fraction = (erf(np.sqrt(area / (2*pi)) / beam_width))**2
     return fraction
 
 def find_energy_to_launch(params, state, time, target):

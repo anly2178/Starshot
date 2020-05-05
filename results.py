@@ -22,6 +22,8 @@ def write_results(params, state, time, filepath):
             key += ' (m)'
         elif key == 'area':
             key += ' (m^2)'
+        elif key == 'radius':
+            key += ' (m)'
         elif key == 'density':
             key += ' (kgm^-3)'
         elif key == 'abs_coeff':

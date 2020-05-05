@@ -12,6 +12,7 @@ def differential_eq(x, params):
     Assume optimal mass condition: sail_mass = payload_mass.
     x is a state vector containing beta and the position/distance.
     """
+    c = 2.998e8 #ms^-1
     #Get state of sail at that time
     beta = x[0]
     dist = x[1]
