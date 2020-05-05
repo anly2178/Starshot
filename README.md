@@ -4,6 +4,10 @@ Python library relating to the Starshot Breakthrough project.
 As of 22/04/2020...
 
 ###
+A circular sail is propelled by a laser beam, produced from a circular laser array, to a target velocity.
+###
+
+###
 
 This directory should be placed in the same directory as the file using it.
 
