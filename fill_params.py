@@ -136,7 +136,8 @@ def fill_abs_ref_tra(params):
 
 def fill_W(params):
     """
-    Fills the square root of RAAD as defined in Ilic 2018
+    Fills the square root of RAAD as defined in Ilic 2018.
+    Units: sqrt(g)/m
     """
     #Set up problem
     structure = find_structure(params)
@@ -156,7 +157,21 @@ def fill_W(params):
 
     target = params["target"]
     W = integrate.quad(dW, 0, target, args=(structure, rho_S, wavelength))
-    params["W"] = W
+    params["W"] = W[0]
+    return params
+
+def fill_diameter(params):
+    """
+    Fills the diameter of the transmitter that corresponds to the RAAD.
+    (m)
+    """
+    c = 2.998e8 #m/s
+    m_p = params["m_sail"] #Optimised mass condition
+    wavelength = params["wavelength"]
+    W = params["W"] #Square root of RAAD
+    P = params["power"] #Laser power
+    diameter = 2*wavelength*c**3*np.sqrt(m_p)*W/P
+    params["diameter"] = diameter
     return params
 
 def fill_params(params):
@@ -175,4 +190,6 @@ def fill_params(params):
                 fill_abs_ref_tra(params)
             elif key == 'W':
                 fill_W(params)
+            elif key == 'diameter':
+                fill_diameter(params)
     return params

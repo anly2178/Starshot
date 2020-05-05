@@ -13,7 +13,7 @@ This directory should be placed in the same directory as the file using it.
 
 ###
 
-To use the functions, one must define parameters for the spacecraft in this format:
+To use the functions, one must define parameters for the spacecraft in this format and order:
 	
 	params = { "material": 'SiO2',
 			 "m_sail": 1e-3,
@@ -74,6 +74,10 @@ Parameter							Defintion
 "transmittance"	----------------------------		fraction of radiant flux transmitted through sail, specifically at the non-doppler-shifted laser wavelength
 								Input:	None
 								
+"W"			----------------------------		Square root of RAAD ('reflectivity-adjusted area density') which is the figure of merit in Ilic 2018.
+								Input:	None
+								Units:	\sqrt(g)/m
+								
 "power"		----------------------------		laser power from the DE (directed energy) system
 								Input:	int, float
 								Units:	W
@@ -85,5 +89,9 @@ Parameter							Defintion
 "wavelength"	----------------------------		wavelength of the laser, not including relativistic doppler shift
 								Input:	int, float
 								Units:	m
+								
+"target"		----------------------------		target speed as a fraction of the speed of light
+								Input:	int, float
+								Units:	Unitless
 ========================================================================================================
 
