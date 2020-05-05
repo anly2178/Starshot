@@ -134,44 +134,41 @@ def fill_abs_ref_tra(params):
     params["transmittance"] = T[0]
     return params
 
-def fill_W(params):
-    """
-    Fills the square root of RAAD as defined in Ilic 2018.
-    Units: sqrt(g)/m
-    """
-    #Set up problem
-    structure = find_structure(params)
-    if structure == None:
-        return params
+# def fill_W(params):
+#     """
+#     Fills the square root of RAAD as defined in Ilic 2018.
+#     Units: sqrt(g)/m
+#     """
+#     #Set up problem
+#     structure = find_structure(params)
+#     if structure == None:
+#         return params
+#
+#     wavelength = params["wavelength"] #m
+#     density = params["density"] * 1000 #g/m^3
+#     thickness = params["thickness"] #m
+#     rho_S = density * thickness #Surface density g/m^2
+#     #To evaluate the integral we define dW
+#     def dW(beta, structure, rho_S, wavelength):
+#         gamma = 1/np.sqrt(1-beta**2)
+#         ds_wavelength = wavelength*np.sqrt((1+beta)/(1-beta))
+#         dW = np.sqrt(rho_S)/(tmm(structure, ds_wavelength)[0]*np.conj(tmm(structure, ds_wavelength)[0])).real * (gamma*beta)/(1-beta)**2
+#         return dW
+#
+#     target = params["target"]
+#     W = integrate.quad(dW, 0, target, args=(structure, rho_S, wavelength))
+#     params["W"] = W[0]
+#     return params
 
-    wavelength = params["wavelength"] #m
-    density = params["density"] * 1000 #g/m^3
-    thickness = params["thickness"] #m
-    rho_S = density * thickness #Surface density g/m^2
-    #To evaluate the integral we define dW
-    def dW(beta, structure, rho_S, wavelength):
-        gamma = 1/np.sqrt(1-beta**2)
-        ds_wavelength = wavelength*np.sqrt((1+beta)/(1-beta))
-        dW = np.sqrt(rho_S)/(tmm(structure, ds_wavelength)[0]*np.conj(tmm(structure, ds_wavelength)[0])).real * (gamma*beta)/(1-beta)**2
-        return dW
-
-    target = params["target"]
-    W = integrate.quad(dW, 0, target, args=(structure, rho_S, wavelength))
-    params["W"] = W[0]
-    return params
-
+#The only condition on the diameter is that it must be larger than the diameter of the sail
+#The diameter of the laser just affects where the sail should start its journey.
 def fill_diameter(params):
     """
-    Fills the diameter of the transmitter that corresponds to the RAAD.
+    If None is given as diameter, fill the diameter with the same diameter
+    as the sail. This means the sail will start from the laser array.
     (m)
     """
-    c = 2.998e8 #m/s
-    m_p = params["m_sail"] #Optimised mass condition
-    wavelength = params["wavelength"]
-    W = params["W"] #Square root of RAAD
-    P = params["power"] #Laser power
-    diameter = 2*wavelength*c**3*np.sqrt(m_p)*W/P
-    params["diameter"] = diameter
+    params["diameter"] = 2*params["radius"]
     return params
 
 def fill_params(params):
@@ -188,8 +185,8 @@ def fill_params(params):
                 fill_radius(params)
             elif key == 'absorptance' or key == 'reflectance' or key == 'transmittance':
                 fill_abs_ref_tra(params)
-            elif key == 'W':
-                fill_W(params)
+            # elif key == 'W':
+            #     fill_W(params)
             elif key == 'diameter':
                 fill_diameter(params)
     return params

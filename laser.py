@@ -32,15 +32,23 @@ def find_focusing_length(params):
     z_0 = pi*D*d_0/(np.sqrt(2)*wavelength) #focusing length
     return z_0
 
-def find_launch_distance(params):
+def find_start_distance(params):
     """
     Returns the distance (m) away from the laser array that the sail should
     be launched. At this distance the beam width is equal to the sail radius.
     """
     z_0 = find_focusing_length(params)
     z_r = find_rayleigh_length(params)
-    launch_d = z_0 - z_r
-    return launch_d
+    start_d = z_0 - z_r
+    return start_d
+
+def find_acceleration_distance(params):
+    """
+    By assumption, we make acceleration distance the distance between the
+    two critical points where the size of the beam is equal to the size of
+    the sail. This is 2 times the rayleigh length.
+    """
+    return 2*find_rayleigh_length(params)
 
 def find_beam_width(params, dist):
     """

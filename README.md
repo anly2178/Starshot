@@ -82,8 +82,8 @@ Parameter							Defintion
 								Input:	int, float
 								Units:	W
 
-"diameter"		----------------------------		diameter of the transmitter system
-								Input:	int, float
+"diameter"		----------------------------		diameter of the transmitter system; must be at least the diameter of the sail (to minimise diffraction losses)
+								Input:	int, float, None
 								Units:	m
 
 "wavelength"	----------------------------		wavelength of the laser, not including relativistic doppler shift
