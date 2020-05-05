@@ -52,6 +52,29 @@ def fill_radius(params):
     params["radius"] = radius
     return params
 
+def find_structure(params):
+    """
+    Finds the structure - for the next two functions.
+    """
+    thickness = params["thickness"]
+    material = params["material"]
+    #Find the refractive index of the material at the wavelength
+    if material == 'SiO2':
+        n = n_silica(wavelength)
+    elif material == 'GeO2':
+        n = n_germania(wavelength)
+    else:
+        print("""List of materials available and their corresponding strings:
+                Material              String
+                Germania ------------ 'GeO2'
+                Silica   ------------ 'SiO2'""")
+        return None
+
+    #Set up arguments for tmm
+    structure = [(n,-thickness)]
+    return structure
+
+
 def fill_abs_ref_tra(params):
     """
     Input:  Dictionary of parameters, that must include the matrial and absorption coefficient
@@ -69,24 +92,11 @@ def fill_abs_ref_tra(params):
 
     #Extract parameters
     wavelength = params["wavelength"]
-    thickness = params["thickness"]
     abs_coeff = params["abs_coeff"]
-    material = params["material"]
-
-    #Find the refractive index of the material at the wavelength
-    if material == 'SiO2':
-        n = n_silica(wavelength)
-    elif material == 'GeO2':
-        n = n_germania(wavelength)
-    else:
-        print("""List of materials available and their corresponding strings:
-                Material              String
-                Germania ------------ 'GeO2'
-                Silica   ------------ 'SiO2'""")
-        return None
-
-    #Set up arguments for tmm
-    structure = [(n,-thickness)]
+    #Finds the structure
+    structure = find_structure(params)
+    if structure == None:
+        return params
     abs_coeff = [abs_coeff]
 
     R = np.array([None]*len(abs_coeff))
@@ -121,6 +131,28 @@ def fill_abs_ref_tra(params):
     params["transmittance"] = T[0]
     return params
 
+def fill_W(params):
+    """
+    Fills the square root of RAAD as defined in Ilic 2018
+    """
+    #Set up problem
+    structure = find_structure(params)
+    if structure == None:
+        return params
+    wavelength = params["wavelength"]
+    density = params["density"]
+    thickness = params["thickness"]
+    rho_S = density * thickness #Surface density
+    #To evaluate the integral we define dW
+    def dW(beta, structure, rho_S, wavelength):
+        gamma = 1/np.sqrt(1-beta**2)
+        ds_wavelength = wavelength*np.sqrt((1+beta)/(1-beta))
+        dW = np.sqrt(rho_S)/(tmm(structure, ds_wavelength)[0]*np.conj(tmm(structure, ds_wavelength)[0])).real * (gamma*beta)/(1-beta)**2
+        return dW
+    target = params["target"]
+    W = integrate.quad(dW, 0, target, args=(structure, rho_S, wavelength))
+    params["W"] = W
+    return params
 
 def fill_params(params):
     """
