@@ -39,6 +39,19 @@ def fill_area(params):
     params["area"] = area
     return params
 
+def fill_radius(params):
+    """
+    Input:  Set of parameters that contains
+                • mass of sail
+                • density
+                • thickness
+    Output: Dictionary of parameters with radius of circular sail (m) added
+    """
+    area = params["area"]
+    radius = (area / pi)**0.5
+    params["radius"] = radius
+    return params
+
 def fill_abs_ref_tra(params):
     """
     Input:  Dictionary of parameters, that must include the matrial and absorption coefficient
@@ -119,6 +132,8 @@ def fill_params(params):
                 fill_thickness(params)
             elif key == 'area':
                 fill_area(params)
+            elif key == 'radius':
+                fill_radius(params)
             elif key == 'absorptance' or key == 'reflectance' or key == 'transmittance':
                 fill_abs_ref_tra(params)
     return params
