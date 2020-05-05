@@ -43,19 +43,23 @@ Parameter							Defintion
 									
 "m_sail"     	---------------------------- 	mass of the sail
 								Input:	int, float
-								Units:		kg
+								Units:	kg
 								
 "thickness"	----------------------------		thickness of the sail
 								Input:	int, float
-								Units:		m
-								
+								Units:	m
+
 "area"		----------------------------		surface area of one side of the sail
 								Input:	int, float
-								Units:		m^2
+								Units:	m^2
+								
+"radius"		----------------------------		radius of the circular sail
+								Input:	int, float
+								Units:	m
 								
 "density"		----------------------------		volume density of sail material (not including the payload)
 								Input:	int, float
-								Units:		kgm^-3
+								Units:	kgm^-3
 
 "abs_coeff"	----------------------------		absorption coefficient of the material
 								Input:	int, float
