@@ -1,5 +1,7 @@
 import numpy as np
 from numpy import sin, cos, pi
+import scipy
+import scipy.integrate as integrate
 from .TMM_analysis_sail.optical_constants import n_silica, n_germania
 from .TMM_analysis_sail.tmm import tmm
 
@@ -58,6 +60,7 @@ def find_structure(params):
     """
     thickness = params["thickness"]
     material = params["material"]
+    wavelength = params["wavelength"]
     #Find the refractive index of the material at the wavelength
     if material == 'SiO2':
         n = n_silica(wavelength)
@@ -139,16 +142,18 @@ def fill_W(params):
     structure = find_structure(params)
     if structure == None:
         return params
-    wavelength = params["wavelength"]
-    density = params["density"]
-    thickness = params["thickness"]
-    rho_S = density * thickness #Surface density
+
+    wavelength = params["wavelength"] #m
+    density = params["density"] * 1000 #g/m^3
+    thickness = params["thickness"] #m
+    rho_S = density * thickness #Surface density g/m^2
     #To evaluate the integral we define dW
     def dW(beta, structure, rho_S, wavelength):
         gamma = 1/np.sqrt(1-beta**2)
         ds_wavelength = wavelength*np.sqrt((1+beta)/(1-beta))
         dW = np.sqrt(rho_S)/(tmm(structure, ds_wavelength)[0]*np.conj(tmm(structure, ds_wavelength)[0])).real * (gamma*beta)/(1-beta)**2
         return dW
+
     target = params["target"]
     W = integrate.quad(dW, 0, target, args=(structure, rho_S, wavelength))
     params["W"] = W
@@ -168,4 +173,6 @@ def fill_params(params):
                 fill_radius(params)
             elif key == 'absorptance' or key == 'reflectance' or key == 'transmittance':
                 fill_abs_ref_tra(params)
+            elif key == 'W':
+                fill_W(params)
     return params
