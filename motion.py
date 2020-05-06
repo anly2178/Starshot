@@ -22,9 +22,8 @@ def differential_eq(x, params):
     reflectance = params["reflectance"]
     power = params["power"]
     #Choose which model to use: Gaussian or Ilic
-    if "W" in params:
+    if not params["Gaussian"]:
         fraction = ilic_fraction(params,dist)
-        print(fraction)
     else:
         fraction = find_fraction_incident(params, dist) #fraction of power incident
     lor = 1/(1-beta**2)**0.5 #Lorentz factor
@@ -59,7 +58,7 @@ def grating_differential_eq(x, params):
     #Each order contributes an amount of 'power' reflected; equivalent to finding the change in momentum
     #Add all these powers together to find the effective power
     eff_p = 0 #Effective power reflected
-    if "W" in params:
+    if not params["Gaussian"]:
         fraction = ilic_fraction(params,dist)
     else:
         fraction = find_fraction_incident(params, dist) #fraction of power incident
@@ -106,7 +105,7 @@ def state_vs_t(params):
     x0 = np.array([0,0])  #Initial state
 
     #Create arrays to fill
-    t = np.append(np.linspace(0,0.8,5), np.logspace(0,4,195)) #Create time, starts off linear and transitions into logarithmic
+    t = np.append(np.linspace(0,0.8,50), np.logspace(0,5,150)) #Create time, starts off linear and transitions into logarithmic
     nt = t.size
     nx = x0.size
     x = np.zeros((nx,200))

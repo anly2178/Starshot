@@ -78,10 +78,13 @@ def find_fraction_incident(params, dist):
     """
     #For small distances, produces zero division error because divides by small beam width.
     #Does not affect the calculations, so we ignore the error.
-    with np.errstate(divide='ignore'):
-        beam_width = find_beam_width(params, dist)
-        area = params["area"]
-        fraction = (erf(np.sqrt(area / (2*pi)) / beam_width))**2
+    # with np.errstate(divide='ignore'):
+    #     beam_width = find_beam_width(params, dist)
+    #     area = params["area"]
+    #     fraction = (erf(np.sqrt(area / (2*pi)) / beam_width))**2
+    r = params["radius"]
+    w = find_beam_width(params,dist)
+    fraction = 1-np.exp(-2*r**2/w**2)
     return fraction
 
 def ilic_fraction(params, dist):
