@@ -1,7 +1,7 @@
 import numpy as np
 from numpy import cos
 from .temp import find_temp
-from .laser import find_fraction_incident, find_acceleration_distance
+from .laser import find_fraction_incident, find_acceleration_distance, ilic_fraction
 from .grating import find_rt_coefficients,find_diffracted_angle
 
 def differential_eq(x, params):
@@ -21,8 +21,12 @@ def differential_eq(x, params):
     m_tot = 2*m_sail
     reflectance = params["reflectance"]
     power = params["power"]
-
-    fraction = find_fraction_incident(params, dist) #fraction of power incident
+    #Choose which model to use: Gaussian or Ilic
+    if "W" in params:
+        fraction = ilic_fraction(params,dist)
+        print(fraction)
+    else:
+        fraction = find_fraction_incident(params, dist) #fraction of power incident
     lor = 1/(1-beta**2)**0.5 #Lorentz factor
     #Derivative of state with respect to time
     beta_dot = 2 * reflectance * power * fraction * (1-beta) / (m_tot * c**2 * lor**3 * (1+beta))
@@ -55,7 +59,10 @@ def grating_differential_eq(x, params):
     #Each order contributes an amount of 'power' reflected; equivalent to finding the change in momentum
     #Add all these powers together to find the effective power
     eff_p = 0 #Effective power reflected
-    fraction = find_fraction_incident(params, dist) #account for diffraction effects
+    if "W" in params:
+        fraction = ilic_fraction(params,dist)
+    else:
+        fraction = find_fraction_incident(params, dist) #fraction of power incident
     p_inc = fraction*power #incident power
     i = 0
     while i < len(angles_coeffs):

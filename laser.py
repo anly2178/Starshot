@@ -75,7 +75,6 @@ def find_fraction_incident(params, dist):
     """
     Finds fraction of laser power incident on the sail.
     Assumes circular Gaussian beam and projection of sail is circular.
-        • Project for later: Find fraction incident on square sail.
     """
     #For small distances, produces zero division error because divides by small beam width.
     #Does not affect the calculations, so we ignore the error.
@@ -83,6 +82,21 @@ def find_fraction_incident(params, dist):
         beam_width = find_beam_width(params, dist)
         area = params["area"]
         fraction = (erf(np.sqrt(area / (2*pi)) / beam_width))**2
+    return fraction
+
+def ilic_fraction(params, dist):
+    """
+    Finds fraction of laser power incident on the sail.
+    Assumes all the light strikes the sail until a critical distance.
+    """
+    D = 2*params["radius"] #(m) Diameter of sail
+    d = params["diameter"] #(m) Diamter of transmitter array
+    wavelength = params["wavelength"] #(m) Wavelength of laser
+    L = D*d/(2*wavelength)
+    if dist > L:
+        fraction = (L/dist)**2 #Inverse square law
+    else:
+        fraction = 1
     return fraction
 
 def find_energy_to_launch(params, state, time, target):
