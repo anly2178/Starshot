@@ -140,19 +140,24 @@ def fill_W(params):
     Units: sqrt(g)/m
     """
     #Set up problem
-    structure = find_structure(params)
-    if structure == None:
-        return params
-
+    if not "angles_coeffs" in params:
+        structure = find_structure(params)
+        if structure == None:
+            return params
+    elif "angles_coeffs" in params:
+        structure = params["reflectance"]
+    area = params["area"] #m^2
+    m_sail = params["m_sail"]*1000 #g
     wavelength = params["wavelength"] #m
-    density = params["density"] * 1000 #g/m^3
-    thickness = params["thickness"] #m
-    rho_S = density * thickness #Surface density g/m^2
+    rho_S = m_sail / area #Surface density g/m^2
     #To evaluate the integral we define dW
     def dW(beta, structure, rho_S, wavelength):
         gamma = 1/np.sqrt(1-beta**2)
         ds_wavelength = wavelength*np.sqrt((1+beta)/(1-beta))
-        dW = np.sqrt(rho_S)/(tmm(structure, ds_wavelength)[0]*np.conj(tmm(structure, ds_wavelength)[0])).real * (gamma*beta)/(1-beta)**2
+        if not "angles_coeffs" in params:
+            dW = np.sqrt(rho_S)/(tmm(structure, ds_wavelength)[0]*np.conj(tmm(structure, ds_wavelength)[0])).real * (gamma*beta)/(1-beta)**2
+        elif "angles_coeffs" in params:
+            dW = np.sqrt(rho_S)/structure * (gamma*beta)/(1-beta)**2
         return dW
 
     target = params["target"]

@@ -58,8 +58,10 @@ def find_rt_coefficients(filepath):
     #Restructure coefficients
     reflec = [coeffs[1],coeffs[0],coeffs[2]]
     transm = [coeffs[6],coeffs[4],coeffs[5]]
-    coeffs = [reflec,transm]
-    return coeffs
+    r_t = [reflec,transm]
+    rtot = coeffs[3]
+    ttot = coeffs[7]
+    return r_t, rtot, ttot
 
 def find_angles_coeffs(filepath, wavelength, period):
     """
@@ -76,7 +78,7 @@ def find_angles_coeffs(filepath, wavelength, period):
         angle = np.radians(find_diffracted_angle(order,wavelength,period))
         angles.append(angle)
     #Find efficiences of each reflected and transmitted order
-    coeffs = find_rt_coefficients(filepath)
+    coeffs, rtot, ttot = find_rt_coefficients(filepath)
     #Match angles and coefficients
     angles_coeffs = []
     i = 0
@@ -87,4 +89,4 @@ def find_angles_coeffs(filepath, wavelength, period):
         angle_r_t = [angle,r,t]
         angles_coeffs.append(angle_r_t)
         i += 1
-    return angles_coeffs
+    return angles_coeffs, rtot, ttot
