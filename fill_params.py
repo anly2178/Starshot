@@ -165,8 +165,21 @@ def fill_W(params):
     params["W"] = W[0]
     return params
 
-#The only condition on the diameter is that it must be larger than the diameter of the sail
-#The diameter of the laser just affects where the sail should start its journey.
+def fill_power(params):
+    """
+    Fills the power needed to reach the target speed at a target acceleration
+    distance.
+    Params must contain a target acceleration distance.
+    """
+    c = 2.998e8 #m/s
+    m = params["m_sail"]*1000 #g
+    W = params["W"] #sqrt(g)/m
+    D = params["radius"]*2 #m, diameter of sail
+    L = params["accel_dist"] #m,
+    P = c**3*np.sqrt(m)*W*D/(1000*L) #W
+    params["power"] = P
+    return params
+
 def fill_diameter(params):
     """
     If None is given as diameter, fill the diameter with the same diameter
@@ -174,16 +187,13 @@ def fill_diameter(params):
     For Ilic beam, diameter is constrained by other parameters.
     (m)
     """
-    if "W" in params:
-        c = 2.998e8
-        wavelength = params["wavelength"]
-        m_sail = params["m_sail"] * 1000 #g
-        W = params["W"]
-        P = params["power"] #GW
-        d = (2*wavelength*c**3*np.sqrt(m_sail)*W)/(1000*P)
-        params["diameter"] = d
-    else:
-        params["diameter"] = 2*params["radius"]
+    c = 2.998e8
+    wavelength = params["wavelength"]
+    m_sail = params["m_sail"] * 1000 #g
+    W = params["W"]
+    P = params["power"] #GW
+    d = (2*wavelength*c**3*np.sqrt(m_sail)*W)/(1000*P)
+    params["diameter"] = d
     return params
 
 def fill_params(params):
