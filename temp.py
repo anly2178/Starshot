@@ -4,6 +4,57 @@ from .TMM_analysis_sail.find_eq_temp import *
 from .TMM_analysis_sail.optical_constants import n_silica
 from .laser import find_fraction_incident
 
+def find_max_power(params):
+    """
+    Returns a maximum power (W) that the laser can have for a given maximum temperature.
+    """
+    sb = 5.67e-8 #Stefan-Boltzmann constant
+    T_max = params["max_temp"] #K, max temperature sail can sustain
+    A = params["area"] #m^2, area of sail
+    absorb = params["absorptance"] #Absolute absorption of sail
+    #Assume max temperature occurs at beta=0, dist=0
+    beta = 0
+    dist = 0
+    frac = find_fraction_incident(params, dist) #Fraction incident at start
+    #Bounds for halving the interval
+    P_bb = 2*A*sb*T_max**4/frac #W, Power incident on black body
+    P_high = P_bb/absorb #W, Upper bound; power incident on sail accounting for absorptance
+    P_low = P_high/1000 #W, Arbitrary lower bound
+    #Create structures to not accidentally destroy original parameters
+    params_high = params.copy()
+    params_high["power"] = P_high
+    params_low = params.copy()
+    params_low["power"] = P_low
+    #Temperatures at bounds
+    T_high = find_one_temp(params_high,beta,dist)
+    T_low = find_one_temp(params_low,beta,dist)
+    #Midpoint temperature
+    T_mid = (T_high+T_low)/2
+    #Check the run time
+    start_time = time.time()
+    while abs(T_mid - T_max) >= 0.001*T_max:
+        #If the high temperature is too low for some reason
+        if T_high <= T_max:
+            params_high["power"] = 2*params_high["power"]
+        #If the low temperature is too high for some reason
+        if T_low >= T_max:
+            params_low["power"] = params_low["power"]/2
+        #Midpoint
+        P_high = params_high["power"]
+        P_low = params_low["power"]
+        P_mid = (P_high + P_low)/2
+        params_mid = params.copy()
+        params_mid["power"] = P_mid
+        T_mid = find_one_temp(params_mid,beta,dist)
+        if T_mid > T_max:
+            params_high["power"] = P_mid
+        else:
+            params_low["power"] = P_mid
+        print(P_mid)
+    print("--- %s seconds ---" % (time.time() - start_time))
+    P_mid = (params_high["power"] + params_low["power"])/2
+    return P_mid
+
 def find_one_temp(params, beta, dist):
     """
     Returns the equilibrium temperature at a specific speed and distance,

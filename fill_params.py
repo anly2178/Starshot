@@ -4,6 +4,7 @@ import scipy
 import scipy.integrate as integrate
 from .TMM_analysis_sail.optical_constants import n_silica, n_germania
 from .TMM_analysis_sail.tmm import tmm
+from .temp import find_max_power
 
 """
 Fills in missing parameters from the given ones, if possible.
@@ -175,8 +176,11 @@ def fill_power(params):
     m = params["m_sail"]*1000 #g
     W = params["W"] #sqrt(g)/m
     D = params["radius"]*2 #m, diameter of sail
-    L = params["accel_dist"] #m,
-    P = c**3*np.sqrt(m)*W*D/(1000*L) #W
+    if "accel_dist" in params:
+        L = params["accel_dist"] #m, target acceleration distance
+        P = c**3*np.sqrt(m)*W*D/(1000*L) #W
+    elif "max_temp" in params:
+        P = find_max_power(params)
     params["power"] = P
     return params
 
@@ -212,6 +216,8 @@ def fill_params(params):
                 fill_abs_ref_tra(params)
             elif key == 'W':
                 fill_W(params)
+            elif key == 'power':
+                fill_power(params)
             elif key == 'diameter':
                 fill_diameter(params)
     return params
