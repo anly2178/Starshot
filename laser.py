@@ -97,24 +97,6 @@ def find_fraction_incident(params, dist):
     fraction = 1-np.exp(-2*r**2/w**2)
     return fraction
 
-def find_energy_to_launch(params, state, time, target):
-    """
-    Finds the energy required to reach the target velocity.
-    """
-    betas = state[0,:]
-    t = 0 #Time taken to reach target velocity
-    i = 0
-    while i < len(betas):
-        beta = betas[i]
-        if beta > target:
-            t = time[i]
-            break
-        else:
-            i += 1
-    power = params["power"]
-    energy = power*t
-    return energy
-
 # #This is from Kulkarni 2018; assumes beam is Bessel. Not relevant to Gaussian beam, and no longer compatible with library.
 # def find_crit_dist(params):
 #     """

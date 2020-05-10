@@ -1,6 +1,42 @@
 from tabulate import tabulate
 import numpy as np
 
+def find_accel_dist_duration(params,state,time):
+    """
+    From results, finds the acceleration distance (m) and duration (s).
+    """
+    target = params["target"] #Target speed
+    i = 0
+    betas = state[0,:]
+    dist = state[1,:]
+    accel_dist = 0
+    while i < len(betas):
+        beta = betas[i]
+        if beta >= target:
+            accel_dist = dist[i]
+            accel_dur = time[i]
+            return accel_dist, accel_dur
+        i += 1
+
+def find_energy_to_launch(params, state, time):
+    """
+    Finds the energy required to reach the target velocity.
+    """
+    target = params["target"]
+    betas = state[0,:]
+    t = 0 #Time taken to reach target velocity
+    i = 0
+    while i < len(betas):
+        beta = betas[i]
+        if beta > target:
+            t = time[i]
+            break
+        else:
+            i += 1
+    power = params["power"]
+    energy = power*t
+    return energy
+
 def write_results(params, state, time, filepath):
     """
     Writes data to a txt file in tabulated form.
