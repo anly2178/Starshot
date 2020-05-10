@@ -1,7 +1,7 @@
 import numpy as np
 from numpy import cos
 from .temp import find_temp
-from .laser import find_fraction_incident, find_acceleration_distance, ilic_fraction
+from .laser import find_fraction_incident
 from .grating import find_rt_coefficients,find_diffracted_angle
 
 def differential_eq(x, params):
@@ -21,11 +21,7 @@ def differential_eq(x, params):
     m_tot = 2*m_sail
     reflectance = params["reflectance"]
     power = params["power"]
-    #Choose which model to use: Gaussian or Ilic
-    if not params["Gaussian"]:
-        fraction = ilic_fraction(params,dist)
-    else:
-        fraction = find_fraction_incident(params, dist) #fraction of power incident
+    fraction = find_fraction_incident(params, dist) #fraction of power incident
     lor = 1/(1-beta**2)**0.5 #Lorentz factor
     #Derivative of state with respect to time
     beta_dot = 2 * reflectance * power * fraction * (1-beta) / (m_tot * c**2 * lor**3 * (1+beta))
@@ -58,10 +54,7 @@ def grating_differential_eq(x, params):
     #Each order contributes an amount of 'power' reflected; equivalent to finding the change in momentum
     #Add all these powers together to find the effective power
     eff_p = 0 #Effective power reflected
-    if not params["Gaussian"]:
-        fraction = ilic_fraction(params,dist)
-    else:
-        fraction = find_fraction_incident(params, dist) #fraction of power incident
+    fraction = find_fraction_incident(params, dist) #fraction of power incident
     p_inc = fraction*power #incident power
     i = 0
     while i < len(angles_coeffs):
@@ -105,7 +98,7 @@ def state_vs_t(params):
     x0 = np.array([0,0])  #Initial state
 
     #Create arrays to fill
-    t = np.append(np.linspace(0,0.8,10), np.logspace(0,5,190)) #Create time, starts off linear and transitions into logarithmic
+    t = np.append(np.linspace(0,0.8,10), np.logspace(0,4,190)) #Create time, starts off linear and transitions into logarithmic
     nt = t.size
     nx = x0.size
     x = np.zeros((nx,200))

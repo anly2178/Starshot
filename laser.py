@@ -21,34 +21,34 @@ def find_rayleigh_length(params):
     wavelength = params["wavelength"]
     z_r = area/(2*wavelength) #rayleigh length
     return z_r
+#
+# def find_focusing_length(params):
+#     """
+#     Returns the distance (m) from the laser array to the beam waist.
+#     """
+#     D = params["radius"]
+#     d_0 = 0.5*params["diameter"] #radius of laser array
+#     wavelength = params["wavelength"]
+#     z_0 = pi*D*d_0/(np.sqrt(2)*wavelength) #focusing length
+#     return z_0
 
-def find_focusing_length(params):
-    """
-    Returns the distance (m) from the laser array to the beam waist.
-    """
-    D = params["radius"]
-    d_0 = 0.5*params["diameter"] #radius of laser array
-    wavelength = params["wavelength"]
-    z_0 = pi*D*d_0/(np.sqrt(2)*wavelength) #focusing length
-    return z_0
+# def find_start_distance(params):
+#     """
+#     Returns the distance (m) away from the laser array that the sail should
+#     be launched. At this distance the beam width is equal to the sail radius.
+#     """
+#     z_0 = find_focusing_length(params)
+#     z_r = find_rayleigh_length(params)
+#     start_d = z_0 - z_r
+#     return start_d
 
-def find_start_distance(params):
-    """
-    Returns the distance (m) away from the laser array that the sail should
-    be launched. At this distance the beam width is equal to the sail radius.
-    """
-    z_0 = find_focusing_length(params)
-    z_r = find_rayleigh_length(params)
-    start_d = z_0 - z_r
-    return start_d
-
-def find_acceleration_distance(params):
-    """
-    By assumption, we make acceleration distance the distance between the
-    two critical points where the size of the beam is equal to the size of
-    the sail. This is 2 times the rayleigh length.
-    """
-    return 2*find_rayleigh_length(params)
+# def find_acceleration_distance(params):
+#     """
+#     By assumption, we make acceleration distance the distance between the
+#     two critical points where the size of the beam is equal to the size of
+#     the sail. This is 2 times the rayleigh length.
+#     """
+#     return 2*find_rayleigh_length(params)
 
 def find_crit_dist(params):
     """
@@ -92,30 +92,9 @@ def find_fraction_incident(params, dist):
     Finds fraction of laser power incident on the sail.
     Assumes circular Gaussian beam and projection of sail is circular.
     """
-    #For small distances, produces zero division error because divides by small beam width.
-    #Does not affect the calculations, so we ignore the error.
-    # with np.errstate(divide='ignore'):
-    #     beam_width = find_beam_width(params, dist)
-    #     area = params["area"]
-    #     fraction = (erf(np.sqrt(area / (2*pi)) / beam_width))**2
     r = params["radius"]
     w = find_beam_width(params,dist)
     fraction = 1-np.exp(-2*r**2/w**2)
-    return fraction
-
-def ilic_fraction(params, dist):
-    """
-    Finds fraction of laser power incident on the sail.
-    Assumes all the light strikes the sail until a critical distance.
-    """
-    D = 2*params["radius"] #(m) Diameter of sail
-    d = params["diameter"] #(m) Diamter of transmitter array
-    wavelength = params["wavelength"] #(m) Wavelength of laser
-    L = D*d/(2*wavelength)
-    if dist > L:
-        fraction = (L/dist)**2 #Inverse square law
-    else:
-        fraction = 1
     return fraction
 
 def find_energy_to_launch(params, state, time, target):
