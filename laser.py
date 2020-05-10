@@ -50,15 +50,31 @@ def find_acceleration_distance(params):
     """
     return 2*find_rayleigh_length(params)
 
+def find_crit_dist(params):
+    """
+    Assume dynamically varying focus of Gaussian beam. Beam is focused such that
+    the beam waist is at the sail until a diffraction-limited distance.
+    Returns the diffraction-limited distance (m).
+    """
+    D = 2*params["radius"] #(m) Diameter of sail
+    d = params["diameter"] #(m) Diamter of transmitter array
+    wavelength = params["wavelength"] #(m) Wavelength of laser
+    L = D*d/(2*wavelength)
+    return L
+
 def find_beam_width(params, dist):
     """
     Finds beam width at some distance from the transmitter.
-    Assumes circular Gaussian beam.
+    Assumes circular Gaussian beam, dynamically focused until diffraction-limited distance.
     """
-    z_r = find_rayleigh_length(params) #sail starts at z_r behind the beam waist
-    d_waist = dist - z_r #Distance from beam waist
+    crit_dist = find_crit_dist(params)
     w_0 = find_beam_waist(params)
-    beam_width = w_0*(1+(d_waist/z_r)**2)**0.5
+    if dist <= crit_dist:
+        beam_width = w_0
+    elif dist > crit_dist:
+        d_waist = dist - crit_dist #(m) Distance from beam waist, which is at diffraction-limited distance
+        z_r = find_rayleigh_length(params) #(m) Rayleigh length
+        beam_width = w_0*(1+(d_waist/z_r)**2)**0.5
     return beam_width
 
 # def find_beam_width(params, dist):
