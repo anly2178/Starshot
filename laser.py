@@ -67,8 +67,12 @@ def find_beam_width(params, dist):
     Finds beam width at some distance from the transmitter.
     Assumes circular Gaussian beam, dynamically focused until diffraction-limited distance.
     """
-    crit_dist = find_crit_dist(params)
     w_0 = find_beam_waist(params)
+    try:
+        crit_dist = find_crit_dist(params)
+    except TypeError: #In the case where trying to find max temp, and diameter not given
+        beam_width = w_0 
+        return beam_width
     if dist <= crit_dist:
         beam_width = w_0
     elif dist > crit_dist:

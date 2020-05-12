@@ -115,7 +115,7 @@ def n_germania(wavelength):
     wavelength = wavelength*1e6
     # Functions for reading files
     def get_list_n():
-        f = open('n_germania.txt', 'r')
+        f = open('starshot_lib/TMM_analysis_sail/n_germania.txt', 'r')
         points = f.readlines()
         i = 0
         n = []
@@ -128,7 +128,7 @@ def n_germania(wavelength):
         return n
 
     def get_list_k():
-        f = open('k_germania.txt', 'r')
+        f = open('starshot_lib/TMM_analysis_sail/k_germania.txt', 'r')
         points = f.readlines()
         i = 0
         k = []

@@ -93,5 +93,9 @@ Parameter							Defintion
 "target"		----------------------------		target speed as a fraction of the speed of light
 								Input:	int, float
 								Units:	Unitless
+								
+"max_temp"	----------------------------		maximum temperature that the sail should reach
+								Input:	int, float
+								Units:	K
 ========================================================================================================
 

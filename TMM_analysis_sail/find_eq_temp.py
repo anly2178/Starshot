@@ -8,7 +8,7 @@ from sympy.solvers import solve
 from sympy import Symbol
 from .tmm import tmm, general_tmm
 from .make_transfer_matrix import make_transfer_matrix
-from .optical_constants import n_silica
+from .optical_constants import n_silica, n_germania
 import time
 
 " ============================================================================ "
@@ -83,7 +83,9 @@ def find_absorption_from_coefficient(structure, abs_coeff, wavelength):
 
 def directional_emissivity(theta, structure, wavelength):
     # First, we need to find the optical constants using wavelength
-    n = n_silica(wavelength)
+
+    n1 = n_silica(wavelength)
+    n2 = n_germania(wavelength)
 
     # Section of code that creates a new structure list that is based on
     # calculated optical constants using wavelength
@@ -92,7 +94,9 @@ def directional_emissivity(theta, structure, wavelength):
         temp_struc[l] = [None]*2    # since each tuple is of form (n,d) only
         # Assigning optical constants as we go
         if structure[l][0] == 1.45:
-            temp_struc[l][0] = n
+            temp_struc[l][0] = n1
+        elif structure[l][0] == 1.6:
+            temp_struc[l][0] = n2
         else:
             temp_struc[l][0] = structure[l][0]
         # Keeping the thickness of each layer

@@ -123,7 +123,6 @@ def find_one_temp(params, beta, dist):
 
     # Halving the interval for a result
     while abs(P_high - P_low) >= 0.01*power_in:
-
     # The only issue we can really get is if P_high is too low - if this is
     # the case, just double P_high
         if (P_high <= power_in):
