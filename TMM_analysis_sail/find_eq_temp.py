@@ -10,6 +10,7 @@ from .tmm import tmm, general_tmm
 from .make_transfer_matrix import make_transfer_matrix
 from .optical_constants import n_silica, n_germania
 import time
+import warnings
 
 " ============================================================================ "
 
@@ -134,7 +135,13 @@ def spectral_power_flux(wavelength, structure, temperature):
     c = 299792458             # speed of light in SI
     k_B = 1.38064852e-23        # Boltzmann constant in SI
     sigma = 5.67e-8
-    I = ((2*h*c**2)/wavelength.astype(float)**5)*(1/(np.exp(h*c/(wavelength.astype(float)*k_B*temperature.astype(float)))-1))         # Planck's Law
+    with warnings.catch_warnings(): #Overflow error occurs at low temperatures 
+        warnings.filterwarnings('error')
+        try:
+            I = ((2*h*c**2)/wavelength.astype(float)**5)*(1/(np.exp(h*c/(wavelength.astype(float)*k_B*temperature.astype(float)))-1))         # Planck's Law
+        except Warning as e:
+            print('Error found:', e)
+            return None
 
     # Now give expression for hemispherical emissivity. Note factor of 4: 2 comes
     # from integrating wrt phi, the other to account for both faces of sail

@@ -111,7 +111,11 @@ def find_one_temp(params, beta, dist):
         # Running each integral and adding to the list (optimisation here would be to fix list size and assign vals)
         i = 0
         for wavelength in bounds:
-            power_out_at_wl[i] = (spectral_power_flux(wavelength, structure, T))
+            poawl = (spectral_power_flux(wavelength, structure, T))
+            if poawl == None: #In the case of overflow error, return None
+                return None
+            else:
+                power_out_at_wl[i] = poawl
             i += 1
         power_out = np.trapz(power_out_at_wl, bounds, (25e-6-1e-6)/points)
         return power_out
@@ -120,6 +124,8 @@ def find_one_temp(params, beta, dist):
     # Powers at the bounds of temperature interval
     P_high = power_out(T_high)
     P_low = power_out(T_low)
+    if P_high == None or P_low == None: #If overflow error, return temperature as 0
+        return 0
 
     # Halving the interval for a result
     while abs(P_high - P_low) >= 0.01*power_in:
@@ -129,14 +135,18 @@ def find_one_temp(params, beta, dist):
             T_high = T_high*2
 
         midpoint = (T_low+T_high)/2
-
-        if power_out(midpoint) > power_in:
+        P_mid = power_out(midpoint)
+        if P_mid == None: #If overflow error, return temperature as 0
+            return 0
+        if P_mid > power_in:
             T_high = midpoint
         else:
             T_low = midpoint
 
         P_high = power_out(T_high)
         P_low = power_out(T_low)
+        if P_high == None or P_low == None: #If overflow error, return temperature as 0
+            return 0
         print(midpoint)
     # Take the midpoints as the final result since this is the result from halving interval
     midpoint = (T_high+T_low)/2
