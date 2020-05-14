@@ -84,8 +84,10 @@ def find_one_temp(params, beta, dist):
     structure = [(n,-thickness)]
     wavelength = wavelength_0*np.sqrt((1+beta)/(1-beta))
     A = find_absorption_from_coefficient(structure, abs_coeff, wavelength)
-
-    fraction = find_fraction_incident(params, dist)
+    try:
+        fraction = find_fraction_incident(params, dist)
+    except TypeError: #Diameter not given, which occurs when finding max power
+        fraction = 1 #Very good approx for small distances
     power_in = ratio*A*rho_S*(1-beta)/(1+beta) * fraction
 
     """ Note: Honestly, this below section should be made into its own function
