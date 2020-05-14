@@ -126,6 +126,8 @@ def read_results(filepath):
         state[0,:] = speed
         state[1,:] = distance
         state[2,:] = temperatures
+    Might be a bit broken because of the number of parameters causing the
+    values to overflow the line. Change to adapt to this in the future.
     """
     #Open file for reading
     f = open(filepath, 'r')

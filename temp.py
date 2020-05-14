@@ -15,9 +15,8 @@ def find_max_power(params):
     #Assume max temperature occurs at beta=0, dist=0
     beta = 0
     dist = 0
-    frac = find_fraction_incident(params, dist) #Fraction incident at start
     #Bounds for halving the interval
-    P_bb = 2*A*sb*T_max**4/frac #W, Power incident on black body
+    P_bb = 2*A*sb*T_max**4 #W, Power incident on black body
     P_high = P_bb/absorb #W, Upper bound; power incident on sail accounting for absorptance
     P_low = P_high/1000 #W, Arbitrary lower bound
     #Create structures to not accidentally destroy original parameters

@@ -139,6 +139,7 @@ def fill_W(params):
     """
     Fills the square root of RAAD as defined in Ilic 2018.
     Units: sqrt(g)/m
+    (Note: Does not account for diffraction; might have to be changed somehow)
     """
     #Set up problem
     if not "angles_coeffs" in params:
@@ -170,7 +171,8 @@ def fill_power(params):
     """
     Fills the power needed to reach the target speed at a target acceleration
     distance.
-    Params must contain a target acceleration distance.
+    Params must contain a target acceleration distance, or a maximum temperature.
+    (Note: Equation from Ilic has been changed to account for circular sail and laser)
     """
     c = 2.998e8 #m/s
     m = params["m_sail"]*1000 #g
@@ -178,7 +180,7 @@ def fill_power(params):
     D = params["radius"]*2 #m, diameter of sail
     if "accel_dist" in params:
         L = params["accel_dist"] #m, target acceleration distance
-        P = c**3*np.sqrt(m)*W*D/(1000*L) #W
+        P = 2*c**3*np.sqrt(m)*W*D/(pi*1000*L) #W
     elif "max_temp" in params:
         P = find_max_power(params)
     params["power"] = P
@@ -196,7 +198,7 @@ def fill_diameter(params):
     m_sail = params["m_sail"] * 1000 #g
     W = params["W"]
     P = params["power"] #GW
-    d = (2*wavelength*c**3*np.sqrt(m_sail)*W)/(1000*P)
+    d = (4*wavelength*c**3*np.sqrt(m_sail)*W)/(pi*1000*P)
     params["diameter"] = d
     return params
 
