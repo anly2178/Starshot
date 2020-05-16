@@ -87,6 +87,7 @@ def directional_emissivity(theta, structure, wavelength):
 
     n1 = n_silica(wavelength)
     n2 = n_germania(wavelength)
+    n3 = n_alumina(wavelength)
 
     # Section of code that creates a new structure list that is based on
     # calculated optical constants using wavelength
@@ -98,6 +99,10 @@ def directional_emissivity(theta, structure, wavelength):
             temp_struc[l][0] = n1
         elif structure[l][0] == 1.6:
             temp_struc[l][0] = n2
+        elif structure[l][0] == 1.749:
+            temp_struc[l][0] = n3
+            if temp_struc[l][0] == 0:
+                return 0
         else:
             temp_struc[l][0] = structure[l][0]
         # Keeping the thickness of each layer
@@ -135,17 +140,16 @@ def spectral_power_flux(wavelength, structure, temperature):
     c = 299792458             # speed of light in SI
     k_B = 1.38064852e-23        # Boltzmann constant in SI
     sigma = 5.67e-8
-    with warnings.catch_warnings(): #Overflow error occurs at low temperatures 
+    with warnings.catch_warnings(): #Overflow error occurs at low temperatures
         warnings.filterwarnings('error')
         try:
             I = ((2*h*c**2)/wavelength.astype(float)**5)*(1/(np.exp(h*c/(wavelength.astype(float)*k_B*temperature.astype(float)))-1))         # Planck's Law
         except Warning as e:
-            print('Error found:', e)
+            print('0.2c has been reached; temperature will be set to 0 to save time')
             return None
 
     # Now give expression for hemispherical emissivity. Note factor of 4: 2 comes
     # from integrating wrt phi, the other to account for both faces of sail
-
     # Use trapezoidal integration to speed things up
     points = 50         # Number of points in the integration
     bounds = np.linspace(0,pi/2,points)

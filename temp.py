@@ -188,7 +188,6 @@ def add_all_temp(params, state):
         temp = find_one_temp(params, beta, dist)
         temps[i] = temp
         i += 1
-
     new_state = np.vstack((state, temps))
     return new_state
 

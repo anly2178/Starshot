@@ -98,10 +98,10 @@ def state_vs_t(params):
     x0 = np.array([0,0])  #Initial state
 
     #Create arrays to fill
-    t = np.append(np.linspace(0,0.8,10), np.logspace(0,3.63,180)) #Create time, starts off linear and transitions into logarithmic
+    t = np.append(np.linspace(0,0.8,10), np.logspace(0,4,90)) #Create time, starts off linear and transitions into logarithmic
     nt = t.size
     nx = x0.size
-    x = np.zeros((nx,200))
+    x = np.zeros((nx,nt))
     x[:,0] = x0 #Speed and distance
 
     #Runge Kutta method to find states as a function of time

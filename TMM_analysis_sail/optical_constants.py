@@ -186,3 +186,64 @@ def n_germania(wavelength):
         return sellmeier(wavelength)
     else:
         return 0
+
+def n_alumina(wavelength):
+    # Working in nm this time
+    wavelength = wavelength*1e9
+    # Functions for reading files, returns complex refractive index
+    def get_list_n(name, number):
+        f = open(name, 'r')
+        points = f.readlines()
+        i = 0
+        n = []
+        k = []
+        while i < len(points):
+            if i % number == 0:
+                string = points[i].strip()
+                point = string.split('\t')
+                if len(point) == 3:
+                    n.append((float(point[0]), float(point[1])))
+                    k.append((float(point[0]), float(point[2])))
+                elif len(point) == 2:
+                    n.append((float(point[0]), float(point[1])))
+            i += 1
+        f.close()
+        return (n, k)
+
+    def find_val_from_list(ls, wavelength):
+        # Each list is in descending order in terms of wavelength, so use this
+        # to our advantage. First, we need to find where the wavelength we want
+        # lies in the list:
+        i = 0
+        while i < len(ls):
+            if wavelength > ls[-1][0]:
+                return ls[-1][1]
+            if wavelength <= ls[i][0]:
+                # Shouldn't be looking past the wavelength ranges that we have here anyways
+                if wavelength < ls[0][0]:
+                    return 0
+                else:
+                    val_interval = (ls[i][1],ls[i-1][1])   # (val at lower wl, val at higher wl)
+                    wl_interval = (ls[i][0],ls[i-1][0])
+                    m = (val_interval[1]-val_interval[0])/(wl_interval[1]-wl_interval[0])
+                    y0 = val_interval[0]
+                    x0 = wl_interval[0]
+                    val = m*(wavelength - x0) + y0
+                    return val
+            else:
+                i += 1
+
+    complex_ns = get_list_n('Al2O3_IR_short.txt', 1)
+    ns = get_list_n('Al2O3_nearIR.txt', 1)[0]
+
+    if wavelength > 1540 and wavelength <= 14285:
+        ns = complex_ns[0]
+        # print(ns)
+        ks = complex_ns[1]
+        # print(find_val_from_list(ns, wavelength) + 1j*find_val_from_list(ks, wavelength))
+        return find_val_from_list(ns, wavelength) + 1j*find_val_from_list(ks, wavelength)
+    # Need to implement for 1-5 um regime
+    elif wavelength <= 1540:
+        return find_val_from_list(ns, wavelength/1000)
+    else:
+        return 0
