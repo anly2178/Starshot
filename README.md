@@ -45,8 +45,8 @@ Parameter							Defintion
 								Input:	int, float
 								Units:	kg
 								
-"thickness"	----------------------------		thickness of the sail
-								Input:	int, float
+"thickness"	----------------------------		thickness of the sail, or thickness of layers in multilayer sail
+								Input:	list containing ints, floats
 								Units:	m
 
 "area"		----------------------------		surface area of one side of the sail

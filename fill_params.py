@@ -23,7 +23,7 @@ def fill_thickness(params):
     area = params["area"]
 
     thickness = m_sail / (density * area)
-    params["thickness"] = thickness
+    params["thickness"] = [thickness]
     return params
 
 def fill_area(params):
@@ -37,8 +37,16 @@ def fill_area(params):
     m_sail = params["m_sail"] #kg
     density = params["density"] #kgm^-3
     thickness = params["thickness"] #m
+    #Sum the thicknesses of odd layers
+    tot_thick = 0
+    i = 0
+    while i < len(thickness):
+        if i % 2 == 0:
+            tot_thick += thickness[i]
+        i += 1
 
-    area = m_sail / (density * thickness) #m^2
+
+    area = m_sail / (density * tot_thick) #m^2
     params["area"] = area
     return params
 
@@ -73,9 +81,16 @@ def find_structure(params):
                 Germania ------------ 'GeO2'
                 Silica   ------------ 'SiO2'""")
         return None
-
-    #Set up arguments for tmm
-    structure = [(n,-thickness)]
+    #Create the structure
+    i = 0
+    structure = []
+    while i < len(thickness):
+        if i%2 == 0:
+            layer = (n,-thickness[i]) #Material
+        elif i%2 == 1:
+            layer = (1,-thickness[i]) #Vacuum
+        structure.append(layer)
+        i += 1
     return structure
 
 

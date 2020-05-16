@@ -71,17 +71,25 @@ def find_one_temp(params, beta, dist):
     abs_coeff = [params["abs_coeff"]]
     thickness = params["thickness"] #m
     wavelength_0 = params["wavelength"] #m
-    density = params["density"] #kgm^-3
-    rho_S = density * thickness * 1e3 #gm^-3
+    area = params["area"] #m^2
+    rho_S = m_sail / area #gm^-2
 
     #Determining which material to calculate absorption for
     if material == 'SiO2':
         n = 1.45
     elif material == 'GeO2':
         n = 1.6
-
+    #Create structure
+    i = 0
+    structure = []
+    while i < len(thickness):
+        if i%2 == 0:
+            layer = (n,-thickness[i]) #Material
+        elif i%2 == 1:
+            layer = (1,-thickness[i]) #Vacuum
+        structure.append(layer)
+        i += 1
     #Finding power absorbed, accounting for doppler shift and diffraction effects
-    structure = [(n,-thickness)]
     wavelength = wavelength_0*np.sqrt((1+beta)/(1-beta))
     A = find_absorption_from_coefficient(structure, abs_coeff, wavelength)
     try:
@@ -195,35 +203,35 @@ def add_all_temp(params, state):
 #the sail is a blackbody. To provide more accurate results, we opt for
 #functions that are material/structure specific such as the ones above.
 
-c = 2.998e8
-stefan_boltzmann = 5.67037e-8
+# c = 2.998e8
+# stefan_boltzmann = 5.67037e-8
+#
+# def find_total_relative_energy(target_beta, reflectance):
+#     """
+#     'Relative energy' is the energy of each photon expressed as a ratio
+#     of the sail's rest mass energy. Kipping 2017 eq 5
+#     Function calculates the relative energy summed over all incident photons.
+#     Assumes that photons are either absorbed or reflected, not transmitted.
+#     """
+#     B = target_beta
+#     R = reflectance
+#     r_tot = (-(1+R)*(1-B)+np.sqrt(8*B*R*(1-B)+((1-B)**2) * ((1+R)**2)))/(4*R*(1-B))
+#     return r_tot
 
-def find_total_relative_energy(target_beta, reflectance):
-    """
-    'Relative energy' is the energy of each photon expressed as a ratio
-    of the sail's rest mass energy. Kipping 2017 eq 5
-    Function calculates the relative energy summed over all incident photons.
-    Assumes that photons are either absorbed or reflected, not transmitted.
-    """
-    B = target_beta
-    R = reflectance
-    r_tot = (-(1+R)*(1-B)+np.sqrt(8*B*R*(1-B)+((1-B)**2) * ((1+R)**2)))/(4*R*(1-B))
-    return r_tot
-
-def find_temp(params, beta, time):
-    """
-    Find the equilibrium temperature at a specific velocity and firing time.
-    Using Kipping 2017 equation (37).
-    """
-    m_s = params["m_sail"]
-    t = params["thickness"]
-    rho = params["density"]
-    R = params["reflectance"]
-    A = params["absorptance"]
-    m_tot = 2*m_s
-    area = m_s / (rho * t)
-    sigma = m_tot / area #Effective surface density
-    r_tot = find_total_relative_energy(beta, R)
-
-    T = (r_tot * sigma * A * c**2 / (2 * stefan_boltzmann * time))**0.25
-    return T
+# def find_temp(params, beta, time):
+#     """
+#     Find the equilibrium temperature at a specific velocity and firing time.
+#     Using Kipping 2017 equation (37).
+#     """
+#     m_s = params["m_sail"]
+#     t = params["thickness"]
+#     rho = params["density"]
+#     R = params["reflectance"]
+#     A = params["absorptance"]
+#     m_tot = 2*m_s
+#     area = m_s / (rho * t)
+#     sigma = m_tot / area #Effective surface density
+#     r_tot = find_total_relative_energy(beta, R)
+#
+#     T = (r_tot * sigma * A * c**2 / (2 * stefan_boltzmann * time))**0.25
+#     return T
