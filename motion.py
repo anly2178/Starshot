@@ -244,11 +244,3 @@ power to reach target speed.
 #         """Increase power by something"""
 #         params["power"] = params["power"]*(target/x[0,-1])**2 #Just a guess I made using non-relativistic assumption
 #
-def trim_2d_zeros(two_array):
-    """
-    Trim zero columns from 2d array.
-    """
-    a = two_array
-    idx = np.argwhere(np.all(a[..., :] == 0, axis=0))
-    a2 = np.delete(a, idx, axis=1)
-    return a2

@@ -47,9 +47,11 @@ def write_results(params, state, time, filepath):
     Data is formatted as:
         Time (s) | Beta (c) | Distance (m) | Temperature (K)
     """
-    #Tabulates the parameters
-    keys = []
-    values = []
+    #For formatting, paramters are separated into three sections: Sail, laser, conditions
+    keys = [[],[],[]]
+    values = [[],[],[]]
+    #Create index to track which one to add to
+    index = 0
     for key, value in params.items():
         #Insert the units
         if key == 'm_sail':
@@ -66,14 +68,25 @@ def write_results(params, state, time, filepath):
             key += ' (cm^-1)'
         elif key == 'power':
             key += ' (W)'
+            index += 1 #Move to laser section of parameters
         elif key == 'diameter':
             key += ' (m)'
         elif key == 'wavelength':
             key += ' (m)'
-        keys.append(key)
-        values.append(value)
-    table = [keys,values]
-    table_params = tabulate(table)
+        elif key == 'target':
+            index += 1 #Move to conditions section of parameters
+        elif key == 'accel_dist':
+            key += ' (m)'
+        elif key == 'max_temp':
+            key += ' (K)'
+        keys[index].append(key)
+        values[index].append(value)
+    sail = [keys[0],values[0]]
+    laser = [keys[1],values[1]]
+    cond = [keys[2],values[2]]
+    table_sail = tabulate(sail)
+    table_laser = tabulate(laser)
+    table_cond = tabulate(cond)
 
     #Tabulate values of the state
     beta = state[0,:]
@@ -86,7 +99,7 @@ def write_results(params, state, time, filepath):
         table_data = tabulate({"Time (s)": time,"Beta (c)": beta, "Distance (m)": dist, "Temperature (K)": temp}, headers="keys", showindex = "always")
     #Write results into file
     f = open(filepath,'w')
-    f.write(table_params + '\n\n')
+    f.write(table_sail + '\n' + table_laser + '\n' + table_cond + '\n\n')
     f.write(table_data)
     f.close()
 
@@ -119,6 +132,15 @@ def remove_brackets(ls):
         i += 1
     return new_ls
 
+def trim_2d_zeros(two_array):
+    """
+    Trim zero columns from 2d array.
+    """
+    a = two_array
+    idx = np.argwhere(np.all(a[..., :] == 0, axis=0))
+    a2 = np.delete(a, idx, axis=1)
+    return a2
+
 def read_results(filepath):
     """
     Reads data from a txt file, and returns a dictionary of parameters,
@@ -135,7 +157,6 @@ def read_results(filepath):
     #Set up lists to insert results
     keys = []
     values = []
-    states = []
     time = np.zeros(200)
     beta = np.zeros(200)
     distance = np.zeros(200)
@@ -157,15 +178,14 @@ def read_results(filepath):
         elif '-' in elements[0]:
             continue
         #Extracts values according to index
-        if index == 0:
-            keys = elements
+        if index == 0 or index == 2 or index == 4:
+            keys += elements
             index += 1
-        elif index == 1:
-            values = strlist_to_float(elements)
+        elif index == 1 or index == 3 or index == 5:
+            values += strlist_to_float(elements)
             index += 1
-        elif index == 2:
-            states = elements
-            index += 1
+        elif index == 6:
+            index += 1 #Reaches state headings
         else:
             #elements is now list of numerical values corresponding to the state
             elements = strlist_to_float(elements)
@@ -191,5 +211,11 @@ def read_results(filepath):
         state = np.array([beta, distance])
     elif has_temp:
         state = np.array([beta,distance,temperature])
+    state[:,0] = 1 #To bypass trimming
+    state = trim_2d_zeros(state)
+    state[:,0] = 0 #Return to zero
+    time[0] = 1 #To bypass trimming
+    time = np.trim_zeros(time)
+    time[0] = 0
 
     return params, state, time
