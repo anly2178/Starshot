@@ -94,6 +94,10 @@ Parameter							Defintion
 								Input:	int, float
 								Units:	Unitless
 								
+"accel_dist"	----------------------------		distance at which target speed is reached
+								Input:	int, float
+								Units:	m
+								
 "max_temp"	----------------------------		maximum temperature that the sail should reach
 								Input:	int, float
 								Units:	K
