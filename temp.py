@@ -31,7 +31,7 @@ def find_max_power(params):
     T_mid = (T_high+T_low)/2
     #Check the run time
     start_time = time.time()
-    while abs(T_mid - T_max) >= 0.001*T_max:
+    while abs(T_mid - T_max) >= 0.0005*T_max: #Maybe the accuracy is too low? 
         #If the high temperature is too low for some reason
         if T_high <= T_max:
             params_high["power"] = 2*params_high["power"]
