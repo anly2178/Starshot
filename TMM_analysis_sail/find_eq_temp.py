@@ -87,7 +87,7 @@ def directional_emissivity(theta, structure, wavelength):
 
     n1 = n_silica(wavelength)
     n2 = n_germania(wavelength)
-    n3 = n_alumina(wavelength)
+    # n3 = n_alumina(wavelength)
 
     # Section of code that creates a new structure list that is based on
     # calculated optical constants using wavelength
@@ -99,10 +99,10 @@ def directional_emissivity(theta, structure, wavelength):
             temp_struc[l][0] = n1
         elif structure[l][0] == 1.6:
             temp_struc[l][0] = n2
-        elif structure[l][0] == 1.749:
-            temp_struc[l][0] = n3
-            if temp_struc[l][0] == 0:
-                return 0
+        # elif structure[l][0] == 1.749:
+        #     temp_struc[l][0] = n3
+        #     if temp_struc[l][0] == 0:
+        #         return 0
         else:
             temp_struc[l][0] = structure[l][0]
         # Keeping the thickness of each layer

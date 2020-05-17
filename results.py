@@ -47,9 +47,9 @@ def write_results(params, state, time, filepath):
     Data is formatted as:
         Time (s) | Beta (c) | Distance (m) | Temperature (K)
     """
-    #For formatting, paramters are separated into three sections: Sail, laser, conditions
-    keys = [[],[],[]]
-    values = [[],[],[]]
+    #For formatting, paramters are separated into three sections: Sail, optical properties, laser, conditions
+    keys = [[],[],[],[]]
+    values = [[],[],[],[]]
     #Create index to track which one to add to
     index = 0
     for key, value in params.items():
@@ -66,6 +66,7 @@ def write_results(params, state, time, filepath):
             key += ' (kgm^-3)'
         elif key == 'abs_coeff':
             key += ' (cm^-1)'
+            index += 1 #Move to optical properties section of parameters
         elif key == 'power':
             key += ' (W)'
             index += 1 #Move to laser section of parameters
@@ -82,9 +83,11 @@ def write_results(params, state, time, filepath):
         keys[index].append(key)
         values[index].append(value)
     sail = [keys[0],values[0]]
-    laser = [keys[1],values[1]]
-    cond = [keys[2],values[2]]
+    optic = [keys[1],values[1]]
+    laser = [keys[2],values[2]]
+    cond = [keys[3],values[3]]
     table_sail = tabulate(sail)
+    table_optic = tabulate(optic)
     table_laser = tabulate(laser)
     table_cond = tabulate(cond)
 
@@ -99,7 +102,7 @@ def write_results(params, state, time, filepath):
         table_data = tabulate({"Time (s)": time,"Beta (c)": beta, "Distance (m)": dist, "Temperature (K)": temp}, headers="keys", showindex = "always")
     #Write results into file
     f = open(filepath,'w')
-    f.write(table_sail + '\n' + table_laser + '\n' + table_cond + '\n\n')
+    f.write(table_sail + '\n' + table_optic + '\n' + table_laser + '\n' + table_cond + '\n\n')
     f.write(table_data)
     f.close()
 
@@ -178,13 +181,13 @@ def read_results(filepath):
         elif '-' in elements[0]:
             continue
         #Extracts values according to index
-        if index == 0 or index == 2 or index == 4:
+        if index == 0 or index == 2 or index == 4 or index == 6:
             keys += elements
             index += 1
-        elif index == 1 or index == 3 or index == 5:
+        elif index == 1 or index == 3 or index == 5 or index == 7:
             values += strlist_to_float(elements)
             index += 1
-        elif index == 6:
+        elif index == 8:
             index += 1 #Reaches state headings
         else:
             #elements is now list of numerical values corresponding to the state

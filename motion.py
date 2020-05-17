@@ -1,6 +1,5 @@
 import numpy as np
 from numpy import cos
-from .temp import find_temp
 from .laser import find_fraction_incident
 from .grating import find_rt_coefficients,find_diffracted_angle
 
@@ -98,7 +97,7 @@ def state_vs_t(params):
     x0 = np.array([0,0])  #Initial state
 
     #Create arrays to fill
-    t = np.append(np.linspace(0,0.8,10), np.logspace(0,4,90)) #Create time, starts off linear and transitions into logarithmic
+    t = np.append(np.linspace(0,0.8,10), np.logspace(0,4,140)) #Create time, starts off linear and transitions into logarithmic
     nt = t.size
     nx = x0.size
     x = np.zeros((nx,nt))
