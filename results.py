@@ -116,12 +116,39 @@ def strlist_to_float(strlist):
         word = strlist[i]
         try:
             strlist[i] = float(word)
-        except ValueError:
+        except (ValueError, TypeError):
             strlist[i] = word
+
         i += 1
     return strlist
 
-def remove_brackets(ls):
+def remove_brackets_str(string):
+    """
+    Remove brackets from a string.
+    """
+    new_str = ''
+    old_str = string
+    for char in old_str:
+        if char == '[' or char == ']':
+            continue
+        else:
+            new_str = new_str + char
+    return new_str
+
+def remove_commas(string):
+    """
+    Remove commas from a string.
+    """
+    new_str = ''
+    old_str = string
+    for char in old_str:
+        if char == ',':
+            continue
+        else:
+            new_str += char
+    return new_str
+
+def remove_brackets_ls(ls):
     """
     Given a list, returns a new list with the elements that include brackets
      (  ) removed.
@@ -134,6 +161,33 @@ def remove_brackets(ls):
             new_ls.append(elem)
         i += 1
     return new_ls
+
+def recover_list(strlist):
+    """
+    From list of strings, recover any lists.
+    """
+    #List from strlist
+    ls = []
+    end_ls = False
+    #Need two indices; one for original list and one for new list
+    new_strlist = []
+    j = 0
+    i = 0
+    while i < len(strlist):
+        elem = strlist[i]
+        if '[' in elem or ']' in elem or ',' in elem: #in the list
+            if ']' in elem: #End of list
+                end_ls = True
+            elem = remove_commas(elem)
+            elem = remove_brackets_str(elem)
+            ls.append(float(elem))
+        else:
+            new_strlist.append(elem)
+        if end_ls:
+            new_strlist.append(ls)
+            end_ls = False
+        i += 1
+    return new_strlist
 
 def trim_2d_zeros(two_array):
     """
@@ -185,6 +239,8 @@ def read_results(filepath):
             keys += elements
             index += 1
         elif index == 1 or index == 3 or index == 5 or index == 7:
+            if index == 1:
+                elements = recover_list(elements)
             values += strlist_to_float(elements)
             index += 1
         elif index == 8:
@@ -201,7 +257,7 @@ def read_results(filepath):
                 has_temp = True
     f.close()
     #Create dictionary of parameters
-    keys = remove_brackets(keys)
+    keys = remove_brackets_ls(keys)
     params = {}
     i = 0
     while i < len(keys):
