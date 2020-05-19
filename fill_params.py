@@ -195,7 +195,7 @@ def fill_power(params):
     D = params["radius"]*2 #m, diameter of sail
     if "accel_dist" in params:
         L = params["accel_dist"] #m, target acceleration distance
-        P = 2*c**3*np.sqrt(m)*W*D/(pi*1000*L) #W
+        P = np.sqrt(pi)*c**3*np.sqrt(m)*W*D/(2*1000*L) #W
     elif "max_temp" in params:
         P = find_max_power(params)
     params["power"] = P
@@ -213,7 +213,7 @@ def fill_diameter(params):
     m_sail = params["m_sail"] * 1000 #g
     W = params["W"]
     P = params["power"] #GW
-    d = (4*wavelength*c**3*np.sqrt(m_sail)*W)/(pi*1000*P)
+    d = (2*wavelength*c**3*np.sqrt(m_sail)*W)/(np.sqrt(pi)*1000*P)
     params["diameter"] = d
     return params
 
