@@ -94,7 +94,7 @@ def find_structure(params):
     return structure
 
 
-def fill_abs_ref_tra(params):
+def fill_absorptance(params):
     """
     Input:  Dictionary of parameters, that must include the matrial and absorption coefficient
             and must have 'None' entered for absorptance, reflectance and transmittance
@@ -146,8 +146,54 @@ def fill_abs_ref_tra(params):
     A = [1]*(len(abs_coeff)) - R - T
 
     params["absorptance"] = A[0]
-    params["reflectance"] = R[0]
-    params["transmittance"] = T[0]
+    return params
+
+def fill_reflectance(params):
+    """
+    Fills the reflectance.
+    """
+    #Get parameters
+    wavelength = params["wavelength"]
+    target = params["target"]
+    shift = np.sqrt((1+target)/(1-target))
+    #Finds the structure
+    structure = find_structure(params)
+    if structure == None:
+        return params
+    sum = 0
+    bandwidth = np.linspace(wavelength, wavelength*shift, 100)
+    i = 0
+    while i < len(bandwidth):
+        r = tmm(structure, bandwidth[i])[0]
+        R = r*np.conj(r)
+        sum += R
+        i += 1
+    reflectance = sum/100
+    params["reflectance"] = reflectance
+    return params
+
+def fill_transmittance(params):
+    """
+    Fills the transmittance.
+    """
+    #Get parameters
+    wavelength = params["wavelength"]
+    target = params["target"]
+    shift = np.sqrt((1+target)/(1-target))
+    #Finds the structure
+    structure = find_structure(params)
+    if structure == None:
+        return params
+    sum = 0
+    bandwidth = np.linspace(wavelength, wavelength*shift, 100)
+    i = 0
+    while i < len(bandwidth):
+        r = tmm(structure, bandwidth[i])[1]
+        R = r*np.conj(r)
+        sum += R
+        i += 1
+    transmittance = sum/100
+    params["transmittance"] = transmittance
     return params
 
 def fill_W(params):
@@ -229,8 +275,12 @@ def fill_params(params):
                 fill_area(params)
             elif key == 'radius':
                 fill_radius(params)
-            elif key == 'absorptance' or key == 'reflectance' or key == 'transmittance':
-                fill_abs_ref_tra(params)
+            elif key == 'absorptance':
+                fill_absorptance(params)
+            elif key == 'reflectance':
+                fill_reflectance(params)
+            elif key == 'transmittance':
+                fill_transmittance(params)
             elif key == 'W':
                 fill_W(params)
             elif key == 'power':

@@ -96,8 +96,9 @@ def state_vs_t(params):
         f = lambda t, x : differential_eq(x, params) #Differential equation
     x0 = np.array([0,0])  #Initial state
 
-    #Create arrays to fill
-    t = np.append(np.linspace(0,0.8,10), np.logspace(0,4,140)) #Create time, starts off linear and transitions into logarithmic
+    #Create arrays to filled
+    t = np.linspace(0,1000,2000)
+    # t = np.append(np.linspace(0,0.8,10), np.logspace(0,4,140)) #Create time, starts off linear and transitions into logarithmic
     nt = t.size
     nx = x0.size
     x = np.zeros((nx,nt))
