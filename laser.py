@@ -42,6 +42,25 @@ def find_crit_dist(params):
     L = pi*D*d/(4*wavelength)
     return L
 
+# def find_beam_width(params, dist):
+#     """
+#     Finds beam width at some distance from the transmitter.
+#     Assumes circular Gaussian beam, dynamically focused until diffraction-limited distance,
+#     where the beam spot is the size of the sail. Thereafter, beam waist is kept
+#     at that point.
+#     """
+#     crit_dist = find_crit_dist(params) #Distance where sail radius = beam width
+#     wavelength = params["wavelength"] #m
+#     diameter = params["diameter"] #m
+#     if dist <= crit_dist:
+#         beam_width = 2*wavelength*dist/(pi*diameter) #m
+#     elif dist > crit_dist:
+#         w_0 = 2*wavelength*crit_dist/(pi*diameter) #m
+#         d_waist = dist - crit_dist #m distance from beam waist
+#         z_r = find_rayleigh_length(w_0,wavelength) #m
+#         beam_width = w_0*(1+(d_waist/z_r)**2)**0.5 #m
+#     return beam_width
+
 def find_beam_width(params, dist):
     """
     Finds beam width at some distance from the transmitter.
@@ -49,16 +68,9 @@ def find_beam_width(params, dist):
     where the beam spot is the size of the sail. Thereafter, beam waist is kept
     at that point.
     """
-    crit_dist = find_crit_dist(params) #Distance where sail radius = beam width
     wavelength = params["wavelength"] #m
     diameter = params["diameter"] #m
-    if dist <= crit_dist:
-        beam_width = 2*wavelength*dist/(pi*diameter) #m
-    elif dist > crit_dist:
-        w_0 = 2*wavelength*crit_dist/(pi*diameter) #m
-        d_waist = dist - crit_dist #m distance from beam waist
-        z_r = find_rayleigh_length(w_0,wavelength) #m
-        beam_width = w_0*(1+(d_waist/z_r)**2)**0.5 #m
+    beam_width = 2*wavelength*dist/(pi*diameter) #m
     return beam_width
 
 # def find_beam_width(params, dist):
@@ -80,7 +92,7 @@ def find_fraction_incident(params, dist):
     w = find_beam_width(params,dist)
     #To prevent overflow warnings, set a point where the fraction loss is appreciable; until then fraction = 1
     #Choose to care about fraction when it becomes <= 0.999, which occurs when:
-    pt = 2*r**2/np.log(1000)
+    pt = 2*r**2/np.log(10000)
     if w**2 <= pt:
         fraction = 1
     else:

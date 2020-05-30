@@ -169,7 +169,7 @@ def fill_reflectance(params):
         sum += R
         i += 1
     reflectance = sum/100
-    params["reflectance"] = reflectance
+    params["reflectance"] = reflectance.real
     return params
 
 def fill_transmittance(params):
@@ -193,7 +193,7 @@ def fill_transmittance(params):
         sum += R
         i += 1
     transmittance = sum/100
-    params["transmittance"] = transmittance
+    params["transmittance"] = transmittance.real
     return params
 
 def fill_W(params):

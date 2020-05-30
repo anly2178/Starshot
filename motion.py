@@ -97,8 +97,8 @@ def state_vs_t(params):
     x0 = np.array([0,0])  #Initial state
 
     #Create arrays to filled
-    t = np.linspace(0,1000,2000)
-    # t = np.append(np.linspace(0,0.8,10), np.logspace(0,4,140)) #Create time, starts off linear and transitions into logarithmic
+    # t = np.append(np.linspace(0,1,100),np.linspace(1,5000,2000)) #For times when you need more accuracy...
+    t = np.append(np.linspace(0,0.8,10), np.logspace(0,4,140)) #Create time, starts off linear and transitions into logarithmic
     nt = t.size
     nx = x0.size
     x = np.zeros((nx,nt))
