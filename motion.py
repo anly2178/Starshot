@@ -1,6 +1,6 @@
 import numpy as np
 from numpy import cos
-from .laser import find_fraction_incident
+from .laser import find_fraction_incident,fixed_beam
 from .grating import find_rt_coefficients,find_diffracted_angle
 
 def differential_eq(x, params):
@@ -21,6 +21,8 @@ def differential_eq(x, params):
     reflectance = params["reflectance"]
     power = params["power"]
     fraction = find_fraction_incident(params, dist) #fraction of power incident
+    # fraction = fixed_beam(params,dist)
+    # fraction = 1
     lor = 1/(1-beta**2)**0.5 #Lorentz factor
     #Derivative of state with respect to time
     beta_dot = 2 * reflectance * power * fraction * (1-beta) / (m_tot * c**2 * lor**3 * (1+beta))
@@ -97,8 +99,8 @@ def state_vs_t(params):
     x0 = np.array([0,0])  #Initial state
 
     #Create arrays to filled
-    # t = np.append(np.linspace(0,1,100),np.linspace(1,5000,2000)) #For times when you need more accuracy...
-    t = np.append(np.linspace(0,0.8,10), np.logspace(0,4,140)) #Create time, starts off linear and transitions into logarithmic
+    # t = np.append(np.linspace(0,1,100),np.linspace(1,1000,2000)) #For times when you need more accuracy...
+    t = np.append(np.linspace(0,0.8,10), np.logspace(0,6,140)) #Create time, starts off linear and transitions into logarithmic
     nt = t.size
     nx = x0.size
     x = np.zeros((nx,nt))

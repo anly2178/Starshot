@@ -99,6 +99,7 @@ def find_fraction_incident(params, dist):
         fraction = 1-np.exp(-2*r**2/w**2)
     return fraction
 
+
 # #This is from Kulkarni 2018; assumes beam is Bessel. Not relevant to Gaussian beam, and no longer compatible with library.
 # def find_crit_dist(params):
 #     """
@@ -118,3 +119,25 @@ def find_fraction_incident(params, dist):
 #     sail_size = np.sqrt(m_sail / (k*density*thickness))
 #     critical_dist = diameter * sail_size / (2*wavelength*alpha)
 #     return critical_dist
+
+def fixed_beam(params, dist):
+    """
+    Finds the fraction for a laser beam with a fixed focus.
+    """
+    def rayleigh(area,wavelength):
+        return area/(2*wavelength)
+
+    def beam_width(area,r_length,dist):
+        w = np.sqrt(area/(2*pi)*(1+(dist/r_length)**2))
+        return w
+
+    def fraction(area,bw):
+        fraction = 1-np.exp(-2*area/(pi*bw**2))
+        return fraction
+
+    area = params["area"] #m^2
+    wavelength = params["wavelength"] #m
+    r_length = rayleigh(area,wavelength)
+    bw = beam_width(area,r_length,dist)
+    frac = fraction(area,bw)
+    return frac

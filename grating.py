@@ -75,7 +75,8 @@ def find_angles_coeffs(filepath, wavelength, period):
     orders = [-1,0,1]
     angles = []
     for order in orders:
-        angle = np.radians(find_diffracted_angle(order,wavelength,period))
+        angle = find_diffracted_angle(order,wavelength,period)
+        
         angles.append(angle)
     #Find efficiences of each reflected and transmitted order
     coeffs, rtot, ttot = find_rt_coefficients(filepath)
