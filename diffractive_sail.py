@@ -59,6 +59,6 @@ class DiffractiveSail(Sail):
         super().__init__(name=name, mass=mass, area=area, target=target,
             power=power, wavelength=wavelength)
         self.angles_coeffs = angles_coeffs
-
-
-    #To be continued...
+        self.W = self._find_W()
+        self.diameter = self._find_diameter()
+        self.print_variables()

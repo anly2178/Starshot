@@ -219,10 +219,10 @@ class Sail:
             Effective reflectance
         """
         eff_R = 0
-        for angle, r, t in angles_coeffs:
+        for angle, r, t in self.angles_coeffs:
             fac = np.cos(np.deg2rad(angle))
             eff_R += r * fac + t * (1 - fac)
-        return eff_R 
+        return eff_R
 
     def _find_W(self):
         """Calculates the square root of RAAD, W, as defined by Ilic 2018.
@@ -238,7 +238,7 @@ class Sail:
         """
         s_density = self.s_density * 1000 #g/m^2
         wavelength = self.wavelength #m
-        reflectance = self.reflectance
+        reflectance = self._find_effective_R()
         #To evaluate the integral we define dW
         def dW(beta, reflectance, s_density, wavelength):
             gamma = 1/np.sqrt(1-beta**2)
