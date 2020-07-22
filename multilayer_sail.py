@@ -168,9 +168,10 @@ class MultilayerSail(Sail):
         im_RI = 1j*wavelength*100*abs_coeff/(4*np.pi)
         temp_struc = [(n+im_RI, t) if n!=1 else (n,t) for (n,t) in structure]
 
-        r, t = tmm(temp_struc, wavelength)
-        R = (r*np.conj(r)).real
-        T = (t*np.conj(t)).real
+        r_p, t_p, r_s, t_s = tmm(temp_struc, wavelength)
+        
+        R = ((r_p*np.conj(r_p) + r_s*np.conj(r_s))/2).real
+        T = ((t_p*np.conj(t_p) + t_s*np.conj(t_s))/2).real
         A = 1 - R - T
         return A
 
@@ -194,8 +195,8 @@ class MultilayerSail(Sail):
         bandwidth = np.linspace(wavelength, wavelength*shift, 100)
         R_all = []
         for b in bandwidth:
-            r, _ = tmm(structure, b)
-            R_all.append(r*np.conj(r))
+            r_p, _, r_s, _ = tmm(structure, b)
+            R_all.append( ((r_p*np.conj(r_p) + r_s*np.conj(r_s))/2) )
         R_avg = (sum(R_all)/100).real
         return R_avg
 
@@ -219,8 +220,8 @@ class MultilayerSail(Sail):
         bandwidth = np.linspace(wavelength, wavelength*shift, 100)
         T_all = []
         for b in bandwidth:
-            _, t = tmm(structure, b)
-            T_all.append(t*np.conj(t))
+            _, t_p, _, t_s = tmm(structure, b)
+            T_all.append( ((t_p*np.conj(t_p) + t_s*np.conj(t_s))/2) )
         T_avg = (sum(T_all)/100).real
         return T_avg
 
