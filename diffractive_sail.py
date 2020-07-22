@@ -18,10 +18,6 @@ class DiffractiveSail(Sail):
         Radius of lightsail [m]
     s_density : float
         Surface density of lightsail [kg/m^2]
-    reflectance : float
-        Absolute reflectance of lightsail
-    transmittance : float
-        Absolute transmittance of lightsail
     target : float
         Target speed as fraction of speed of light. E.g. 0.2c
     power : float
@@ -38,11 +34,9 @@ class DiffractiveSail(Sail):
 
     Methods (for user)
     ------------------
-    def __init__(   name=None, material=None, mass=None, thickness=None,
-                    area=None, radius=None, s_density=None, abs_coeff=None,
-                    absorptance=None, reflectance=None, transmittance=None,
-                    W=None):
-        The constructor for Sail class
+    def __init__(   self, name=None, mass=None, area=None, target=0.2,
+                    wavelength=None, power=100e9, angles_coeffs=None):
+        The constructor for DiffractiveSail class
     print_variables()
         Prints the variables of the sail
     change_variables()
