@@ -32,12 +32,10 @@ def tmm(matrix_params, wavelength, theta):
 
     # Here, we need to just make the matrices and continue to left-multiply them
     # to the field vector, beginning with M_1, ending at M_m
-    i = 0
-    while i < len(matrix_params):
-        new_theta = arcsin(n0/matrix_params[i][0]*sin(theta))       # Simple and speedy
-        M_p = np.matmul(make_p_transfer_matrix(matrix_params[i], k0, new_theta), M_p)
-        M_s = np.matmul(make_s_transfer_matrix(matrix_params[i], k0, new_theta), M_s)
-        i += 1
+    for matrix_param in matrix_params:
+        new_theta = arcsin(n0/matrix_param[0]*sin(theta))       # Simple and speedy
+        M_p = np.matmul(make_p_transfer_matrix(matrix_param, k0, new_theta), M_p)
+        M_s = np.matmul(make_s_transfer_matrix(matrix_param, k0, new_theta), M_s)
 
     p_field_vector = np.matmul(M_p,p_field_vector)
     s_field_vector = np.matmul(M_s,s_field_vector)
@@ -45,12 +43,12 @@ def tmm(matrix_params, wavelength, theta):
     # find r, t:
 
     # Note we can use theta here since angle of incidence = angle of outgoing ray
-    E_p = p_field_vector[0][0]
-    H_p = p_field_vector[1][0]
+    E_p = p_field_vector[0, 0]
+    H_p = p_field_vector[1, 0]
     H_p_divided = H_p/(1j*k0/cos(theta))     # For easier calcs
 
-    E_s = s_field_vector[0][0]
-    H_s = s_field_vector[1][0]
+    E_s = s_field_vector[0, 0]
+    H_s = s_field_vector[1, 0]
     H_s_divided = H_s/(1j*k0*cos(theta))     # For easier calcs
 
 # Calc coefficients for p-polarised light

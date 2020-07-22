@@ -9,8 +9,7 @@ from numpy import sin, cos, pi
 """
 
 def make_p_transfer_matrix(matrix_params, wavenumber, angle):
-    n = matrix_params[0]
-    d = matrix_params[1]
+    n, d = matrix_params
     k = wavenumber*n
 
 # Other values in terms of previous parameters
@@ -25,8 +24,7 @@ def make_p_transfer_matrix(matrix_params, wavenumber, angle):
     return M
 
 def make_s_transfer_matrix(matrix_params, wavenumber, angle):
-    n = matrix_params[0]
-    d = matrix_params[1]
+    n, d = matrix_params
     k = wavenumber*n
 
 # Other values in terms of previous parameters
