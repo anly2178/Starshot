@@ -103,3 +103,11 @@ class Material:
 
     def set_has_equations(self, bool):
         has_equations = bool
+    
+#     def save_material(self):
+#        """Saves the material properties to a file for ease of use in the future"""
+#        TO DO
+
+#     def load_material(material_name):
+#        """Loads the material properties from a file based on the material_name (string) given"""
+#        TO DO
