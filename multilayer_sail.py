@@ -1,7 +1,7 @@
 from Starshot.sail import Sail
 from Starshot.optical_constants import n_silica, n_germania
 import numpy as np
-from tmm.tmm import tmm
+from Starshot.tmm.tmm import tmm
 
 class MultilayerSail(Sail):
     """
@@ -170,7 +170,7 @@ class MultilayerSail(Sail):
         temp_struc = [(n+im_RI, t) if n!=1 else (n,t) for (n,t) in structure]
 
         r_p, t_p, r_s, t_s = tmm(temp_struc, wavelength)
-        
+
         R = ((r_p*np.conj(r_p) + r_s*np.conj(r_s))/2).real
         T = ((t_p*np.conj(t_p) + t_s*np.conj(t_s))/2).real
         A = 1 - R - T

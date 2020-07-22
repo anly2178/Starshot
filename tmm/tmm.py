@@ -1,7 +1,7 @@
 import scipy
 import numpy as np
 from numpy import sin, cos, pi, arcsin
-from make_transfer_matrix import make_transfer_matrix, make_p_transfer_matrix, make_s_transfer_matrix
+from Starshot.tmm.make_transfer_matrix import make_p_transfer_matrix, make_s_transfer_matrix
 
 """ This function will take a set of transfer matrices and return in a double
     (r,t), the reflectivity and transmittance coefficients. From these,
