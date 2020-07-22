@@ -18,7 +18,7 @@ from materials_equations import use_equation
 
 class Material:
 
-    def __init__(self, name, density, n = None, k = None has_equations = False):
+    def __init__(self, name, density, n=None, k=None, has_equations=False):
         """ Constructor requires at least the name and the density
         """
         self.name = name
@@ -62,9 +62,8 @@ class Material:
 
             Perhaps future implementation for tab separated files?
         """
-        f = open(absolute_path, 'r')
-        entries = f.readlines()
-        f.close()
+        with open(absolute_path, 'r') as f:
+            entries = f.readlines()
         for entry in entries:
             float(entry.strip().split(','))
         return entries
@@ -84,7 +83,7 @@ class Material:
         self.n = make_list_from_file(absolute_path)
 
     def get_n(self):
-        if has_equations:
+        if self.has_equations:
             n = use_equation(self.name, 'n')
         return n
 
@@ -94,16 +93,16 @@ class Material:
         self.k = make_list_from_file(absolute_path)
 
     def get_k(self):
-        if has_equations:
+        if self.has_equations:
             k = use_equation(self.name, 'k')
         return k
 
     def get_has_equations(self):
-        return has_equations
+        return self.has_equations
 
     def set_has_equations(self, bool):
-        has_equations = bool
-    
+        self.has_equations = bool
+
 #     def save_material(self):
 #        """Saves the material properties to a file for ease of use in the future"""
 #        TO DO
