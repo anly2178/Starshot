@@ -1,6 +1,7 @@
 from Starshot.sail import Sail
 from Starshot.optical_constants import n_silica, n_germania
 import numpy as np
+from tmm.tmm import tmm
 
 class MultilayerSail(Sail):
     """
