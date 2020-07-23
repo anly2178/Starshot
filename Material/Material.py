@@ -70,11 +70,12 @@ class Material:
         """
         self.n_list = make_list_from_file(absolute_path)
 
-    def get_n(self):
+    def get_n(self, wavelength):
         """ If an equation needs to be used, it will use an equation. Each
             equation in materials_equations is identified by the material name
             (and if there is an equation for n and k, the 'n' and 'k' string
-            identifiers in the second argument helps to differentiate)
+            identifiers in the second argument helps to differentiate).
+            Requires wavelength as float to find values
         """
         if has_equations_for_n:
             n = use_equation(self, 'n', wavelength)
@@ -90,7 +91,7 @@ class Material:
         """
         self.k_list = make_list_from_file(absolute_path)
 
-    def get_k(self):
+    def get_k(self, wavelength):
         if has_equations_for_k:
             k = use_equation(self, 'k', wavelength)
         else:
