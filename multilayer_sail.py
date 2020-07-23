@@ -2,13 +2,12 @@ from Starshot.sail import Sail
 from Starshot.optical_constants import n_silica, n_germania
 import numpy as np
 from Starshot.tmm.tmm import tmm
+from Starshot.Material import Material
 
 class MultilayerSail(Sail):
     """
     Multilayer lightsails.
-
     ...
-
     Attributes
     ----------
     name : str
@@ -48,7 +47,6 @@ class MultilayerSail(Sail):
         Absorption coefficient of lightsail. [cm^-1]
     absorptance : float
         Absolute absorption of lightsail
-
     Methods (for user)
     ------------------
     def __init__(   name=None, material=None, mass=None, thickness=None,
@@ -71,7 +69,6 @@ class MultilayerSail(Sail):
                     area=None, reflectance=None, abs_coeff=None, target=0.2,
                     max_temp=1000, power=None, wavelength=1.2e-6):
         """The constructor for MultilayerSail class
-
         Parameters
         ----------
         name : str
@@ -96,16 +93,33 @@ class MultilayerSail(Sail):
             Laser power [W]
         wavelength : float
             Laser wavelength [m]
-
         Returns
         -------
         MultilayerSail
             MultilayerSail with variables specified by user
         """
         super().__init__(name, mass, area, reflectance, target, power, wavelength)
-        self.material = material
+###
+        # This block converts the material names (list of strings) into a list of
+        # Material objects
         if material is None:
             raise ValueError("Enter material(s)")
+        self.materials = []
+        loaded_materials = []   # Stores materials already loaded to prevent additional loading
+        for name in material:
+            material_is_loaded = False
+            # if already loaded, just append loaded material to list
+            for mat in loaded_materials:
+                if mat.get_name() == name:
+                    self.materials.append(mat)
+                    material_is_loaded = True
+                    break
+            # otherwise, load in the new material
+            if not material_is_loaded:
+                new_material = load_material(name)     #Errors handled in Material.py
+                loaded_materials.append(new_material)
+                self.materials.append(new_material)
+###
         self.thickness = thickness #m
         if thickness is None:
             raise ValueError("Enter thickness(es)")
@@ -127,34 +141,26 @@ class MultilayerSail(Sail):
 
     def _find_structure(self):
         """Creates a list representing the structure of the MultilayerSail.
-
         Parameters
         ----------
         None required
-
         Returns
         -------
         list of tuples of two floats
             [(refractive index, -thickness [m]), ...]
         """
-        n_s = n_silica(self.wavelength); n_g = n_germania(self.wavelength)
+###
         structure = []
         for material, thickness in zip(self.material, self.thickness):
-            if material == 'SiO2':
-                structure.append((n_s, -thickness))
-            elif material == 'GeO2':
-                structure.append((n_g, -thickness))
-            elif material == 'gap':
-                structure.append((1, -thickness))
+            structure.append( (material.get_n(self.wavelength), -thickness) )
         return structure
+###
 
     def _find_absorptance(self):
         """Calculates absorptance of MultilayerSail.
-
         Parameters
         ----------
         None required
-
         Returns
         -------
         float
@@ -178,11 +184,9 @@ class MultilayerSail(Sail):
 
     def _find_reflectance(self):
         """Calculates reflectance of MultilayerSail.
-
         Parameters
         ----------
         None required
-
         Returns
         -------
         float
@@ -203,11 +207,9 @@ class MultilayerSail(Sail):
 
     def _find_transmittance(params):
         """Calculates transmittance of MultilayerSail.
-
         Parameters
         ----------
         None required
-
         Returns
         -------
         float
@@ -228,11 +230,9 @@ class MultilayerSail(Sail):
 
     def _find_power(self):
         """Calculates maximum laser power the MultilayerSail can withstand.
-
         Parameters
         ----------
         None required
-
         Returns
         -------
         float
@@ -291,14 +291,12 @@ class MultilayerSail(Sail):
 
     def _find_temp(self, beta, dist):
         """Calculates temperature of MultilayerSail at a speed and distance.
-
         Parameters
         ----------
         float
             Beta (v/c)
         float
             Distance away [m]
-
         Returns
         -------
         float
