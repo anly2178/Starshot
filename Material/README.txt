@@ -14,5 +14,11 @@ TODO:
                               - Al2O3
                               - Si3N4
                           by loading data from .csv files
+                  - EXAMPLE FILE SAVE:
+                        SiO2_data.csv
+                        gap_data.csv
+                        
+                        format: [material_name]_data.csv
+                        
   Commenting + code cleanup
   Potentially add functionality for reading different file types?
