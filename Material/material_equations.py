@@ -26,13 +26,7 @@ def SiO2_equations(wavelength):
 
         # Quickly defining another function that is requred later on
         def D(x):
-            D = [None]*len(x)
-            i = 0
-            while i < len(x):
-                d = scipy.special.dawsn(x[i])
-                D[i] = (d)
-                i += 1
-            return np.array(D)
+            return np.array([scipy.special.dawsn(y) for y in x])
 
         alpha = np.array((3.7998, 0.46089, 1.2520, 7.8147, 1.0313, 5.3757, 6.3305, 1.2948))
         wavenumber0 = np.array((1089.7, 1187.7, 797.78, 1058.2, 446.13, 443, 465.80, 1026.7))
@@ -55,7 +49,6 @@ def SiO2_equations(wavelength):
     # k no longer negligible
     elif wavelength >= 7e-6:
         wavenumber = (1/wavelength)/100     # in cm^-1
-        sum = 0
         g_kkg = silica_g(wavenumber, True)
         g = silica_g(wavenumber)
         n = np.sqrt(2.1232 + np.sum(g_kkg) + 1j*np.sum(g))
@@ -73,7 +66,7 @@ def GeO2_Sellmeier(wavelength):
     l1 = 0.68972606e-1
     l2 = 0.15396605
     l3 = 0.11841931e2
-    wlsq = (wavelength)**2
+    wlsq = wavelength**2
     nsq = 1 + (wlsq*A1)/(wlsq-l1**2) + (wlsq*A2)/(wlsq-l2**2) + (wlsq*A3)/(wlsq-l3**2)
     return np.sqrt(nsq)
 
