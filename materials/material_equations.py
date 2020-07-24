@@ -10,14 +10,14 @@ import numpy as np
 
 def SiO2_equations(wavelength):
 
-""" Returns refractive index of SiO_2 from wavelength argument.
+    """ Returns refractive index of SiO_2 from wavelength argument.
     Input wavelength is in metres. Sellmeier equation is only valid
     from 1-8 micrometres, but that is good enough for calculating the
     reflectivity of a silica-based lightsail for the laser bandwidth.
     Source: Rei Kitamura, Laurent Pilon and Miroslaw Jonasz (2007).
 
     Past Sellmeier range, use Kitamura, Pilon, Jonasz's eqn for 7-50 um
-"""
+    """
 
     """ Nested function defining some functions required to find the complex
         refractive index of silica. Wavenumber is in cm^-1 """
@@ -56,9 +56,9 @@ def SiO2_equations(wavelength):
 
 def GeO2_Sellmeier(wavelength):
 
-""" Provides a Sellmeier equation for GeO2 which is accurate below 5 microns
+    """ Provides a Sellmeier equation for GeO2 which is accurate below 5 microns
     Source: Fleming, J. W., 1984
-"""
+    """
 
     A1 = 0.80686642
     A2 = 0.71815848
@@ -72,9 +72,9 @@ def GeO2_Sellmeier(wavelength):
 
 def Si3N4_Sellmeier(wavelength):
 
-""" Provides a Sellmeier equation for Si3N4 which is accurate below ~1.5 microns
+    """ Provides a Sellmeier equation for Si3N4 which is accurate below ~1.5 microns
     Source: Luke et al., 2015
-"""
+    """
 
     wavelength = wavelength
     A1 = 3.0249

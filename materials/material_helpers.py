@@ -1,5 +1,4 @@
-from material import Material
-import materials_equations
+import material_equations
 
 def interpolate_from_list(list, wavelength):
     """ Fills in any values using a linear fit between data points given in
