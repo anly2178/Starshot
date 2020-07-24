@@ -48,7 +48,6 @@ class MultilayerSail(Sail):
         Absorption coefficient of lightsail. [cm^-1]
     absorptance : float
         Absolute absorption of lightsail
-
     Methods (for user)
     ------------------
     def __init__(   name=None, material=None, mass=None, thickness=None,
@@ -101,6 +100,7 @@ class MultilayerSail(Sail):
             MultilayerSail with variables specified by user
         """
         super().__init__(name, mass, area, reflectance, target, power, wavelength)
+###
         # This block converts the material names (list of strings) into a list of
         # Material objects
         if material is None:
@@ -151,18 +151,18 @@ class MultilayerSail(Sail):
         list of tuples of two floats
             [(refractive index, -thickness [m]), ...]
         """
+###
         structure = []
         for material, thickness in zip(self.material, self.thickness):
             structure.append( (material.get_n(self.wavelength), -thickness) )
         return structure
+###
 
     def _find_absorptance(self):
         """Calculates absorptance of MultilayerSail.
-
         Parameters
         ----------
         None required
-
         Returns
         -------
         float
