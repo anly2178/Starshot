@@ -38,7 +38,7 @@ class MultilayerSail(Sail):
         Diameter of laser array [m]
     angles_coeffs : list of tuples of three floats
         Angle [degrees], reflection efficiency and transmission efficiency of each order.
-    material : list of str
+    materials : list of str
         List of strings representing the materials in each layer
     thickness : list (of floats)
         Thickness of layers [m]
@@ -50,7 +50,7 @@ class MultilayerSail(Sail):
         Absolute absorption of lightsail
     Methods (for user)
     ------------------
-    def __init__(   name=None, material=None, mass=None, thickness=None,
+    def __init__(   name=None, materials=None, mass=None, thickness=None,
                     area=None, radius=None, s_density=None, abs_coeff=None,
                     absorptance=None, reflectance=None, transmittance=None,
                     W=None):
@@ -66,7 +66,7 @@ class MultilayerSail(Sail):
         includes the variables of the mission. The png file includes
         speed vs distance and speed vs time graphs.
     """
-    def __init__(   self, name=None, material=None, mass=None, thickness=None,
+    def __init__(   self, name=None, materials=None, mass=None, thickness=None,
                     area=None, reflectance=None, abs_coeff=None, target=0.2,
                     max_temp=1000, power=None, wavelength=1.2e-6):
         """The constructor for MultilayerSail class
@@ -74,7 +74,7 @@ class MultilayerSail(Sail):
         ----------
         name : str
             A name or code that identifies the sail
-        material : list of str
+        materials : list of str
             List of strings representing the materials in each layer
         mass : float
             Mass of lightsail (excluding payload) [kg]
@@ -100,15 +100,14 @@ class MultilayerSail(Sail):
             MultilayerSail with variables specified by user
         """
         super().__init__(name, mass, area, reflectance, target, power, wavelength)
-###
         # This block converts the material names (list of strings) into a list of
         # Material objects
-        if material is None:
+        if materials is None:
             raise ValueError("Enter material(s)")
         self.materials = []
         ###
         loaded_materials = []   # Stores materials already loaded to prevent additional loading
-        for name in material:
+        for name in materials:
             material_is_loaded = False
             # if already loaded, just append loaded material to list
             for mat in loaded_materials:
