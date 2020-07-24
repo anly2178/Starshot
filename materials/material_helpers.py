@@ -1,4 +1,4 @@
-from Material import Material
+from material import Material
 import materials_equations
 
 def interpolate_from_list(list, wavelength):

@@ -1,4 +1,4 @@
-from Material import Material
+from material import Material
 from load_materials import load_materials
 
 a = Material(name='bob', density='123', n_list=[4,5,6], k_list=[7,8,9],
