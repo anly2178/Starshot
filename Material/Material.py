@@ -1,4 +1,5 @@
 import os
+import pickle
 from material_helpers import interpolate_from_list, use_equation
 
 """ Each material should have a:
@@ -27,6 +28,7 @@ class Material:
         self.k_list = k_list
         self.has_equations_for_n = has_equations_for_n
         self.has_equations_for_k = has_equations_for_k
+        self._save_material()
 
     def get_density(self):
         return self.density
@@ -112,6 +114,10 @@ class Material:
 
     def set_has_equations_for_k(self, bool):
         has_equations_for_n = bool
+
+    def _save_material(self):
+        with open('material_data.pkl', 'ab') as output:
+            pickle.dump(self, output, pickle.HIGHEST_PROTOCOL)
 
     # def save_material(self):
     #    """Saves the material properties to a file for ease of use in the future"""
