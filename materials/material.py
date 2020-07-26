@@ -1,6 +1,6 @@
 import os
 import pickle
-from save_load_mat import has_saved
+from save_load_mat import has_saved, update_material
 from material_helpers import interpolate_from_list, use_equation
 
 """ Each material should have a:
@@ -31,18 +31,29 @@ class Material:
         self.has_equations_for_k = has_equations_for_k
         if not has_saved(self):
             self._save_material()
+        else:
+            update_material(self, name)
+        #if it has already been saved, we should check if the two are identical.
+        #if identical, then load the old values.
+        #if not identical, then overwrite the old values.
+        #Also, by making the names the way of identifying materials, we are
+        #assuming that we can't have, for example, different SiO2 with
+        #different absorption coefficients.
 
     def get_density(self):
         return self.density
 
     def set_density(self, density):
         self.density = density
+        update_material(self, self.get_name())
 
     def get_name(self):
         return self.name
 
     def set_name(self, name):
+        old_name = self.get_name()
         self.name = name
+        update_material(self, old_name)
 
     def make_list_from_file(path):
         """ Takes in the file path of a CSV with each entry organised as
@@ -73,6 +84,7 @@ class Material:
             if any data is taken from there)
         """
         self.n_list = make_list_from_file(absolute_path)
+        update_material(self, self.get_name())
 
     def get_n(self, wavelength):
         """ If an equation needs to be used, it will use an equation. Each
@@ -94,6 +106,7 @@ class Material:
         """ Same as above, but for k
         """
         self.k_list = make_list_from_file(absolute_path)
+        update_material(self, self.get_name())
 
     def get_k(self, wavelength):
         if has_equations_for_k:
@@ -110,12 +123,14 @@ class Material:
 
     def set_has_equations_for_n(self, bool):
         has_equations_for_n = bool
+        update_material(self, self.get_name())
 
     def get_has_equations_for_k(self):
         return has_equations_for_n
 
     def set_has_equations_for_k(self, bool):
         has_equations_for_n = bool
+        update_material(self, self.get_name())
 
     def _save_material(self):
         with open('material_data.pkl', 'ab') as output:

@@ -18,3 +18,24 @@ def has_saved(material):
         if material.get_name() == mat.get_name():
             return True
     return False
+
+def update_material(material, old_name):
+    """Update material in pkl file with the same name."""
+    old_materials = load_materials()
+    new_materials = []
+    for mat in old_materials:
+        if mat.get_name() == old_name:
+            new_materials.append(material)
+        elif mat.get_name() == material.get_name():
+            continue
+        else:
+            new_materials.append(mat)
+    with open('material_data.pkl', 'wb') as f:
+        for mat in new_materials:
+            pickle.dump(mat, f, pickle.HIGHEST_PROTOCOL)
+
+
+#To allow users to update a material e.g. if defined incorrectly,
+#must reload a list of all materials, delete the incorrect material,
+#save a new list of materials.
+#Also, need to delete old pkl file.
