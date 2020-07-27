@@ -1,6 +1,6 @@
 import os
 import pickle
-from save_load_mat import has_saved, update_material
+from .save_load_mat import has_saved, update_material
 import scipy
 import numpy as np
 

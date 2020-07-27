@@ -1,5 +1,4 @@
 from Starshot.sail import Sail
-from Starshot.optical_constants import n_silica, n_germania
 import numpy as np
 from Starshot.tmm.tmm import tmm
 from Starshot.materials.material import Material
