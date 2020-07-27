@@ -1,7 +1,8 @@
 import os
 import pickle
 from save_load_mat import has_saved, update_material
-from material_helpers import interpolate_from_list, use_equation
+import scipy
+import numpy as np
 
 """ Each material should have a:
         - name (str; potentially multiple names. Main name is chemical formula
@@ -11,24 +12,37 @@ from material_helpers import interpolate_from_list, use_equation
             * real component (list of list/tuples, each tuple has 2 parts,
               the wavelength and the value)
             * imaginary component (same as above)
-        - boolean value to designate whether it has equations which can describe
-          its optical constants. If this is the case, the get_n or get_k
-          functions will be altered in order to use the equations. For an equation
-          to be used, the user must code it in manually
-            (see materials_equations.py)
+        - (optional) a list of entries detailing equations used for a material
+          which detail optical constants
+            * each entry is another list of form:
+                [ str: {name}
+                  list/tuple: {range},
+                  func: {equation}
+                ]
+            * the RANGE in which an equation can be used accurately is described
+              by start_wavelength and end_wavelength. Range goes FROM
+              start_wavelength TO end_wavelength:
+                range = [float {start_wavelength}, float {end_wavelength}]
+              BOTH wavelengths should be given in micrometres.
+
+IMPORTANT NOTE: If using an equation, ensure the equation TAKES IN wavelengths
+                IN MICROMETRES as units. This is especially important when using
+                equations from papers which may use wavenumbers in their equations
+                in which case the user is expected to convert the units to
+                micrometres within the scope of their defined/loaded function
 """
 
 class Material:
 
-    def __init__(self, name, density, n_list = None, k_list = None, has_equations_for_n = False, has_equations_for_k = False):
+    def __init__(self, name, density, n_list = None, k_list = None):
         """ Constructor requires at least the name and the density
         """
         self.name = name
         self.density = density
         self.n_list = n_list
         self.k_list = k_list
-        self.has_equations_for_n = has_equations_for_n
-        self.has_equations_for_k = has_equations_for_k
+        self.n_equations = None
+        self.k_equations = None
         if not has_saved(self):
             self._save_material()
         else:
@@ -93,8 +107,12 @@ class Material:
             identifiers in the second argument helps to differentiate).
             Requires wavelength as float to find values
         """
-        if has_equations_for_n:
-            n = use_equation(self, 'n', wavelength)
+        for entry in self.n_equations:
+            _, range, equation_func = entry     # unpack entry
+            start_wavelength, end_wavelength = range       # unpack range
+            # Check if in valid range for equation use
+            if wavelength >= start_wavelength and wavelength <= end_wavelength:
+                n = equation_func(wavelength)
         else:
             n = interpolate_from_list(self.n_list, wavelength)
         return n
@@ -109,8 +127,12 @@ class Material:
         update_material(self, self.get_name())
 
     def get_k(self, wavelength):
-        if has_equations_for_k:
-            k = use_equation(self, 'k', wavelength)
+        for entry in self.k_equations:
+            _, range, equation_func = entry     # unpack entry
+            start_wavelength, end_wavelength = range       # unpack range
+            # Check if in valid range for equation use
+            if wavelength >= start_wavelength and wavelength <= end_wavelength:
+                k = equation_func(wavelength)
         else:
             k = interpolate_from_list(self.k_list, wavelength)
         return k
@@ -118,19 +140,78 @@ class Material:
     def get_k_list(self):
         return self.k_list
 
-    def get_has_equations_for_n(self):
-        return has_equations_for_n
+    def interpolate_from_list(list, wavelength):
+        """ Fills in any values using a linear fit between data points given in
+            the files. Also sets the values beyond the intervals given in the list
+            to 0.
+        """
 
-    def set_has_equations_for_n(self, bool):
-        has_equations_for_n = bool
-        update_material(self, self.get_name())
+        # From materials, the given list will be in ascending order, so we can
+        # use this to our advantage
 
-    def get_has_equations_for_k(self):
-        return has_equations_for_n
+        if wavelength > list[-1][0]:
+            return 0        # "worst case scenario in terms of temperature"
+        elif wavelength < list[0][0]:
+            return 0        # also "worst case"
+        else:
+            # performing linear interpolation between points in the list using the
+            # point-gradient formula
+            i = 0
+            while i < len(list)-1:
+                if wavelength == list[i][0]:
+                    val = list[i][1]
+                # the first instance where the wavelength input is larger than a
+                # value in the list, we want to stop
+                elif wavelength > list[i][0]:
+                # when this is true, we know val lies between the i'th and i-1'th entries
+                    value_interval = (list[i][1], list[i+1][1])
+                    wavelength_interval = (list[i][0], list[i+1][0])
+                    m = (val_interval[1]-val_interval[0])/(wavelength_interval[1]-wavelength_interval[0])   # rise over run
+                    y0 = val_interval[0]
+                    x0 = wavelength_interval[0]
+                    val = m*(wavelength - x0) + y0
+                    return val
+                else:
+                    i += 1
 
-    def set_has_equations_for_k(self, bool):
-        has_equations_for_n = bool
-        update_material(self, self.get_name())
+    def add_equation(self, name, start_wavelength, end_wavelength, filepath, n_or_k):
+        """ Extracts an equation from a .py file that is valid within a specified
+            wavelength range = [start_wavelength, end_wavelength] and saves it
+            as a material attribute. A name should also be attached to the
+            equation for the sake of easy removal/editing if required. Appends
+            the entry to an equations_list list (n_equations or k_equations
+            depending on input).
+
+            Raises an error if invalid name (e.g. repeated names)
+            Raises an error if there is an equation with a wavelength range
+            which overlaps with the equation being added
+        """
+        if n_or_k == 'n':
+            equations_list = self.n_equations
+        elif n_or_k == 'k':
+            equations_list = self.k_equations
+        range = [start_wavelength, end_wavelength]
+        # Make a dictionary to store the function in
+        dic = {}
+        exec(open(filepath).read(), globals(), dic)
+        func, = dic.values()    # assign var to function for storage in list entry
+        entry = [name, range, func]
+        equations_list.append(entry)
+        dic.clear()     # Cleared just in case some memory issues occur
+        return
+
+    def rmv_equation(self, name, n_or_k):
+        """ Removed an equation from a saved equations_list (n_equations or k_equations
+            depending on input) based on the name initially given by the user
+        """
+        if n_or_k == 'n':
+            equations_list = self.n_equations
+        elif n_or_k == 'k':
+            equations_list = self.k_equations
+        for entry in equations_list:
+            if name == entry[0]:
+                equations_list.remove(entry)
+        return
 
     def _save_material(self):
         with open('material_data.pkl', 'ab') as output:
