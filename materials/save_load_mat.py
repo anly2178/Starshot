@@ -1,8 +1,11 @@
 import pickle
+import os
 
 def load_materials():
     """Loads a list of saved materials"""
     materials = []
+    if not os.path.exists('material_data.pkl'):
+        with open('material_data.pkl', 'w'): pass
     with open('material_data.pkl', 'rb') as input:
         while True:
             try:
@@ -33,6 +36,11 @@ def update_material(material, old_name):
     with open('material_data.pkl', 'wb') as f:
         for mat in new_materials:
             pickle.dump(mat, f, pickle.HIGHEST_PROTOCOL)
+
+def delete_material_data():
+    """Deletes pkl file containing materials."""
+    if os.path.exists('material_data.pkl'):
+        os.remove('material_data.pkl')
 
 
 #To allow users to update a material e.g. if defined incorrectly,
