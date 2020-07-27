@@ -1,7 +1,7 @@
 from Starshot.sail import Sail
 import numpy as np
 from Starshot.tmm.tmm import tmm
-from Starshot.materials.material import Material
+from Starshot.materials.save_load_mat import load_material
 
 class MultilayerSail(Sail):
     """
@@ -103,23 +103,10 @@ class MultilayerSail(Sail):
         # Material objects
         if materials is None:
             raise ValueError("Enter material(s)")
-        self.materials = []
-        ###
-        loaded_materials = []   # Stores materials already loaded to prevent additional loading
-        for name in materials:
-            material_is_loaded = False
-            # if already loaded, just append loaded material to list
-            for mat in loaded_materials:
-                if mat.get_name() == name:
-                    self.materials.append(mat)
-                    material_is_loaded = True
-                    break
-            # otherwise, load in the new material
-            if not material_is_loaded:
-                new_material = load_material(name)     #Errors handled in Material.py
-                loaded_materials.append(new_material)
-                self.materials.append(new_material)
-        ###
+        try:
+            self.materials = [load_material(mat) for mat in materials]
+        except ValueError as ve:
+            print(ve)
         self.thickness = thickness #m
         if thickness is None:
             raise ValueError("Enter thickness(es)")

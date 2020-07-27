@@ -30,8 +30,11 @@ def material_exists(name):
 def load_material(name):
     """Load material from pkl file."""
     matdir = mkmatdir()
-    with matdir.joinpath(name + '.pkl').open(mode='rb') as f:
-        return pickle.load(f)
+    try:
+        with matdir.joinpath(name + '.pkl').open(mode='rb') as f:
+            return pickle.load(f)
+    except FileNotFoundError:
+        raise ValueError(f"ValueError: '{name}' does not exist. Initialise Material object for '{name}'.")
 
 
 
