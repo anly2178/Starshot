@@ -1,6 +1,8 @@
 import os
 import pickle
 from save_load_mat import has_saved, update_material
+import scipy
+import numpy as np
 
 """ Each material should have a:
         - name (str; potentially multiple names. Main name is chemical formula
