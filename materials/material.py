@@ -1,6 +1,6 @@
 import os
 import pickle
-from .save_load_mat import has_saved, update_material
+from .save_load_mat import save_material, del_material, material_exists, load_material
 import scipy
 import numpy as np
 
@@ -37,29 +37,29 @@ class Material:
     def __init__(self, name, density, n_list = None, k_list = None):
         """ Constructor requires at least the name and the density
         """
-        self.name = name
-        self.density = density
-        self.n_list = n_list
-        self.k_list = k_list
-        self.n_equations = None
-        self.k_equations = None
-        if not has_saved(self):
-            self._save_material()
+        if material_exists(name):
+            mat = load_material(name)
+            self.name = mat.get_name()
+            self.density = mat.get_density()
+            self.n_list = mat.get_n_list()
+            self.k_list = mat.get_k_list()
+            self.n_equations = mat.get_n_equations()
+            self.k_equations = mat.get_k_equations()
         else:
-            update_material(self, name)
-        #if it has already been saved, we should check if the two are identical.
-        #if identical, then load the old values.
-        #if not identical, then overwrite the old values.
-        #Also, by making the names the way of identifying materials, we are
-        #assuming that we can't have, for example, different SiO2 with
-        #different absorption coefficients.
+            self.name = name
+            self.density = density
+            self.n_list = n_list
+            self.k_list = k_list
+            self.n_equations = None
+            self.k_equations = None
+            save_material(self)
 
     def get_density(self):
         return self.density
 
     def set_density(self, density):
         self.density = density
-        update_material(self, self.get_name())
+        save_material(self)
 
     def get_name(self):
         return self.name
@@ -67,7 +67,9 @@ class Material:
     def set_name(self, name):
         old_name = self.get_name()
         self.name = name
-        update_material(self, old_name)
+        save_material(self)
+        del_material(old_name)
+
 
     def make_list_from_file(path):
         """ Takes in the file path of a CSV with each entry organised as
@@ -98,7 +100,7 @@ class Material:
             if any data is taken from there)
         """
         self.n_list = make_list_from_file(absolute_path)
-        update_material(self, self.get_name())
+        save_material(self)
 
     def get_n(self, wavelength):
         """ If an equation needs to be used, it will use an equation. Each
@@ -118,13 +120,13 @@ class Material:
         return n
 
     def get_n_list(self):
-        return self.n
+        return self.n_list
 
     def set_k_list(self, absolute_path):
         """ Same as above, but for k
         """
         self.k_list = make_list_from_file(absolute_path)
-        update_material(self, self.get_name())
+        save_material(self)
 
     def get_k(self, wavelength):
         for entry in self.k_equations:
@@ -139,6 +141,12 @@ class Material:
 
     def get_k_list(self):
         return self.k_list
+
+    def get_n_equations(self):
+        return self.n_equations
+
+    def get_k_equations(self):
+        return self.k_equations
 
     def interpolate_from_list(list, wavelength):
         """ Fills in any values using a linear fit between data points given in
@@ -212,10 +220,6 @@ class Material:
             if name == entry[0]:
                 equations_list.remove(entry)
         return
-
-    def _save_material(self):
-        with open('material_data.pkl', 'ab') as output:
-            pickle.dump(self, output, pickle.HIGHEST_PROTOCOL)
 
     # def save_material(self):
     #    """Saves the material properties to a file for ease of use in the future"""

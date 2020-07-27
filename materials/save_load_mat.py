@@ -1,49 +1,40 @@
+from pathlib import Path
 import pickle
 import os
 
-def load_materials():
-    """Loads a list of saved materials"""
-    materials = []
-    if not os.path.exists('material_data.pkl'):
-        with open('material_data.pkl', 'w'): pass
-    with open('material_data.pkl', 'rb') as input:
-        while True:
-            try:
-                materials.append(pickle.load(input))
-            except EOFError:
-                break
-    return materials
+def mkmatdir():
+    """Make saved_materials directory if it does not exist. Return Path object for directory."""
+    matdir = Path('saved_materials')
+    matdir.mkdir(exist_ok=True)
+    return matdir
 
-def has_saved(material):
-    """Check if material has previously been saved."""
-    materials = load_materials()
-    for mat in materials:
-        if material.get_name() == mat.get_name():
+def save_material(material):
+    """Save material."""
+    matdir = mkmatdir()
+    with matdir.joinpath(material.get_name() + '.pkl').open(mode='wb') as f:
+        pickle.dump(material, f, pickle.HIGHEST_PROTOCOL)
+
+def del_material(name):
+    """Delete material according to its name."""
+    matdir = mkmatdir()
+    matdir.joinpath(name + '.pkl').unlink()
+
+def material_exists(name):
+    """Check if material already exists."""
+    matdir = mkmatdir()
+    for mat in matdir.glob('*.pkl'):
+        if mat.stem == name:
             return True
     return False
 
-def update_material(material, old_name):
-    """Update material in pkl file with the same name."""
-    old_materials = load_materials()
-    new_materials = []
-    for mat in old_materials:
-        if mat.get_name() == old_name:
-            new_materials.append(material)
-        elif mat.get_name() == material.get_name():
-            continue
-        else:
-            new_materials.append(mat)
-    with open('material_data.pkl', 'wb') as f:
-        for mat in new_materials:
-            pickle.dump(mat, f, pickle.HIGHEST_PROTOCOL)
-
-def delete_material_data():
-    """Deletes pkl file containing materials."""
-    if os.path.exists('material_data.pkl'):
-        os.remove('material_data.pkl')
+def load_material(name):
+    """Load material from pkl file."""
+    matdir = mkmatdir()
+    with matdir.joinpath(name + '.pkl').open(mode='rb') as f:
+        return pickle.load(f)
 
 
-#To allow users to update a material e.g. if defined incorrectly,
-#must reload a list of all materials, delete the incorrect material,
-#save a new list of materials.
-#Also, need to delete old pkl file.
+
+#Create saved_materials folder if it does not exist.
+#Create files for each material according to name in saved_materials
+#Navigate by stem name.
