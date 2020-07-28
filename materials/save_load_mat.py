@@ -1,6 +1,5 @@
 from pathlib import Path
 import pickle
-import os
 
 def mkmatdir():
     """Make saved_materials directory if it does not exist. Return Path object for directory."""
