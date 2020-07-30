@@ -48,7 +48,7 @@ is located parallel to the Starshot directory.
 
 ## Usage
 
-**To initialise a new material**:
+**To initialise a new** ```Material```:
 
 ```python
 from Starshot.materials.material import Material
@@ -57,7 +57,7 @@ new_material = Material(name=insert_name, density=insert_density, n_list=insert_
 ```
 * For more detail, see the Material section.
 
-**To initialise a new sail**:
+**To initialise a new** ```Sail```:
 
 ```python
 from Starshot.sail import Sail
@@ -67,7 +67,7 @@ new_sail = Sail(name=insert_name, mass=insert_mass, area=insert_area, reflectanc
 ```
 * For more detail, see the Sail section.
 
-**To initialise a new multilayer sail**:
+**To initialise a new** ```MultilayerSail```:
 
 ```python
 from Starshot.multilayer_sail import MultilayerSail
