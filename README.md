@@ -84,4 +84,4 @@ new_multi = MultilayerSail(name=insert_name, materials=insert_materials, mass=in
 sail.calculate_mission()
 ```
 
-**Note**: The ```DiffractiveSail``` class will be included when it is in a useful state.
+*Note*: The ```DiffractiveSail``` class will be included when it is in a useful state.
