@@ -38,3 +38,10 @@ root
         ├── tmm.py
         └── make_transfer_matrix.py
 ```
+* Starshot directory is downloaded from github.
+
+* test.py is to be created by the user. It is the script that the user runs.
+The user may name the script something else. It is important that the script
+is located parallel to the Starshot directory.
+
+* saved_materials is automatically created when the user initialises a Material object.
