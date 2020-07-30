@@ -55,6 +55,7 @@ from Starshot.materials.material import Material
 
 new_material = Material(name=insert_name, density=insert_density, n_list=insert_n_list, k_list=insert_k_list)
 ```
+* For more detail, see the Material section.
 
 To initialise a general sail:
 
@@ -77,4 +78,4 @@ new_multi = MultilayerSail(name=insert_name, materials=insert_materials, mass=in
 ```
 * For more detail, see the Multilayer Sail section.
 
-**Note**: The ```DiffractiveSail``` class will be included when it is in a useful state. 
+**Note**: The ```DiffractiveSail``` class will be included when it is in a useful state.
