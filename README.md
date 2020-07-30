@@ -45,3 +45,36 @@ The user may name the script something else. It is important that the script
 is located parallel to the Starshot directory.
 
 * saved_materials is automatically created when the user initialises a Material object.
+
+## Usage
+
+To initialise a new material:
+
+```python
+from Starshot.materials.material import Material
+
+new_material = Material(name=insert_name, density=insert_density, n_list=insert_n_list, k_list=insert_k_list)
+```
+
+To initialise a general sail:
+
+```python
+from Starshot.sail import Sail
+
+new_sail = Sail(name=insert_name, mass=insert_mass, area=insert_area, reflectance=insert_reflectance,
+  target=insert_target, power=insert_power, wavelength=insert_wavelength)
+```
+* For more detail, see the Sail section.
+
+To initialise a multilayer sail:
+
+```python
+from Starshot.multilayer_sail import MultilayerSail
+
+new_multi = MultilayerSail(name=insert_name, materials=insert_materials, mass=insert_mass,
+  thickness=insert_thickness, area=insert_area, reflectance=insert_reflectance, abs_coeff=insert_abs_coeff,
+  target=insert_target, max_temp=insert_max_temp, power=insert_power, wavelength=insert_wavelength)
+```
+* For more detail, see the Multilayer Sail section.
+
+**Note**: The ```DiffractiveSail``` class will be included when it is in a useful state. 
