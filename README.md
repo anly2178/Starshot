@@ -12,6 +12,7 @@ A Python library for the Starshot initiative.
 
 The directory tree should appear like this:
 
+```bash
 root
 ├── test.py
 ├── saved_materials
@@ -36,3 +37,4 @@ root
         ├── __pycache__
         ├── tmm.py
         └── make_transfer_matrix.py
+```
