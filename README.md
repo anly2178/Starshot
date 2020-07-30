@@ -85,3 +85,12 @@ sail.calculate_mission()
 ```
 
 *Note*: The ```DiffractiveSail``` class will be included when it is in a useful state.
+
+##Creators
+**Andrew Ly**
+* [anly2178@uni.sydney.edu.au](anly2178@uni.sydney.edu.au)
+* [https://github.com/anly2178](https://github.com/anly2178)
+
+**Justin Widjaja**
+* [jwid8259@uni.sydney.edu.au](jwid8259@uni.sydney.edu.au)
+* [https://github.com/jwid8259](https://github.com/jwid8259)
