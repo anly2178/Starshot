@@ -86,6 +86,14 @@ sail.calculate_mission()
 
 *Note*: The ```DiffractiveSail``` class will be included when it is in a useful state.
 
+## Features
+
+### Sail
+
+### Multilayer Sail
+
+### Material
+
 ## Creators
 **Andrew Ly**
 * [anly2178@uni.sydney.edu.au](anly2178@uni.sydney.edu.au)
