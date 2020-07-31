@@ -2,6 +2,12 @@ from Starshot.sail import Sail
 import numpy as np
 from Starshot.tmm.tmm import tmm
 from Starshot.materials.save_load_mat import load_material
+import scipy
+import scipy.integrate as integrate
+import matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
+from numpy import sin, cos, pi
 
 class MultilayerSail(Sail):
     """
@@ -67,7 +73,7 @@ class MultilayerSail(Sail):
     """
     def __init__(   self, name=None, materials=None, mass=None, thickness=None,
                     area=None, reflectance=None, abs_coeff=None, target=0.2,
-                    max_temp=1000, power=None, wavelength=1.2e-6):
+                    max_Starchip_temp=1000, power=None, wavelength=1.2e-6):
         """The constructor for MultilayerSail class
         Parameters
         ----------
@@ -87,8 +93,8 @@ class MultilayerSail(Sail):
             Absorption coefficient of lightsail. [cm^-1]
         target : float
             Target speed as fraction of speed of light. E.g. 0.2c
-        max_temp : float
-            Maximum temperature of sail [K]
+        max_Starchip_temp : float
+            Maximum temperature of sail payload [K]
         power : float
             Laser power [W]
         wavelength : float
@@ -110,7 +116,7 @@ class MultilayerSail(Sail):
         self.thickness = thickness #m
         if thickness is None:
             raise ValueError("Enter thickness(es)")
-        self.max_temp = max_temp #K
+        self.max_Starchip_temp = max_Starchip_temp #K
         self.abs_coeff = abs_coeff
         if self.abs_coeff is not None:
             self.absorptance = self._find_absorptance()
@@ -126,7 +132,7 @@ class MultilayerSail(Sail):
         self.diameter = self._find_diameter()
         self.print_variables()
 
-    def _find_structure(self):
+    def _find_structure(self, wavelength = self.wavelength):
         """Creates a list representing the structure of the MultilayerSail.
         Parameters
         ----------
@@ -139,12 +145,11 @@ class MultilayerSail(Sail):
 ###
         structure = []
         for material, thickness in zip(self.material, self.thickness):
-            structure.append( (material.get_n(self.wavelength), -thickness) )
+            structure.append( (material.get_n(wavelength) + 1j*material.get_k(wavelength), -thickness) )
         return structure
 ###
-
     def _find_absorptance(self):
-        """Calculates absorptance of MultilayerSail.
+        """Calculates absorptance of MultilayerSail based on its abs_coeff.
         Parameters
         ----------
         None required
@@ -170,7 +175,7 @@ class MultilayerSail(Sail):
         return A
 
     def _find_reflectance(self):
-        """Calculates reflectance of MultilayerSail.
+        """Calculates reflectance of MultilayerSail, averaged over wavelength.
         Parameters
         ----------
         None required
@@ -193,7 +198,7 @@ class MultilayerSail(Sail):
         return R_avg
 
     def _find_transmittance(params):
-        """Calculates transmittance of MultilayerSail.
+        """Calculates transmittance of MultilayerSail, averaged over wavelength.
         Parameters
         ----------
         None required
@@ -215,66 +220,107 @@ class MultilayerSail(Sail):
         T_avg = (sum(T_all)/100).real
         return T_avg
 
-    def _find_power(self):
-        """Calculates maximum laser power the MultilayerSail can withstand.
+    def _spectral_power_flux(self, wavelength, temperature, points_in_integration = 50):
+
+        """ Finds the spectral power flux of an "ideal" (perfectly flat and smooth)
+        sail that is SYMMETRICAL on both sides of the sail. This is the energy
+        emitted per unit area at given wavelength. Accounts for asymmetric
+        multilayer_sails (along the axis of the incident laser light)
+
+        Uses trapezoidal rule to integrate power emitted at all angles to
+        produce the spectral power flux
+
         Parameters
         ----------
-        None required
+        float
+            wavelength [m]
+        float
+            temperature [m]
+        int
+            points_in_integration
+                - this is the number of points used in the trapezoidal rule
+                  integration
         Returns
         -------
         float
-            Maximum power for MultilayerSail [W].
+            emissivity in direction described by angle and sail structure
         """
-        sb = 5.67e-8 #Stefan-Boltzmann constant
 
-        T_max = self.max_temp #K
-        area = self.area
-        A = self.absorptance
+        def _directional_emissivity(self, angle, wavelength, front_or_back):
+            """ Calculates the directional emissivity of a given multilayer_sail
+                structure based on a wavelength (float) and incident angle (i.e.
+                angle of elevation). This assumes the sail is perfectly smooth and
+                the structure is radially symmetric along the surface of the sail at
+                each point of the sail.
+                Parameters
+                ----------
+                float
+                    angle [radians]
+                float
+                    wavelength [m]
+                string
+                    front_or_back
+                        - denotes whether we are calculating the directional
+                          emissivity of the front or back face of the sail
+                Returns
+                -------
+                float
+                    emissivity in direction described by angle and sail structure
+            """
+            # Creates a new structure list that is based on calculated optical constants using wavelength
+            if front_or_back == 'front':
+                structure = self._find_structure(wavelength)
+            elif front_or_back == 'back':
+                structure = self._find_structure(wavelength).reverse()
 
-        T_max = params["max_temp"] #K, max temperature sail can sustain
-        A = params["area"] #m^2, area of sail
-        absorb = params["absorptance"] #Absolute absorption of sail
-        #Assume max temperature occurs at beta=0, dist=0
-        beta = 0
-        dist = 0
-        #Bounds for halving the interval
-        P_bb = 2*A*sb*T_max**4 #W, Power incident on black body
-        P_high = P_bb/absorb #W, Upper bound; power incident on sail accounting for absorptance
-        P_low = P_high/1000 #W, Arbitrary lower bound
-        #Create structures to not accidentally destroy original parameters
-        params_high = params.copy()
-        params_high["power"] = P_high
-        params_low = params.copy()
-        params_low["power"] = P_low
-        #Temperatures at bounds
-        T_high = find_one_temp(params_high,beta,dist)
-        T_low = find_one_temp(params_low,beta,dist)
-        #Midpoint temperature
-        T_mid = (T_high+T_low)/2
-        #Check the run time
-        start_time = time.time()
-        while abs(T_mid - T_max) >= 0.0005*T_max: #Maybe the accuracy is too low?
-            #If the high temperature is too low for some reason
-            if T_high <= T_max:
-                params_high["power"] = 2*params_high["power"]
-            #If the low temperature is too high for some reason
-            if T_low >= T_max:
-                params_low["power"] = params_low["power"]/2
-            #Midpoint
-            P_high = params_high["power"]
-            P_low = params_low["power"]
-            P_mid = (P_high + P_low)/2
-            params_mid = params.copy()
-            params_mid["power"] = P_mid
-            T_mid = find_one_temp(params_mid,beta,dist)
-            if T_mid > T_max:
-                params_high["power"] = P_mid
-            else:
-                params_low["power"] = P_mid
-            print(P_mid)
-        print("--- %s seconds ---" % (time.time() - start_time))
-        P_mid = (params_high["power"] + params_low["power"])/2
-        return P_mid
+            # This block gives an expression for emissivity in terms of theta (and wavelength)
+            # First set out by finding the reflectance and transmittance of structure at
+            # this wavelength and angle
+            r_p, t_p, r_s, t_s = tmm(structure, wavelength, theta)
+            R = ( r_p*np.conj(r_p) + r_s*np.conj(r_s) )/2
+            T = ( t_p*np.conj(t_p) + t_s*np.conj(t_s) )/2
+            dEpsilon = (1-R-T)
+            return dEpsilon.real
+
+        # First, give expression for radiation emitted by a black body
+        h = 6.62607004e-34       # Planck's constant in SI
+        c = 299792458             # speed of light in SI
+        k_B = 1.38064852e-23        # Boltzmann constant in SI
+        I = ((2*h*c**2)/wavelength**5)*(1/(np.exp(h*c/(wavelength*k_B*temperature))-1))         # Planck's Law
+
+        # Now give expression for hemispherical emissivity. Note factor of 2: 2 comes
+        # from integrating wrt phi (the azimuth)
+
+        # Use trapezoidal integration to speed things up
+        bounds = np.linspace(0,pi/2,points_in_integration)
+
+        # ONCE FOR EMISSION FROM FRONT FACE
+        direc_ems = points*[None]
+        i = 0
+        for theta in bounds:
+            direc_ems[i] = (2*_directional_emissivity(theta, wavelength, 'front')*cos(theta)*sin(theta))
+            i += 1
+        # In the below line, note that the integration returns the spectral hemispherical emissivity
+        front_power_flux = pi*I*np.trapz(direc_ems, bounds, pi/2/points_in_integration)
+
+        # SECOND TIME FOR BACK FACE
+        direc_ems = points*[None]
+        i = 0
+        for theta in bounds:
+            direc_ems[i] = (2*_directional_emissivity(theta, wavelength, 'back')*cos(theta)*sin(theta))
+            i += 1
+        back_power_flux = pi*I*np.trapz(direc_ems, bounds, pi/2/points_in_integration)
+
+        power_flux = front_power_flux + back_power_flux
+
+        return power_flux
+
+        
+
+
+# ============================================================================
+# Going to cut off these functions here for now - I'm not too sure what they do
+# and they're a bit technical, so I'll leave these untouched for now, sorry.
 
     def _find_temp(self, beta, dist):
         """Calculates temperature of MultilayerSail at a speed and distance.
@@ -371,3 +417,67 @@ class MultilayerSail(Sail):
         print("--- %s seconds ---" % (time.time() - start_time))
         return midpoint
     #Methods here
+
+
+# Not sure what this is meant to do, moving to bottom of file
+
+    # def _find_power(self):
+    #     """Calculates maximum laser power the MultilayerSail can withstand.
+    #     Parameters
+    #     ----------
+    #     None required
+    #     Returns
+    #     -------
+    #     float
+    #         Maximum power for MultilayerSail [W].
+    #     """
+    #     sb = 5.67e-8 #Stefan-Boltzmann constant
+    #
+    #     T_max = self.max_temp #K
+    #     area = self.area
+    #     A = self.absorptance
+    #
+    #     T_max = params["max_temp"] #K, max temperature sail can sustain
+    #     A = params["area"] #m^2, area of sail
+    #     absorb = params["absorptance"] #Absolute absorption of sail
+    #     #Assume max temperature occurs at beta=0, dist=0
+    #     beta = 0
+    #     dist = 0
+    #     #Bounds for halving the interval
+    #     P_bb = 2*A*sb*T_max**4 #W, Power incident on black body
+    #     P_high = P_bb/absorb #W, Upper bound; power incident on sail accounting for absorptance
+    #     P_low = P_high/1000 #W, Arbitrary lower bound
+    #     #Create structures to not accidentally destroy original parameters
+    #     params_high = params.copy()
+    #     params_high["power"] = P_high
+    #     params_low = params.copy()
+    #     params_low["power"] = P_low
+    #     #Temperatures at bounds
+    #     T_high = find_one_temp(params_high,beta,dist)
+    #     T_low = find_one_temp(params_low,beta,dist)
+    #     #Midpoint temperature
+    #     T_mid = (T_high+T_low)/2
+    #     #Check the run time
+    #     start_time = time.time()
+    #     while abs(T_mid - T_max) >= 0.0005*T_max: #Maybe the accuracy is too low?
+    #         #If the high temperature is too low for some reason
+    #         if T_high <= T_max:
+    #             params_high["power"] = 2*params_high["power"]
+    #         #If the low temperature is too high for some reason
+    #         if T_low >= T_max:
+    #             params_low["power"] = params_low["power"]/2
+    #         #Midpoint
+    #         P_high = params_high["power"]
+    #         P_low = params_low["power"]
+    #         P_mid = (P_high + P_low)/2
+    #         params_mid = params.copy()
+    #         params_mid["power"] = P_mid
+    #         T_mid = find_one_temp(params_mid,beta,dist)
+    #         if T_mid > T_max:
+    #             params_high["power"] = P_mid
+    #         else:
+    #             params_low["power"] = P_mid
+    #         print(P_mid)
+    #     print("--- %s seconds ---" % (time.time() - start_time))
+    #     P_mid = (params_high["power"] + params_low["power"])/2
+    #     return P_mid
