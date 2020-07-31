@@ -7,6 +7,13 @@ import numpy as np
         - name (str; potentially multiple names. Main name is chemical formula
           e.g. SiO2, GeO2, Si3N4, etc.)
         - density (float; kg/m^3)
+        - max_temp (float; K)
+            * is simply the temperature beyond which a material cannot be
+              considered structurally sound. For most materials, this can be
+              considered the melting point of the material, but may vary in
+              special cases. For example, consider glasses like SiO2, GeO2 
+              which can become quite viscous past their glass transition 
+              temperature which lies lower than melting point
         - set of optical constants
             * real component (list of list/tuples, each tuple has 2 parts,
               the wavelength and the value)
@@ -33,13 +40,14 @@ IMPORTANT NOTE: If using an equation, ensure the equation TAKES IN wavelengths
 
 class Material:
 
-    def __init__(self, name, density, n_list = None, k_list = None):
+    def __init__(self, name, density, max_temp, n_list = None, k_list = None):
         """ Constructor requires at least the name and the density
         """
         if material_exists(name):
             mat = load_material(name)
             self.name = mat.get_name()
             self.density = mat.get_density()
+            self.max_temp = mat.get_max_temp()
             self.n_list = mat.get_n_list()
             self.k_list = mat.get_k_list()
             self.n_equations = mat.get_n_equations()
@@ -47,6 +55,7 @@ class Material:
         else:
             self.name = name
             self.density = density
+            self.max_temp = max_temp
             self.n_list = n_list
             self.k_list = k_list
             self.n_equations = None
@@ -60,6 +69,13 @@ class Material:
         self.density = density
         save_material(self)
 
+    def get_max_temp(self):
+        return self.max_temp
+
+    def set_max_temp(self, max_temp):
+        self.max_temp = max_temp
+        save_material(self)
+        
     def get_name(self):
         return self.name
 
@@ -68,7 +84,6 @@ class Material:
         self.name = name
         save_material(self)
         del_material(old_name)
-
 
     def make_list_from_file(path):
         """ Takes in the file path of a CSV with each entry organised as
