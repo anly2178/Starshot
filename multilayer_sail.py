@@ -1,5 +1,4 @@
 from Starshot.sail import Sail
-import numpy as np
 from Starshot.tmm.tmm import tmm
 from Starshot.materials.save_load_mat import load_material
 import scipy
@@ -315,7 +314,7 @@ class MultilayerSail(Sail):
 
         return power_flux
 
-        
+
 
 
 # ============================================================================

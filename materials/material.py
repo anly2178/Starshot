@@ -11,8 +11,8 @@ import numpy as np
             * is simply the temperature beyond which a material cannot be
               considered structurally sound. For most materials, this can be
               considered the melting point of the material, but may vary in
-              special cases. For example, consider glasses like SiO2, GeO2 
-              which can become quite viscous past their glass transition 
+              special cases. For example, consider glasses like SiO2, GeO2
+              which can become quite viscous past their glass transition
               temperature which lies lower than melting point
         - set of optical constants
             * real component (list of list/tuples, each tuple has 2 parts,
@@ -75,7 +75,7 @@ class Material:
     def set_max_temp(self, max_temp):
         self.max_temp = max_temp
         save_material(self)
-        
+
     def get_name(self):
         return self.name
 
@@ -162,7 +162,7 @@ class Material:
     def get_k_equations(self):
         return self.k_equations
 
-    def interpolate_from_list(list, wavelength):
+    def interpolate_from_list(ls, wavelength):
         """ Fills in any values using a linear fit between data points given in
             the files. Also sets the values beyond the intervals given in the list
             to 0.
@@ -171,30 +171,23 @@ class Material:
         # From materials, the given list will be in ascending order, so we can
         # use this to our advantage
 
-        if wavelength > list[-1][0]:
+        if wavelength > ls[-1][0]:
             return 0        # "worst case scenario in terms of temperature"
-        elif wavelength < list[0][0]:
+        elif wavelength < ls[0][0]:
             return 0        # also "worst case"
         else:
             # performing linear interpolation between points in the list using the
             # point-gradient formula
-            i = 0
-            while i < len(list)-1:
-                if wavelength == list[i][0]:
-                    val = list[i][1]
-                # the first instance where the wavelength input is larger than a
-                # value in the list, we want to stop
-                elif wavelength > list[i][0]:
-                # when this is true, we know val lies between the i'th and i-1'th entries
-                    value_interval = (list[i][1], list[i+1][1])
-                    wavelength_interval = (list[i][0], list[i+1][0])
-                    m = (val_interval[1]-val_interval[0])/(wavelength_interval[1]-wavelength_interval[0])   # rise over run
-                    y0 = val_interval[0]
-                    x0 = wavelength_interval[0]
-                    val = m*(wavelength - x0) + y0
-                    return val
-                else:
-                    i += 1
+            for i, (wl, val) in enumerate(ls):
+                if wavelength == wl:
+                    value = val
+                    # the first instance where the wavelength input is larger than a
+                    # value in the list, we want to stop
+                elif wavelength > wl:
+                    # when this is true, we know val lies between the i'th and i-1'th entries
+                    m = (ls[i][1] - ls[i-1][1])/(ls[i][0] - ls[i-1][0]) #gradient
+                    value = m*(wavelength - ls[i-1][0]) + ls[i-1][1]
+                    return value
 
     def add_equation(self, name, start_wavelength, end_wavelength, filepath, n_or_k):
         """ Extracts an equation from a .py file that is valid within a specified
