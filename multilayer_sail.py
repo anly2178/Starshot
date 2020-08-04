@@ -147,26 +147,31 @@ class MultilayerSail(Sail):
             structure.append( (material.get_n(wavelength) + 1j*material.get_k(wavelength), -thickness) )
         return structure
 ###
-    def _find_absorptance(self):
-        """Calculates absorptance of MultilayerSail based on its abs_coeff.
+    def _find_absorptance(self, wavelength = self.wavelength):
+        """Calculates absorptance of MultilayerSail based on the (expected)
+        absorption coefficients of the sail materials (material.abs_coeff 
+        attribute) and a wavelength being analysed within the laser bandwidth.
+        Assumes the absorption coefficient is constant over the laser range
+        in the near IR. Usage of absorption coefficient in the laser bandwidth
+        is due to extinction coefficients for most materials not being well
+        established in this range. Further, results for extinction and
+        absorption coefficients may vary depending on purity and manufacture of
+        materials.
         Parameters
         ----------
-        None required
+        float (optional)
+            wavelength [m]
         Returns
         -------
         float
             Absorptance of MultilayerSail
         """
-        #Extract parameters
-        wavelength = self.wavelength
-        abs_coeff = self.abs_coeff
-        #Finds the structure
-        structure = self._find_structure()
+        structure_near_IR = []
+        for material, thickness in zip(self.materials, self.thickness):
+            k = 1j*wavelength*100*material.get_abs_coeff()/(4*pi)   # conversion from abs_coeff to extinction coeff
+            structure_near_IR.append( (material.get_n(wavelength) + k, -thickness) )
 
-        im_RI = 1j*wavelength*100*abs_coeff/(4*np.pi)
-        temp_struc = [(n+im_RI, t) if n!=1 else (n,t) for (n,t) in structure]
-
-        r_p, t_p, r_s, t_s = tmm(temp_struc, wavelength)
+        r_p, t_p, r_s, t_s = tmm(structure_near_IR, wavelength)
 
         R = ((r_p*np.conj(r_p) + r_s*np.conj(r_s))/2).real
         T = ((t_p*np.conj(t_p) + t_s*np.conj(t_s))/2).real
@@ -314,8 +319,109 @@ class MultilayerSail(Sail):
 
         return power_flux
 
+    def _find_eq_temps_given_abs_coeff(self):
+        """ Determines the maximum equilibrium temperature of the sail given
+            the absorption coefficients of each material in the sail.
+            If any of the materials do not have an allocated absorption
+            coefficient, will raise an exception.
+            Parameters
+            ----------
+            None required
+            Returns
+            -------
+            float
+                equilibrium temperature [K]
+        """
+        initial_wavelength = self.wavelength        # laser wavelength
+        target = self.target
+        structure = deepcopy(self.structure)
+        # Below block of code finds the maximum power absorbed by the sail throughout its journey
+        betas = np.linspace(0,target,100)  # fraction of speed of light sail is travelling at
+        power_absorbed = 0       # need to find maximum p_in based on beta
+        power_mass_ratio = self.power/self.mass     # laser power to mass ratio of sail
+        SA_density = _find_SA_density(self)         # surface area density
 
+        # Loop that gets the maximum power value
+        for beta in betas:
+            wavelength = initial_wavelength*np.sqrt((1+beta)/(1-beta))
+            A = _find_absorptance(wavelength)
 
+            # Finding the LHS of Atwater et al. 2018's  equation
+            power_beta = ratio*A*SA_density*(1-beta)/(1+beta)       # power absorbed when v/c = beta
+
+            if power_beta > power_absorbed:
+                power_absorbed = power_beta     # since maximum power in results in highest equilibrium temperature
+
+        def _power_in_minus_out(T, power_absorbed):
+            """ Uses an input temperature to find the total power emitted by the 
+                sail. Subtracts this value from the power absorbed, given as input.
+                Roots occur when the power in = power out, and hence at thermal
+                equilibrium.
+                Parameters
+                ----------
+                float 
+                    T(emperature) [K]
+                float
+                    power_absorbed []
+                Returns
+                ----------
+                float 
+                    difference []
+                        - difference between power_absorbed and power_emitted
+            """
+
+            def _find_power_emitted(T, points_in_integration = 100, integration_range = [1e-6, 25e-6]):
+                """ Finds the power emitted by a sail with given structure at a 
+                    specific temperature. Determnied by performing a trapezoidal
+                    integration over a (default 1-25 micron) wavelength range of the
+                    spectral power flux, calculated by the _spectral_power_flux()
+                    method.
+                    Parameters
+                    ----------
+                    float 
+                        T(emperature) [K]
+                    int (optional)
+                        points_in_integration
+                            - number of points used in trapezoidal integration
+                    list/tuple (optional)
+                        integration_range
+                            - wavelength range over which spectral power flux 
+                              is integrated over to determine total power per
+                              unit area of sail emitted (note the area of the 
+                              sail in this respect is the area of one face,
+                              NOT the surface area = 2 * sail area)
+                    Returns
+                    ----------
+                    float 
+                        power_emitted []
+                """
+                lower_bound, upper_bound = integration_range
+                points = np.linspace(lower_bound, upper_bound, points_in_integration)
+
+                power_out_at_wl = points*[None]
+
+                # Calling _spectral_power_flux at each point and adding to the list for integration
+                i = 0
+                for wavelength in points:
+                    power_out_at_wl[i] = _spectral_power_flux(wavelength, T)
+                    i += 1
+                power_emitted = np.trapz(power_out_at_wl, points, (upper_bound - lower_bound)/points_in_integration)
+                return power_emitted
+
+            return power_absorbed - _find_power_emitted(T)
+
+        # The zero of the _power_in_minus_out function occurs when the sail is at 
+        # equilibrium temperature. Hence, we can use Newton's method to estimate
+        # this temperature
+
+        # Use the starting point of Newton's method as the black body temperature
+        # given the power_absorbed (per unit area)
+
+        bb_temp = (power_in/(2*1*5.67e-8))**0.25
+
+        eq_temp = scipy.optimize.newton(_power_in_minus_out, bb_temp, args = (power_absorbed))
+
+        return eq_temp
 
 # ============================================================================
 # Going to cut off these functions here for now - I'm not too sure what they do

@@ -48,6 +48,7 @@ class Material:
             self.name = mat.get_name()
             self.density = mat.get_density()
             self.max_temp = mat.get_max_temp()
+            self.abs_coeff = mat.get_abs_coeff()
             self.n_list = mat.get_n_list()
             self.k_list = mat.get_k_list()
             self.n_equations = mat.get_n_equations()
@@ -56,6 +57,7 @@ class Material:
             self.name = name
             self.density = density
             self.max_temp = max_temp
+            self.abs_coeff = abs_coeff
             self.n_list = n_list
             self.k_list = k_list
             self.n_equations = None
@@ -76,6 +78,13 @@ class Material:
         self.max_temp = max_temp
         save_material(self)
 
+    def get_abs_coeff(self):
+        return self.abs_coeff
+
+    def set_abs_coeff(self, abs_coeff):
+        self.abs_coeff = abs_coeff
+        save_material(self)
+        
     def get_name(self):
         return self.name
 
