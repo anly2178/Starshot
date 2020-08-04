@@ -141,12 +141,28 @@ class MultilayerSail(Sail):
         list of tuples of two floats
             [(refractive index, -thickness [m]), ...]
         """
-###
         structure = []
         for material, thickness in zip(self.material, self.thickness):
             structure.append( (material.get_n(wavelength) + 1j*material.get_k(wavelength), -thickness) )
         return structure
-###
+
+    def _find_SA_density(self):
+        """ Determines the surface area density of the sail given its structure
+            and mass densities of each material
+            Parameters
+            ----------
+            None required
+            Returns
+            ----------
+            float
+                surface area density [kg m-2]
+        """
+        structure = self.structure
+        SA_density = 0
+        for material, thickness in zip(self.materials, self.thickness):
+            SA_density += material.get_density()*thickness
+        return SA_density
+
     def _find_absorptance(self, wavelength = self.wavelength):
         """Calculates absorptance of MultilayerSail based on the (expected)
         absorption coefficients of the sail materials (material.abs_coeff 
