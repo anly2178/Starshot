@@ -1,5 +1,6 @@
+from .save_load_mat import save_material, del_material, material_exists, load_material, make_list_from_file
+from .interpolator import interpolate_from_list
 import pickle
-from .save_load_mat import save_material, del_material, material_exists, load_material
 import scipy
 import numpy as np
 
@@ -40,7 +41,7 @@ IMPORTANT NOTE: If using an equation, ensure the equation TAKES IN wavelengths
 
 class Material:
 
-    def __init__(self, name, density, max_temp, n_list = None, k_list = None):
+    def __init__(self, name, density, max_temp, abs_coeff = None, n_list = None, k_list = None):
         """ Constructor requires at least the name and the density
         """
         if material_exists(name):
@@ -84,7 +85,7 @@ class Material:
     def set_abs_coeff(self, abs_coeff):
         self.abs_coeff = abs_coeff
         save_material(self)
-        
+
     def get_name(self):
         return self.name
 
@@ -94,21 +95,21 @@ class Material:
         save_material(self)
         del_material(old_name)
 
-    def make_list_from_file(path):
-        """ Takes in the file path of a CSV with each entry organised as
-            [wavelength],[n/k] and forms a list of tuples. If any tuples are a
-            different size to any of the others, will raise a ValueError.
-            If the file is not a CSV, will also raise a ValueError.
-
-            Perhaps future implementation for tab separated files?
-        """
-        f = open(absolute_path, 'r')
-        entries = f.readlines()
-        f.close()
-        for entry in entries:
-            float(entry.strip().split(','))
-        list.sort(entries)      # Sort in ascending order in terms of wavelength
-        return entries
+    # def make_list_from_file(path):
+    #     """ Takes in the file path of a CSV with each entry organised as
+    #         [wavelength],[n/k] and forms a list of tuples. If any tuples are a
+    #         different size to any of the others, will raise a ValueError.
+    #         If the file is not a CSV, will also raise a ValueError.
+    #
+    #         Perhaps future implementation for tab separated files?
+    #     """
+    #     f = open(path, 'r')
+    #     entries = f.readlines()
+    #     f.close()
+    #     for entry in entries:
+    #         float(entry.strip().split(','))
+    #     list.sort(entries)      # Sort in ascending order in terms of wavelength
+    #     return entries
 
     def set_n_list(self, absolute_path):
         """ Takes in a string which is the ABSOLUTE (relative should work too,
@@ -132,13 +133,14 @@ class Material:
             identifiers in the second argument helps to differentiate).
             Requires wavelength as float to find values
         """
-        for entry in self.n_equations:
-            _, range, equation_func = entry     # unpack entry
-            start_wavelength, end_wavelength = range       # unpack range
-            # Check if in valid range for equation use
-            if wavelength >= start_wavelength and wavelength <= end_wavelength:
-                n = equation_func(wavelength)
-        else:
+        try:
+            for entry in self.n_equations:
+                _, range, equation_func = entry     # unpack entry
+                start_wavelength, end_wavelength = range       # unpack range
+                # Check if in valid range for equation use
+                if wavelength >= start_wavelength and wavelength <= end_wavelength:
+                    n = equation_func(wavelength)
+        except TypeError:
             n = interpolate_from_list(self.n_list, wavelength)
         return n
 
@@ -152,13 +154,14 @@ class Material:
         save_material(self)
 
     def get_k(self, wavelength):
-        for entry in self.k_equations:
-            _, range, equation_func = entry     # unpack entry
-            start_wavelength, end_wavelength = range       # unpack range
-            # Check if in valid range for equation use
-            if wavelength >= start_wavelength and wavelength <= end_wavelength:
-                k = equation_func(wavelength)
-        else:
+        try:
+            for entry in self.k_equations:
+                _, range, equation_func = entry     # unpack entry
+                start_wavelength, end_wavelength = range       # unpack range
+                # Check if in valid range for equation use
+                if wavelength >= start_wavelength and wavelength <= end_wavelength:
+                    k = equation_func(wavelength)
+        except TypeError:
             k = interpolate_from_list(self.k_list, wavelength)
         return k
 
@@ -170,33 +173,6 @@ class Material:
 
     def get_k_equations(self):
         return self.k_equations
-
-    def interpolate_from_list(ls, wavelength):
-        """ Fills in any values using a linear fit between data points given in
-            the files. Also sets the values beyond the intervals given in the list
-            to 0.
-        """
-
-        # From materials, the given list will be in ascending order, so we can
-        # use this to our advantage
-
-        if wavelength > ls[-1][0]:
-            return 0        # "worst case scenario in terms of temperature"
-        elif wavelength < ls[0][0]:
-            return 0        # also "worst case"
-        else:
-            # performing linear interpolation between points in the list using the
-            # point-gradient formula
-            for i, (wl, val) in enumerate(ls):
-                if wavelength == wl:
-                    value = val
-                    # the first instance where the wavelength input is larger than a
-                    # value in the list, we want to stop
-                elif wavelength > wl:
-                    # when this is true, we know val lies between the i'th and i-1'th entries
-                    m = (ls[i][1] - ls[i-1][1])/(ls[i][0] - ls[i-1][0]) #gradient
-                    value = m*(wavelength - ls[i-1][0]) + ls[i-1][1]
-                    return value
 
     def add_equation(self, name, start_wavelength, end_wavelength, filepath, n_or_k):
         """ Extracts an equation from a .py file that is valid within a specified
