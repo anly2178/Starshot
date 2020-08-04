@@ -149,7 +149,7 @@ class MultilayerSail(Sail):
 ###
     def _find_absorptance(self, wavelength = self.wavelength):
         """Calculates absorptance of MultilayerSail based on the (expected)
-        absorption coefficients of the sail materials (material.abs_coeff 
+        absorption coefficients of the sail materials (material.abs_coeff
         attribute) and a wavelength being analysed within the laser bandwidth.
         Assumes the absorption coefficient is constant over the laser range
         in the near IR. Usage of absorption coefficient in the laser bandwidth
@@ -250,7 +250,7 @@ class MultilayerSail(Sail):
             emissivity in direction described by angle and sail structure
         """
 
-        def _directional_emissivity(self, angle, wavelength, front_or_back):
+        def directional_emissivity(self, angle, wavelength, front_or_back):
             """ Calculates the directional emissivity of a given multilayer_sail
                 structure based on a wavelength (float) and incident angle (i.e.
                 angle of elevation). This assumes the sail is perfectly smooth and
@@ -299,24 +299,15 @@ class MultilayerSail(Sail):
         bounds = np.linspace(0,pi/2,points_in_integration)
 
         # ONCE FOR EMISSION FROM FRONT FACE
-        direc_ems = points*[None]
-        i = 0
-        for theta in bounds:
-            direc_ems[i] = (2*_directional_emissivity(theta, wavelength, 'front')*cos(theta)*sin(theta))
-            i += 1
+        direc_ems = [2*directional_emissivity(theta, wavelength, 'front')*cos(theta)*sin(theta) for theta in bounds]
         # In the below line, note that the integration returns the spectral hemispherical emissivity
         front_power_flux = pi*I*np.trapz(direc_ems, bounds, pi/2/points_in_integration)
 
         # SECOND TIME FOR BACK FACE
-        direc_ems = points*[None]
-        i = 0
-        for theta in bounds:
-            direc_ems[i] = (2*_directional_emissivity(theta, wavelength, 'back')*cos(theta)*sin(theta))
-            i += 1
+        direc_ems = [2*directional_emissivity(theta, wavelength, 'back')*cos(theta)*sin(theta) for theta in bounds]
         back_power_flux = pi*I*np.trapz(direc_ems, bounds, pi/2/points_in_integration)
 
         power_flux = front_power_flux + back_power_flux
-
         return power_flux
 
     def _find_eq_temps_given_abs_coeff(self):
@@ -334,83 +325,77 @@ class MultilayerSail(Sail):
         """
         initial_wavelength = self.wavelength        # laser wavelength
         target = self.target
-        structure = deepcopy(self.structure)
+        structure = self.structure.copy()
         # Below block of code finds the maximum power absorbed by the sail throughout its journey
         betas = np.linspace(0,target,100)  # fraction of speed of light sail is travelling at
         power_absorbed = 0       # need to find maximum p_in based on beta
         power_mass_ratio = self.power/self.mass     # laser power to mass ratio of sail
-        SA_density = _find_SA_density(self)         # surface area density
+        s_density = self.s_density         # surface area density
 
         # Loop that gets the maximum power value
         for beta in betas:
             wavelength = initial_wavelength*np.sqrt((1+beta)/(1-beta))
-            A = _find_absorptance(wavelength)
+            A = self._find_absorptance(wavelength)
 
             # Finding the LHS of Atwater et al. 2018's  equation
-            power_beta = ratio*A*SA_density*(1-beta)/(1+beta)       # power absorbed when v/c = beta
+            power_beta = power_mass_ratio*A*s_density*(1-beta)/(1+beta)       # power absorbed when v/c = beta
 
             if power_beta > power_absorbed:
                 power_absorbed = power_beta     # since maximum power in results in highest equilibrium temperature
 
-        def _power_in_minus_out(T, power_absorbed):
-            """ Uses an input temperature to find the total power emitted by the 
+        def power_in_minus_out(T, power_absorbed):
+            """ Uses an input temperature to find the total power emitted by the
                 sail. Subtracts this value from the power absorbed, given as input.
                 Roots occur when the power in = power out, and hence at thermal
                 equilibrium.
                 Parameters
                 ----------
-                float 
+                float
                     T(emperature) [K]
                 float
                     power_absorbed []
                 Returns
                 ----------
-                float 
+                float
                     difference []
                         - difference between power_absorbed and power_emitted
             """
 
-            def _find_power_emitted(T, points_in_integration = 100, integration_range = [1e-6, 25e-6]):
-                """ Finds the power emitted by a sail with given structure at a 
+            def find_power_emitted(T, points_in_integration = 100, integration_range = [1e-6, 25e-6]):
+                """ Finds the power emitted by a sail with given structure at a
                     specific temperature. Determnied by performing a trapezoidal
                     integration over a (default 1-25 micron) wavelength range of the
                     spectral power flux, calculated by the _spectral_power_flux()
                     method.
                     Parameters
                     ----------
-                    float 
+                    float
                         T(emperature) [K]
                     int (optional)
                         points_in_integration
                             - number of points used in trapezoidal integration
                     list/tuple (optional)
                         integration_range
-                            - wavelength range over which spectral power flux 
+                            - wavelength range over which spectral power flux
                               is integrated over to determine total power per
-                              unit area of sail emitted (note the area of the 
+                              unit area of sail emitted (note the area of the
                               sail in this respect is the area of one face,
                               NOT the surface area = 2 * sail area)
                     Returns
                     ----------
-                    float 
+                    float
                         power_emitted []
                 """
                 lower_bound, upper_bound = integration_range
                 points = np.linspace(lower_bound, upper_bound, points_in_integration)
-
-                power_out_at_wl = points*[None]
-
                 # Calling _spectral_power_flux at each point and adding to the list for integration
-                i = 0
-                for wavelength in points:
-                    power_out_at_wl[i] = _spectral_power_flux(wavelength, T)
-                    i += 1
+                power_out_at_wl = [self._spectral_power_flux(wavelength,T) for wavelength in points]
                 power_emitted = np.trapz(power_out_at_wl, points, (upper_bound - lower_bound)/points_in_integration)
                 return power_emitted
 
-            return power_absorbed - _find_power_emitted(T)
+            return power_absorbed - find_power_emitted(T)
 
-        # The zero of the _power_in_minus_out function occurs when the sail is at 
+        # The zero of the _power_in_minus_out function occurs when the sail is at
         # equilibrium temperature. Hence, we can use Newton's method to estimate
         # this temperature
 
@@ -419,7 +404,7 @@ class MultilayerSail(Sail):
 
         bb_temp = (power_in/(2*1*5.67e-8))**0.25
 
-        eq_temp = scipy.optimize.newton(_power_in_minus_out, bb_temp, args = (power_absorbed))
+        eq_temp = scipy.optimize.newton(power_in_minus_out, bb_temp, args = (power_absorbed))
 
         return eq_temp
 
@@ -427,100 +412,103 @@ class MultilayerSail(Sail):
 # Going to cut off these functions here for now - I'm not too sure what they do
 # and they're a bit technical, so I'll leave these untouched for now, sorry.
 
-    def _find_temp(self, beta, dist):
-        """Calculates temperature of MultilayerSail at a speed and distance.
-        Parameters
-        ----------
-        float
-            Beta (v/c)
-        float
-            Distance away [m]
-        Returns
-        -------
-        float
-            Equilibrium temperature of MultilayerSail
-        """
-
-        #Extracting the parameters
-        material = self.material
-        power = self.power #W
-        mass = self.mass * 1000 #g
-        r = power/mass #W/g
-        abs_coeff = self.abs_coeff #cm^-1
-        thickness = self.thickness #m
-        wavelength_0 = self.wavelength #m
-        area = self.area #m^2
-        s_density = self.s_density * 1000 #gm^-2
-        structure = self._find_structure()
-        #Finding power absorbed, accounting for doppler shift and diffraction effects
-        wavelength = wavelength_0*np.sqrt((1+beta)/(1-beta))
-        A = self.absorptance
-        fraction = self._find_fraction(dist=0)
-        power_in = r*A*s_density*(1-beta)/(1+beta) * fraction
-
-        """ Note: Honestly, this below section should be made into its own function
-            since it is a reusable block of code. Consider doing this at some point
-            but for now, focus on optimising code and commenting
-        """
-        # The RHS is more complicated, since you can't get an expression for T explicitly
-        # We need to integrate power flux over all wavelengths to get the total radiated power
-        midpoint = 0
-        bb_temp = (power_in/(2*1*5.67e-8))**0.25
-
-        T_low = bb_temp             # Lower bound = max emissivity = black body temp
-        T_high = bb_temp*10         # Upper bound arbitrary (might not hold at higher temps) - should find a way to set a true reasonable higher bound
-        # Use trapezoidal rule to find the total power out for a given temperature
-        def power_out(T):
-            points = 101            # Can be changed if better resolution is required
-
-            # Ilic paper uses 1-25 microns, but eqns should be valid from 0.5-50 microns if so required
-            bounds = np.linspace(1e-6, 25e-6, points)
-            power_out_at_wl = np.zeros(points)
-
-            # Running each integral and adding to the list (optimisation here would be to fix list size and assign vals)
-            i = 0
-            for wavelength in bounds:
-                poawl = (spectral_power_flux(wavelength, structure, T))
-                if poawl == None: #In the case of overflow error, return None
-                    return None
-                else:
-                    power_out_at_wl[i] = poawl
-                i += 1
-            power_out = np.trapz(power_out_at_wl, bounds, (25e-6-1e-6)/points)
-            return power_out
-
-        start_time = time.time()
-        # Powers at the bounds of temperature interval
-        P_high = power_out(T_high)
-        P_low = power_out(T_low)
-        if P_high == None or P_low == None: #If overflow error, return temperature as 0
-            return 0
-
-        # Halving the interval for a result
-        while abs(P_high - P_low) >= 0.01*power_in:
-        # The only issue we can really get is if P_high is too low - if this is
-        # the case, just double P_high
-            if (P_high <= power_in):
-                T_high = T_high*2
-
-            midpoint = (T_low+T_high)/2
-            P_mid = power_out(midpoint)
-            if P_mid == None: #If overflow error, return temperature as 0
-                return 0
-            if P_mid > power_in:
-                T_high = midpoint
-            else:
-                T_low = midpoint
-
-            P_high = power_out(T_high)
-            P_low = power_out(T_low)
-            if P_high == None or P_low == None: #If overflow error, return temperature as 0
-                return 0
-            print(midpoint)
-        # Take the midpoints as the final result since this is the result from halving interval
-        midpoint = (T_high+T_low)/2
-        print("--- %s seconds ---" % (time.time() - start_time))
-        return midpoint
+#I will comment these out for now so they do not interfere. If we find them
+#unnecessary in the future, we will delete them.
+    #
+    # def _find_temp(self, beta, dist):
+    #     """Calculates temperature of MultilayerSail at a speed and distance.
+    #     Parameters
+    #     ----------
+    #     float
+    #         Beta (v/c)
+    #     float
+    #         Distance away [m]
+    #     Returns
+    #     -------
+    #     float
+    #         Equilibrium temperature of MultilayerSail
+    #     """
+    #
+    #     #Extracting the parameters
+    #     material = self.material
+    #     power = self.power #W
+    #     mass = self.mass * 1000 #g
+    #     r = power/mass #W/g
+    #     abs_coeff = self.abs_coeff #cm^-1
+    #     thickness = self.thickness #m
+    #     wavelength_0 = self.wavelength #m
+    #     area = self.area #m^2
+    #     s_density = self.s_density * 1000 #gm^-2
+    #     structure = self._find_structure()
+    #     #Finding power absorbed, accounting for doppler shift and diffraction effects
+    #     wavelength = wavelength_0*np.sqrt((1+beta)/(1-beta))
+    #     A = self.absorptance
+    #     fraction = self._find_fraction(dist=0)
+    #     power_in = r*A*s_density*(1-beta)/(1+beta) * fraction
+    #
+    #     """ Note: Honestly, this below section should be made into its own function
+    #         since it is a reusable block of code. Consider doing this at some point
+    #         but for now, focus on optimising code and commenting
+    #     """
+    #     # The RHS is more complicated, since you can't get an expression for T explicitly
+    #     # We need to integrate power flux over all wavelengths to get the total radiated power
+    #     midpoint = 0
+    #     bb_temp = (power_in/(2*1*5.67e-8))**0.25
+    #
+    #     T_low = bb_temp             # Lower bound = max emissivity = black body temp
+    #     T_high = bb_temp*10         # Upper bound arbitrary (might not hold at higher temps) - should find a way to set a true reasonable higher bound
+    #     # Use trapezoidal rule to find the total power out for a given temperature
+    #     def power_out(T):
+    #         points = 101            # Can be changed if better resolution is required
+    #
+    #         # Ilic paper uses 1-25 microns, but eqns should be valid from 0.5-50 microns if so required
+    #         bounds = np.linspace(1e-6, 25e-6, points)
+    #         power_out_at_wl = np.zeros(points)
+    #
+    #         # Running each integral and adding to the list (optimisation here would be to fix list size and assign vals)
+    #         i = 0
+    #         for wavelength in bounds:
+    #             poawl = (spectral_power_flux(wavelength, structure, T))
+    #             if poawl == None: #In the case of overflow error, return None
+    #                 return None
+    #             else:
+    #                 power_out_at_wl[i] = poawl
+    #             i += 1
+    #         power_out = np.trapz(power_out_at_wl, bounds, (25e-6-1e-6)/points)
+    #         return power_out
+    #
+    #     start_time = time.time()
+    #     # Powers at the bounds of temperature interval
+    #     P_high = power_out(T_high)
+    #     P_low = power_out(T_low)
+    #     if P_high == None or P_low == None: #If overflow error, return temperature as 0
+    #         return 0
+    #
+    #     # Halving the interval for a result
+    #     while abs(P_high - P_low) >= 0.01*power_in:
+    #     # The only issue we can really get is if P_high is too low - if this is
+    #     # the case, just double P_high
+    #         if (P_high <= power_in):
+    #             T_high = T_high*2
+    #
+    #         midpoint = (T_low+T_high)/2
+    #         P_mid = power_out(midpoint)
+    #         if P_mid == None: #If overflow error, return temperature as 0
+    #             return 0
+    #         if P_mid > power_in:
+    #             T_high = midpoint
+    #         else:
+    #             T_low = midpoint
+    #
+    #         P_high = power_out(T_high)
+    #         P_low = power_out(T_low)
+    #         if P_high == None or P_low == None: #If overflow error, return temperature as 0
+    #             return 0
+    #         print(midpoint)
+    #     # Take the midpoints as the final result since this is the result from halving interval
+    #     midpoint = (T_high+T_low)/2
+    #     print("--- %s seconds ---" % (time.time() - start_time))
+    #     return midpoint
     #Methods here
 
 
