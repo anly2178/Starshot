@@ -1,9 +1,12 @@
 def interpolate_from_list(ls, wavelength):
     """ Fills in any values using a linear fit between data points given in
         the files. Also sets the values beyond the intervals given in the list
-        to 0.
+        to 0. If the list provided is NoneType or empty, returns 0.
     """
 
+    if ls == None or len(ls) == 0:
+        return 0
+    
     # From materials, the given list will be in ascending order, so we can
     # use this to our advantage
 
