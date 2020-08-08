@@ -94,19 +94,19 @@ sail_name.calculate_mission()
 
 ### Attributes
 
-* name (str) - a unique name or code that identifies the sail. Defaults to None.
-* mass (float) [kg] - mass of lightsail (excluding payload). It is assumed that payload mass equals to lightsail mass as per optimal mass condition (Kulkarni 2018). Defaults to None.
-* area (float) [m^2] - surface area of lightsail on one side. Defaults to None.
-* radius (float) [m] - radius of lightsail.
-* s_density (float) [kg/m^2] - surface density of lightsail.
-* reflectance (float) - fraction of incident power that is reflected by lighsail.
-* transmittace (float) - fraction of incident power that is transmitted through lightsail.
-* target (float) - target speed as fraction of speed of light. Defaults to 0.2c.
-* power (float) [W] - power of laser array. Defaults to None.
-* wavelength (float) [m] - laser wavelength, not Doppler-shifted. Defaults to 1.064e-6 m.
-* W (float) [sqrt(g)/m] - square root of 'reflectivity-adjusted-area-density' as defined by Ilic et al. (2018).
-* diameter (float) [m] - diameter of circular laser array.
-* angles_coeffs (list of tuples of three floats) - angle [degrees], reflection efficiency and transmission efficiency of each order.
+* *name* (str) - a unique name or code that identifies the sail. Defaults to None.
+* *mass* (float) [kg] - mass of lightsail (*excluding payload*). It is assumed that payload mass equals to lightsail mass as per optimal mass condition (Kulkarni 2018). Defaults to None.
+* *area* (float) [m^2] - surface area of lightsail on one side. Defaults to None.
+* *radius* (float) [m] - radius of lightsail.
+* *s_density* (float) [kg/m^2] - surface density of lightsail.
+* *reflectance* (float) - fraction of incident power that is reflected by lighsail.
+* *transmittace* (float) - fraction of incident power that is transmitted through lightsail.
+* *target* (float) - target speed as fraction of speed of light. Defaults to 0.2c.
+* *power* (float) [W] - power of laser array. Defaults to None.
+* *wavelength* (float) [m] - laser wavelength, not Doppler-shifted. Defaults to 1.064e-6 m.
+* *W* (float) [sqrt(g)/m] - square root of 'reflectivity-adjusted-area-density' as defined by Ilic et al. (2018).
+* *diameter* (float) [m] - diameter of circular laser array.
+* *angles_coeffs* (list of tuples of three floats) - angle [degrees], reflection efficiency and transmission efficiency of each order.
 
 ### Methods
 
@@ -114,8 +114,7 @@ sail_name.calculate_mission()
 __init__(   self, name=None, mass=None, area=None, reflectance=None,
                   target=0.2, power=None, wavelength=1.064e-6)
 ```
-* constructor for Sail class
-      The constructor for Sail class
+* Constructor for Sail class
 
 ```python
 calculate_mission()
