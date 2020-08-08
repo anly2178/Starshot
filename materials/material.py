@@ -187,8 +187,12 @@ class Material:
             which overlaps with the equation being added
         """
         if n_or_k == 'n':
+            if self.n_equations == None:
+                self.n_equations = []
             equations_list = self.n_equations
         elif n_or_k == 'k':
+            if self.k_equations == None:
+                self.k_equations = []
             equations_list = self.k_equations
         range = [start_wavelength, end_wavelength]
         # Make a dictionary to store the function in
