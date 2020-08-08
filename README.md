@@ -171,7 +171,10 @@ special cases. For example, glasses like SiO2, GeO2 can become quite viscous pas
 
 ### Methods
 
-* To be completed.
+```python
+__init__(name, density, max_temp, abs_coeff = None, n_list = None, k_list = None)
+```
+* Constructor for ```Material``` class. 
 
 ## Creators
 **Andrew Ly**
@@ -182,4 +185,4 @@ special cases. For example, glasses like SiO2, GeO2 can become quite viscous pas
 * [jwid8259@uni.sydney.edu.au](jwid8259@uni.sydney.edu.au)
 * [https://github.com/jwid8259](https://github.com/jwid8259)
 
-Supervised by Boris Kuhlmey, Martijn de Sterke, and Mohammad Rafat as part of a project for the University of Sydney. 
+Supervised by Boris Kuhlmey, Martijn de Sterke, and Mohammad Rafat as part of a project for the University of Sydney.
