@@ -72,7 +72,7 @@ class MultilayerSail(Sail):
     """
     def __init__(   self, name=None, materials=None, mass=None, thickness=None,
                     area=None, reflectance=None, abs_coeff=None, target=0.2,
-                    max_Starchip_temp=1000, power=None, wavelength=1.2e-6):
+                    max_Starchip_temp=1000, power=None, wavelength=1.064e-6):
         """The constructor for MultilayerSail class
         Parameters
         ----------

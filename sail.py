@@ -42,10 +42,8 @@ class Sail:
 
     Methods (for user)
     ------------------
-    def __init__(   name=None, material=None, mass=None, thickness=None,
-                    area=None, radius=None, s_density=None, abs_coeff=None,
-                    absorptance=None, reflectance=None, transmittance=None,
-                    W=None):
+    __init__(   self, name=None, mass=None, area=None, reflectance=None,
+                    target=0.2, power=None, wavelength=1.2e-6)
         The constructor for Sail class
     print_variables()
         Prints the variables of the sail
@@ -59,7 +57,7 @@ class Sail:
         speed vs distance and speed vs time graphs.
     """
     def __init__(   self, name=None, mass=None, area=None, reflectance=None,
-                    target=0.2, power=None, wavelength=1.2e-6):
+                    target=0.2, power=None, wavelength=1.064e-6):
         """The constructor for Sail class
 
         Parameters
