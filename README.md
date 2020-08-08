@@ -88,7 +88,7 @@ sail_name.calculate_mission()
 
 ## Sail
 
-* The ```Sail``` class is the superclass for all subclasses of sails, such as ```MultilayerSail``` and ```DiffractiveSail```. Therefore, these subclasses inherit the ```Sail``` attributes and methods.
+The ```Sail``` class is the superclass for all subclasses of sails, such as ```MultilayerSail``` and ```DiffractiveSail```. Therefore, these subclasses inherit the ```Sail``` attributes and methods.
 * Sail is flat and circular. Generalising the shape is to be completed.
 * Gaussian beam is produced by circular laser array.
 
@@ -114,7 +114,7 @@ sail_name.calculate_mission()
 __init__(   self, name=None, mass=None, area=None, reflectance=None,
                   target=0.2, power=None, wavelength=1.064e-6)
 ```
-* Constructor for Sail class
+* Constructor for ```Sail``` class
 
 ```python
 calculate_mission()
@@ -124,9 +124,32 @@ calculate_mission()
 
 ## Multilayer Sail
 
+The ```MultilayerSail``` class is a subclass of ```Sail```. It includes sails with 1 or more layered materials.
+
 ### Attributes
 
+* materials (list of str) - list of strings representing the materials in each layer, starting from the layer closest to the laser array. The tag for each material is its chemical formula, or as defined by the user.
+* thickness (list of floats) [m] - list of the thicknesses of each layer, starting from the layer closest to the laser array.
+* max_Starchip_temp (float) [K] - maximum temperature of payload. Defaults to 1000 K.
+* absorptance (float) - fraction of incident power absorbed by lightsail.
+
+*Note*: The ```MultilayerSail``` class inherits the attributes of the ```Sail``` class.
+
 ### Methods
+
+```python
+__init__(   self, name=None, materials=None, mass=None, thickness=None,
+                  area=None, reflectance=None, abs_coeff=None, target=0.2,
+                  max_Starchip_temp=1000, power=None, wavelength=1.064e-6)
+```
+
+* Constructor for  ```MultilayerSail``` class.
+
+```python
+calculate_mission()
+```
+
+* Inherited from ```Sail``` class.  
 
 ## Material
 
