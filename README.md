@@ -128,10 +128,10 @@ The ```MultilayerSail``` class is a subclass of ```Sail```. It includes sails wi
 
 ### Attributes
 
-* materials (list of str) - list of strings representing the materials in each layer, starting from the layer closest to the laser array. The tag for each material is its chemical formula, or as defined by the user.
-* thickness (list of floats) [m] - list of the thicknesses of each layer, starting from the layer closest to the laser array.
-* max_Starchip_temp (float) [K] - maximum temperature of payload. Defaults to 1000 K.
-* absorptance (float) - fraction of incident power absorbed by lightsail.
+* *materials* (list of str) - list of strings representing the materials in each layer, starting from the layer closest to the laser array. The tag for each material is its chemical formula, or as defined by the user.
+* *thickness* (list of floats) [m] - list of the thicknesses of each layer, starting from the layer closest to the laser array.
+* *max_Starchip_temp* (float) [K] - maximum temperature of payload. Defaults to 1000 K.
+* *absorptance* (float) - fraction of incident power absorbed by lightsail.
 
 *Note*: The ```MultilayerSail``` class inherits the attributes of the ```Sail``` class.
 
@@ -153,9 +153,25 @@ calculate_mission()
 
 ## Material
 
+The ```Material``` class.
+
+* Materials are automatically saved in a pkl file with the same stem name as the material. The pkl file is saved inside a ```saved_materials``` directory within the current working directory. Any updates to materials are automatically saved.  
+
 ### Attributes
 
+* *name* (str) - A code or tag that represents the material, usually chemical formula.
+* *density* (float) [kg/m^3] - density of the material.
+* *max_temp* (float) [K] - the temperature beyond which the material is not structurally sound. For most materials, this would be the melting point, but may vary in
+special cases. For example, glasses like SiO2, GeO2 can become quite viscous past their glass transition temperature which lies lower than melting point.
+* *abs_coeff* (float) [cm^-1] - absorption coefficient of the material.
+* *n_list* (list of floats) - list of real refractive index for a range of wavelengths [micrometres].
+* *k_list* (list of floats) - list of extinction coefficient for a range of wavelengths [micrometres].
+* *n_equations* -
+* *k_equations* -
+
 ### Methods
+
+* To be completed.
 
 ## Creators
 **Andrew Ly**
@@ -165,3 +181,5 @@ calculate_mission()
 **Justin Widjaja**
 * [jwid8259@uni.sydney.edu.au](jwid8259@uni.sydney.edu.au)
 * [https://github.com/jwid8259](https://github.com/jwid8259)
+
+Supervised by Boris Kuhlmey, Martijn de Sterke, and Mohammad Rafat as part of a project for the University of Sydney. 
