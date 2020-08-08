@@ -174,7 +174,7 @@ special cases. For example, glasses like SiO2, GeO2 can become quite viscous pas
 ```python
 __init__(name, density, max_temp, abs_coeff = None, n_list = None, k_list = None)
 ```
-* Constructor for ```Material``` class. 
+* Constructor for ```Material``` class.
 
 ## Creators
 **Andrew Ly**
