@@ -174,9 +174,10 @@ special cases. For example, glasses like SiO2, GeO2 can become quite viscous pas
 ### Methods
 
 ```python
-__init__(name, density, max_temp, abs_coeff = None, n_list = None, k_list = None)
+__init__(name, density, max_temp, abs_coeff = None, n_list_path = None, k_list_path = None)
 ```
 * Constructor for ```Material``` class.
+* ```n_list_path``` and ```k_list_path``` are the filepaths to the list of real refractive index and extinction coefficient respectively.
 
 ## Creators
 **Andrew Ly**

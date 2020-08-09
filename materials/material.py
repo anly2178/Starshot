@@ -1,8 +1,8 @@
 from .save_load_mat import save_material, del_material, material_exists, load_material, make_list_from_file
 from .interpolator import interpolate_from_list
-import pickle
 import scipy
 import numpy as np
+from os import path
 
 """ Each material should have a:
         - name (str; potentially multiple names. Main name is chemical formula
@@ -41,7 +41,7 @@ IMPORTANT NOTE: If using an equation, ensure the equation TAKES IN wavelengths
 
 class Material:
 
-    def __init__(self, name, density, max_temp, abs_coeff = None, n_list = None, k_list = None):
+    def __init__(self, name, density, max_temp, abs_coeff = None, n_list_path = None, k_list_path = None):
         """ Constructor requires at least the name and the density
         """
         if material_exists(name):
@@ -59,8 +59,14 @@ class Material:
             self.density = density
             self.max_temp = max_temp
             self.abs_coeff = abs_coeff
-            self.n_list = n_list
-            self.k_list = k_list
+            if n_list_path is None or not path.exists(n_list_path):
+                self.n_list = None
+            else:
+                self.n_list = make_list_from_file(n_list_path)
+            if k_list_path is None or not path.exists(k_list_path):
+                self.k_list = None
+            else:
+                self.k_list = make_list_from_file(k_list_path)
             self.n_equations = []
             self.k_equations = []
             save_material(self)
