@@ -46,6 +46,8 @@ is located parallel to the Starshot directory.
 
 * saved_materials is automatically created when the user initialises a Material object.
 
+* *Note*: The library may require the installation of [Dill](https://pypi.org/project/dill/).
+
 ## Usage
 
 **To initialise a new** ```Material```:
