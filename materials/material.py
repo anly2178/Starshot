@@ -198,7 +198,8 @@ class Material:
         exec(open(filepath).read(), globals(), dic)
         func, = dic.values()    # assign var to function for storage in list entry
         entry = [name, range, func]
-        equations_list.append(entry)
+        if name not in [eq[0] for eq in equations_list]:
+            equations_list.append(entry)
         dic.clear()     # Cleared just in case some memory issues occur
         save_material(self)
         return

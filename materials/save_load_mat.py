@@ -1,5 +1,5 @@
 from pathlib import Path
-import pickle
+import dill as pickle
 from numpy import loadtxt
 
 def mkmatdir():
@@ -48,7 +48,7 @@ def make_list_from_file(filepath):
         ls = loadtxt(filepath, delimiter=',') #comma-separated
     except ValueError:
         ls = loadtxt(filepath) #space-separated
-    return ls[ls[:,0].argsort()] #sorted increasing order by wavelength 
+    return ls[ls[:,0].argsort()] #sorted increasing order by wavelength
 
 
 
