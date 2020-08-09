@@ -189,12 +189,8 @@ class Material:
             which overlaps with the equation being added
         """
         if n_or_k == 'n':
-            if self.n_equations == None:
-                self.n_equations = []
             equations_list = self.n_equations
         elif n_or_k == 'k':
-            if self.k_equations == None:
-                self.k_equations = []
             equations_list = self.k_equations
         range = [start_wavelength, end_wavelength]
         # Make a dictionary to store the function in
@@ -204,6 +200,7 @@ class Material:
         entry = [name, range, func]
         equations_list.append(entry)
         dic.clear()     # Cleared just in case some memory issues occur
+        save_material(self)
         return
 
     def rmv_equation(self, name, n_or_k):
@@ -217,7 +214,18 @@ class Material:
         for entry in equations_list:
             if name == entry[0]:
                 equations_list.remove(entry)
+        save_material(self)
         return
+
+    def print_variables(self):
+        """Print attributes of material
+        """
+        for var, value in self.__dict__.items():
+            if var == 'n_equations' or var == 'k_equations':
+                for ls in value:
+                    ls.pop(-1) #Remove function, but keep name and wavelength range
+            print(var, '=', value)
+        print('')
 
     # Possible implementation in future?
     # def set_optical_constants(self, absolute_path):
