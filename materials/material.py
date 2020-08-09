@@ -61,8 +61,8 @@ class Material:
             self.abs_coeff = abs_coeff
             self.n_list = n_list
             self.k_list = k_list
-            self.n_equations = None
-            self.k_equations = None
+            self.n_equations = []
+            self.k_equations = []
             save_material(self)
 
     def get_density(self):
@@ -133,14 +133,15 @@ class Material:
             identifiers in the second argument helps to differentiate).
             Requires wavelength as float to find values
         """
-        try:
-            for entry in self.n_equations:
-                _, range, equation_func = entry     # unpack entry
-                start_wavelength, end_wavelength = range       # unpack range
-                # Check if in valid range for equation use
-                if wavelength >= start_wavelength and wavelength <= end_wavelength:
-                    n = equation_func(wavelength)
-        except TypeError:
+        found_equation = False
+        for entry in self.n_equations:
+            _, range, equation_func = entry     # unpack entry
+            start_wavelength, end_wavelength = range       # unpack range
+            # Check if in valid range for equation use
+            if wavelength >= start_wavelength and wavelength <= end_wavelength:
+                n = equation_func(wavelength)
+                found_equation = True
+        if not found_equation:
             n = interpolate_from_list(self.n_list, wavelength)
         return n
 
@@ -154,14 +155,15 @@ class Material:
         save_material(self)
 
     def get_k(self, wavelength):
-        try:
-            for entry in self.k_equations:
-                _, range, equation_func = entry     # unpack entry
-                start_wavelength, end_wavelength = range       # unpack range
-                # Check if in valid range for equation use
-                if wavelength >= start_wavelength and wavelength <= end_wavelength:
-                    k = equation_func(wavelength)
-        except TypeError:
+        found_equation = False
+        for entry in self.k_equations:
+            _, range, equation_func = entry     # unpack entry
+            start_wavelength, end_wavelength = range       # unpack range
+            # Check if in valid range for equation use
+            if wavelength >= start_wavelength and wavelength <= end_wavelength:
+                k = equation_func(wavelength)
+                found_equation = True
+        if not found_equation:
             k = interpolate_from_list(self.k_list, wavelength)
         return k
 
@@ -176,7 +178,7 @@ class Material:
 
     def add_equation(self, name, start_wavelength, end_wavelength, filepath, n_or_k):
         """ Extracts an equation from a .py file that is valid within a specified
-            wavelength range = [start_wavelength, end_wavelength] and saves it
+            wavelength range (in m) = [start_wavelength, end_wavelength] and saves it
             as a material attribute. A name should also be attached to the
             equation for the sake of easy removal/editing if required. Appends
             the entry to an equations_list list (n_equations or k_equations
@@ -187,8 +189,12 @@ class Material:
             which overlaps with the equation being added
         """
         if n_or_k == 'n':
+            if self.n_equations == None:
+                self.n_equations = []
             equations_list = self.n_equations
         elif n_or_k == 'k':
+            if self.k_equations == None:
+                self.k_equations = []
             equations_list = self.k_equations
         range = [start_wavelength, end_wavelength]
         # Make a dictionary to store the function in
