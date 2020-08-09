@@ -71,7 +71,7 @@ class MultilayerSail(Sail):
         speed vs distance and speed vs time graphs.
     """
     def __init__(   self, name=None, materials=None, mass=None, thickness=None,
-                    area=None, reflectance=None, abs_coeff=None, target=0.2,
+                    reflectance=None, abs_coeff=None, target=0.2,
                     max_Starchip_temp=1000, power=None, wavelength=1.064e-6):
         """The constructor for MultilayerSail class
         Parameters
@@ -103,9 +103,6 @@ class MultilayerSail(Sail):
         MultilayerSail
             MultilayerSail with variables specified by user
         """
-        super().__init__(name, mass, area, reflectance, target, power, wavelength)
-        # This block converts the material names (list of strings) into a list of
-        # Material objects
         if materials is None:
             raise ValueError("Enter material(s)")
         try:
@@ -115,6 +112,13 @@ class MultilayerSail(Sail):
         self.thickness = thickness #m
         if thickness is None:
             raise ValueError("Enter thickness(es)")
+        if mass is None:
+            raise ValueError("Enter mass")
+        s_density = mat.get_density() * t for mat, t in zip(materials, thickness)
+        area = mass / s_density
+        super().__init__(name, mass, area, reflectance, target, power, wavelength)
+        # This block converts the material names (list of strings) into a list of
+        # Material objects
         self.max_Starchip_temp = max_Starchip_temp #K
         self.abs_coeff = abs_coeff
         if self.abs_coeff is not None:
