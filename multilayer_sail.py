@@ -71,8 +71,8 @@ class MultilayerSail(Sail):
         speed vs distance and speed vs time graphs.
     """
     def __init__(   self, name=None, materials=None, mass=None, thickness=None,
-                    reflectance=None, abs_coeff=None, target=0.2,
-                    max_Starchip_temp=1000, power=None, wavelength=1.064e-6):
+                    reflectance=None, target=0.2, max_Starchip_temp=1000,
+                    power=None, wavelength=1.064e-6):
         """The constructor for MultilayerSail class
         Parameters
         ----------
@@ -88,8 +88,6 @@ class MultilayerSail(Sail):
             Area of lightsail [m^2]
         reflectance : float
             Absolute reflectance of lightsail
-        abs_coeff : float
-            Absorption coefficient of lightsail. [cm^-1]
         target : float
             Target speed as fraction of speed of light. E.g. 0.2c
         max_Starchip_temp : float
@@ -122,19 +120,16 @@ class MultilayerSail(Sail):
         # This block converts the material names (list of strings) into a list of
         # Material objects
         self.max_Starchip_temp = max_Starchip_temp #K
-        self.abs_coeff = abs_coeff
-        if self.abs_coeff is not None:
-            self.absorptance = self._find_absorptance()
-            if self.power is None:
-                self.power = self._find_power()
-        elif self.abs_coeff is None and self.power is None:
-            raise ValueError("Enter laser power or absorption coefficient")
+        self.absorptance = self._find_absorptance()
+        if self.power is None:
+            self.power = self._find_power() #Estimate max power that sail can use.
         if self.reflectance is None:
             self.reflectance = self._find_reflectance()
         if self.transmittance is None:
             self.transmittance = self._find_transmittance()
-        # self.W = self._find_W()
-        # self.diameter = self._find_diameter()
+        self.angles_coeffs = [(0, self.reflectance, self.transmittance)]
+        self.W = self._find_W()
+        self.diameter = self._find_diameter()
         self.print_variables()
 
     def _find_structure(self, wavelength = None):
