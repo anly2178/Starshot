@@ -114,7 +114,9 @@ class MultilayerSail(Sail):
             raise ValueError("Enter thickness(es)")
         if mass is None:
             raise ValueError("Enter mass")
-        s_density = mat.get_density() * t for mat, t in zip(materials, thickness)
+        s_density = 0
+        for mat, t in zip(self.materials, thickness):
+            s_density += mat.get_density() * t
         area = mass / s_density
         super().__init__(name, mass, area, reflectance, target, power, wavelength)
         # This block converts the material names (list of strings) into a list of
@@ -131,11 +133,11 @@ class MultilayerSail(Sail):
             self.reflectance = self._find_reflectance()
         if self.transmittance is None:
             self.transmittance = self._find_transmittance()
-        self.W = self._find_W()
-        self.diameter = self._find_diameter()
+        # self.W = self._find_W()
+        # self.diameter = self._find_diameter()
         self.print_variables()
 
-    def _find_structure(self, wavelength = self.wavelength):
+    def _find_structure(self, wavelength = None):
         """Creates a list representing the structure of the MultilayerSail.
         Parameters
         ----------
@@ -145,8 +147,10 @@ class MultilayerSail(Sail):
         list of tuples of two floats
             [(refractive index, -thickness [m]), ...]
         """
+        if wavelength == None:
+            wavelength = self.wavelength
         structure = []
-        for material, thickness in zip(self.material, self.thickness):
+        for material, thickness in zip(self.materials, self.thickness):
             structure.append( (material.get_n(wavelength) + 1j*material.get_k(wavelength), -thickness) )
         return structure
 
@@ -167,7 +171,7 @@ class MultilayerSail(Sail):
             SA_density += material.get_density()*thickness
         return SA_density
 
-    def _find_absorptance(self, wavelength = self.wavelength):
+    def _find_absorptance(self, wavelength = None):
         """Calculates absorptance of MultilayerSail based on the (expected)
         absorption coefficients of the sail materials (material.abs_coeff
         attribute) and a wavelength being analysed within the laser bandwidth.
@@ -186,12 +190,14 @@ class MultilayerSail(Sail):
         float
             Absorptance of MultilayerSail
         """
+        if wavelength == None:
+            wavelength = self.wavelength
         structure_near_IR = []
         for material, thickness in zip(self.materials, self.thickness):
             k = 1j*wavelength*100*material.get_abs_coeff()/(4*pi)   # conversion from abs_coeff to extinction coeff
             structure_near_IR.append( (material.get_n(wavelength) + k, -thickness) )
 
-        r_p, t_p, r_s, t_s = tmm(structure_near_IR, wavelength)
+        r_p, t_p, r_s, t_s = tmm(structure_near_IR, wavelength, 0)
 
         R = ((r_p*np.conj(r_p) + r_s*np.conj(r_s))/2).real
         T = ((t_p*np.conj(t_p) + t_s*np.conj(t_s))/2).real
@@ -216,12 +222,12 @@ class MultilayerSail(Sail):
         bandwidth = np.linspace(wavelength, wavelength*shift, 100)
         R_all = []
         for b in bandwidth:
-            r_p, _, r_s, _ = tmm(structure, b)
+            r_p, _, r_s, _ = tmm(structure, b, 0)
             R_all.append( ((r_p*np.conj(r_p) + r_s*np.conj(r_s))/2) )
         R_avg = (sum(R_all)/100).real
         return R_avg
 
-    def _find_transmittance(params):
+    def _find_transmittance(self):
         """Calculates transmittance of MultilayerSail, averaged over wavelength.
         Parameters
         ----------
@@ -239,7 +245,7 @@ class MultilayerSail(Sail):
         bandwidth = np.linspace(wavelength, wavelength*shift, 100)
         T_all = []
         for b in bandwidth:
-            _, t_p, _, t_s = tmm(structure, b)
+            _, t_p, _, t_s = tmm(structure, b, 0)
             T_all.append( ((t_p*np.conj(t_p) + t_s*np.conj(t_s))/2) )
         T_avg = (sum(T_all)/100).real
         return T_avg
@@ -247,9 +253,9 @@ class MultilayerSail(Sail):
     def _spectral_power_flux(self, wavelength, temperature, points_in_integration = 50):
 
         """ Finds the spectral power flux of an "ideal" (perfectly flat and smooth)
-        sail that is SYMMETRICAL on both sides of the sail. This is the energy
-        emitted per unit area at given wavelength. Accounts for asymmetric
-        multilayer_sails (along the axis of the incident laser light)
+        sail. This is the energy emitted per unit area at given wavelength.
+        Accounts for asymmetric multilayer_sails
+        (along the axis of the incident laser light)
 
         Uses trapezoidal rule to integrate power emitted at all angles to
         produce the spectral power flux
@@ -270,7 +276,7 @@ class MultilayerSail(Sail):
             emissivity in direction described by angle and sail structure
         """
 
-        def directional_emissivity(self, angle, wavelength, front_or_back):
+        def _directional_emissivity(sail, angle, wavelength, front_or_back):
             """ Calculates the directional emissivity of a given multilayer_sail
                 structure based on a wavelength (float) and incident angle (i.e.
                 angle of elevation). This assumes the sail is perfectly smooth and
@@ -295,7 +301,8 @@ class MultilayerSail(Sail):
             if front_or_back == 'front':
                 structure = self._find_structure(wavelength)
             elif front_or_back == 'back':
-                structure = self._find_structure(wavelength).reverse()
+                structure = self._find_structure(wavelength)
+                structure.reverse()
 
             # This block gives an expression for emissivity in terms of theta (and wavelength)
             # First set out by finding the reflectance and transmittance of structure at
@@ -314,17 +321,23 @@ class MultilayerSail(Sail):
 
         # Now give expression for hemispherical emissivity. Note factor of 2: 2 comes
         # from integrating wrt phi (the azimuth)
-
-        # Use trapezoidal integration to speed things up
         bounds = np.linspace(0,pi/2,points_in_integration)
 
-        # ONCE FOR EMISSION FROM FRONT FACE
-        direc_ems = [2*directional_emissivity(theta, wavelength, 'front')*cos(theta)*sin(theta) for theta in bounds]
+        # Use trapezoidal integration to speed things up
+        direc_ems = points_in_integration*[None]
+        i = 0
+        for theta in bounds:
+            direc_ems[i] = (2*_directional_emissivity(self, theta, wavelength, 'front')*cos(theta)*sin(theta))
+            i += 1
         # In the below line, note that the integration returns the spectral hemispherical emissivity
         front_power_flux = pi*I*np.trapz(direc_ems, bounds, pi/2/points_in_integration)
 
         # SECOND TIME FOR BACK FACE
-        direc_ems = [2*directional_emissivity(theta, wavelength, 'back')*cos(theta)*sin(theta) for theta in bounds]
+        direc_ems = points_in_integration   *[None]
+        i = 0
+        for theta in bounds:
+            direc_ems[i] = (2*_directional_emissivity(self, theta, wavelength, 'back')*cos(theta)*sin(theta))
+            i += 1
         back_power_flux = pi*I*np.trapz(direc_ems, bounds, pi/2/points_in_integration)
 
         power_flux = front_power_flux + back_power_flux
@@ -345,7 +358,7 @@ class MultilayerSail(Sail):
         """
         initial_wavelength = self.wavelength        # laser wavelength
         target = self.target
-        structure = self.structure.copy()
+
         # Below block of code finds the maximum power absorbed by the sail throughout its journey
         betas = np.linspace(0,target,100)  # fraction of speed of light sail is travelling at
         power_absorbed = 0       # need to find maximum p_in based on beta
@@ -365,7 +378,7 @@ class MultilayerSail(Sail):
 
         def power_in_minus_out(T, power_absorbed):
             """ Uses an input temperature to find the total power emitted by the
-                sail. Subtracts this value from the power absorbed, given as input.
+                sail per unit sail area. Subtracts this value from the power absorbed, given as input.
                 Roots occur when the power in = power out, and hence at thermal
                 equilibrium.
                 Parameters
@@ -422,9 +435,24 @@ class MultilayerSail(Sail):
         # Use the starting point of Newton's method as the black body temperature
         # given the power_absorbed (per unit area)
 
-        bb_temp = (power_in/(2*1*5.67e-8))**0.25
+        bb_temp = (power_absorbed/(2*1*5.67e-8))**0.25
+        a = bb_temp         # Beginning of interval for Brent's method
+        b = bb_temp*2       # End of interval for Brent's method
 
-        eq_temp = scipy.optimize.newton(power_in_minus_out, bb_temp, args = (power_absorbed))
+        # Since we don't accurately know where the temperature lies, set b to be
+        # initially twice the temperature of a black body. If the root does not
+        # lie in the interval [a,b], then the below block of code will
+        # work to double b until the root does lie within [a,b] (that is,
+        # the function has different signs at a and b)
+        solved = False
+
+        while not solved:
+            try:
+                eq_temp = scipy.optimize.brentq(power_in_minus_out, a, b, args = [(power_absorbed)])
+                solved = True
+            except ValueError:
+                b = b*2
+                solved = False
 
         return eq_temp
 

@@ -4,9 +4,11 @@ def interpolate_from_list(ls, wavelength):
         to 0. If the list provided is NoneType or empty, returns 0.
     """
 
-    if ls == None or len(ls) == 0:
+    if ls is None:
         return 0
-    
+    elif len(ls) == 0:
+        return 0
+
     # From materials, the given list will be in ascending order, so we can
     # use this to our advantage
 
@@ -18,7 +20,6 @@ def interpolate_from_list(ls, wavelength):
         # performing linear interpolation between points in the list using the
         # point-gradient formula
         for i, (wl, val) in enumerate(ls):
-            print(wl, val)
             if wavelength == wl:
                 value = val
                 # the first instance where the wavelength input is larger than a
