@@ -101,6 +101,8 @@ class MultilayerSail(Sail):
         MultilayerSail
             MultilayerSail with variables specified by user
         """
+        area = 1 #Placeholder for area for now to prevent error
+        super().__init__(name, mass, area, reflectance, target, power, wavelength)
         if materials is None:
             raise ValueError("Enter material(s)")
         self.materials = materials
@@ -110,12 +112,9 @@ class MultilayerSail(Sail):
         if mass is None:
             raise ValueError("Enter mass")
         s_density = 0
-        for mat, t in zip(self.materials, thickness):
+        for mat, t in zip(self._material_objects(), thickness):
             s_density += mat.get_density() * t
-        area = mass / s_density
-        super().__init__(name, mass, area, reflectance, target, power, wavelength)
-        # This block converts the material names (list of strings) into a list of
-        # Material objects
+        self.area = mass / s_density
         self.max_Starchip_temp = max_Starchip_temp #K
         self.absorptance = self._find_absorptance()
         if self.power is None:
@@ -132,7 +131,7 @@ class MultilayerSail(Sail):
     def _material_objects(self):
         """Convert list of material tags to material objects"""
         try:
-            mats = [load_material(mat) for mat in materials]
+            mats = [load_material(mat) for mat in self.materials]
         except ValueError as ve:
             print(ve)
         return mats
