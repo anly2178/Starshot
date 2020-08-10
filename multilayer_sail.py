@@ -103,10 +103,7 @@ class MultilayerSail(Sail):
         """
         if materials is None:
             raise ValueError("Enter material(s)")
-        try:
-            self.materials = [load_material(mat) for mat in materials]
-        except ValueError as ve:
-            print(ve)
+        self.materials = materials
         self.thickness = thickness #m
         if thickness is None:
             raise ValueError("Enter thickness(es)")
@@ -132,6 +129,15 @@ class MultilayerSail(Sail):
         self.diameter = self._find_diameter()
         self.print_variables()
 
+    def _material_objects(self):
+        """Convert list of material tags to material objects"""
+        try:
+            mats = [load_material(mat) for mat in materials]
+        except ValueError as ve:
+            print(ve)
+        return mats
+
+
     def _find_structure(self, wavelength = None):
         """Creates a list representing the structure of the MultilayerSail.
         Parameters
@@ -145,7 +151,7 @@ class MultilayerSail(Sail):
         if wavelength == None:
             wavelength = self.wavelength
         structure = []
-        for material, thickness in zip(self.materials, self.thickness):
+        for material, thickness in zip(self._material_objects(), self.thickness):
             structure.append( (material.get_n(wavelength) + 1j*material.get_k(wavelength), -thickness) )
         return structure
 
@@ -162,7 +168,7 @@ class MultilayerSail(Sail):
         """
         structure = self.structure
         SA_density = 0
-        for material, thickness in zip(self.materials, self.thickness):
+        for material, thickness in zip(self._material_objects(), self.thickness):
             SA_density += material.get_density()*thickness
         return SA_density
 
@@ -188,7 +194,7 @@ class MultilayerSail(Sail):
         if wavelength == None:
             wavelength = self.wavelength
         structure_near_IR = []
-        for material, thickness in zip(self.materials, self.thickness):
+        for material, thickness in zip(self._material_objects(), self.thickness):
             k = 1j*wavelength*100*material.get_abs_coeff()/(4*pi)   # conversion from abs_coeff to extinction coeff
             structure_near_IR.append( (material.get_n(wavelength) + k, -thickness) )
 
