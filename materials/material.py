@@ -41,7 +41,7 @@ IMPORTANT NOTE: If using an equation, ensure the equation TAKES IN wavelengths
 
 class Material:
 
-    def __init__(self, name, density, max_temp, abs_coeff = None, n_list_path = None, k_list_path = None):
+    def __init__(self, name, density = None, max_temp = None, abs_coeff = None, n_list_path = None, k_list_path = None):
         """ Constructor requires at least the name and the density
         """
         if material_exists(name):
