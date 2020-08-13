@@ -25,7 +25,9 @@ silica.add_equation(name="n_kkg", range=(1e-6, 25e-6), filepath="n_sio2_kkg.py",
 #It's back!
 silica.print_variables()
 
-#Now comment out the code above, and re-run the script with just the code below.
+#Now comment out the code above, uncomment the code below, and re-run the script.
 #Here, silica is being loaded from the saved_materials directory.
-silica = Material(name="SiO2")
-silica.print_variables()
+# silica = Material(name="SiO2")
+# silica.print_variables()
+
+#Silica is now available as a material!

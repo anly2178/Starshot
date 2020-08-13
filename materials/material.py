@@ -227,9 +227,6 @@ class Material:
         """Print attributes of material
         """
         for var, value in self.__dict__.items():
-            if var == 'n_equations' or var == 'k_equations':
-                for ls in value:
-                    ls.pop(-1) #Remove function, but keep name and wavelength range
             print(var, '=', value)
         print('')
 
