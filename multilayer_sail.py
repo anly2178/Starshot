@@ -101,20 +101,21 @@ class MultilayerSail(Sail):
         MultilayerSail
             MultilayerSail with variables specified by user
         """
-        area = 1 #Placeholder for area for now to prevent error
-        super().__init__(name, mass, area, reflectance, target, power, wavelength)
         if materials is None:
             raise ValueError("Enter material(s)")
         self.materials = materials
         self.thickness = thickness #m
         if thickness is None:
             raise ValueError("Enter thickness(es)")
+        self.s_density = self._find_SA_density() #Placeholder for area for now to prevent error
         if mass is None:
             raise ValueError("Enter mass")
-        s_density = 0
-        for mat, t in zip(self._material_objects(), thickness):
-            s_density += mat.get_density() * t
-        self.area = mass / s_density
+        area = mass / self.s_density
+        super().__init__(name, mass, area, reflectance, target, power, wavelength)
+        # s_density = 0
+        # for mat, t in zip(self._material_objects(), thickness):
+        #     s_density += mat.get_density() * t
+        # self.area = mass / s_density
         self.max_Starchip_temp = max_Starchip_temp #K
         self.absorptance = self._find_absorptance()
         if self.power is None:
@@ -165,7 +166,6 @@ class MultilayerSail(Sail):
             float
                 surface area density [kg m-2]
         """
-        structure = self.structure
         SA_density = 0
         for material, thickness in zip(self._material_objects(), self.thickness):
             SA_density += material.get_density()*thickness
