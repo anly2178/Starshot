@@ -75,8 +75,8 @@ new_sail = Sail(name=insert_name, mass=insert_mass, area=insert_area, reflectanc
 from Starshot.multilayer_sail import MultilayerSail
 
 new_multi = MultilayerSail(name=insert_name, materials=insert_materials, mass=insert_mass,
-  thickness=insert_thickness, area=insert_area, reflectance=insert_reflectance, abs_coeff=insert_abs_coeff,
-  target=insert_target, max_temp=insert_max_temp, power=insert_power, wavelength=insert_wavelength)
+  thickness=insert_thickness, reflectance=insert_reflectance, target=insert_target,
+  max_Starchip_temp=insert_max_temp, power=insert_power, wavelength=insert_wavelength)
 ```
 * For more detail, see the Multilayer Sail section.
 
