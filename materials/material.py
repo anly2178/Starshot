@@ -182,7 +182,7 @@ class Material:
     def get_k_equations(self):
         return self.k_equations
 
-    def add_equation(self, name, start_wavelength, end_wavelength, filepath, n_or_k):
+    def add_equation(self, name, range, filepath, n_or_k):
         """ Extracts an equation from a .py file that is valid within a specified
             wavelength range (in m) = [start_wavelength, end_wavelength] and saves it
             as a material attribute. A name should also be attached to the
@@ -198,7 +198,6 @@ class Material:
             equations_list = self.n_equations
         elif n_or_k == 'k':
             equations_list = self.k_equations
-        range = [start_wavelength, end_wavelength]
         # Make a dictionary to store the function in
         dic = {}
         exec(open(filepath).read(), globals(), dic)

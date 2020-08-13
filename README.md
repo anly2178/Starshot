@@ -169,7 +169,7 @@ special cases. For example, glasses like SiO2, GeO2 can become quite viscous pas
 * *n_list_path* (str) - path to file including a space-separated or comma-separated list of real refractive index for a range of wavelengths in microns.
 * *k_list_path* (str) - path to file including a space-separated or comma-separated list of real refractive index for a range of wavelengths in microns.
 * *n_equations* (list of lists) - a list of lists corresponding to equations for the refractive index. Each sublist includes a name (str), wavelength range (list), and function.
-* *k_equations* (list of lists) - a list of lists corresponding to equations for the extinction coefficient. Each sublist includes a name (str), wavelength range (list), and function. 
+* *k_equations* (list of lists) - a list of lists corresponding to equations for the extinction coefficient. Each sublist includes a name (str), wavelength range (list), and function.
 
 ### Methods
 
@@ -186,7 +186,7 @@ print_variables()
 * Method is useful for checking the properties of a material and identifying which equations to add/remove.
 
 ```python
-add_equation(name, start_wavelength, end_wavelength, filepath, n_or_k):
+add_equation(name, range, filepath, n_or_k):
 ```
 * Save a function for calculating the refractive index or extinction coefficient to the material. Functions are saved according to a unique name.
 * A guide on creating this function is in the Material Equations section.
