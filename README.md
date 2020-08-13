@@ -161,15 +161,15 @@ The ```Material``` class.
 
 ### Attributes
 
-* *name* (str) - A code or tag that represents the material, usually chemical formula.
+* *name* (str) - a code or tag that represents the material, usually chemical formula.
 * *density* (float) [kg/m^3] - density of the material.
 * *max_temp* (float) [K] - the temperature beyond which the material is not structurally sound. For most materials, this would be the melting point, but may vary in
 special cases. For example, glasses like SiO2, GeO2 can become quite viscous past their glass transition temperature which lies lower than melting point.
 * *abs_coeff* (float) [cm^-1] - absorption coefficient of the material.
-* *n_list* (list of floats) - list of real refractive index for a range of wavelengths [micrometres].
-* *k_list* (list of floats) - list of extinction coefficient for a range of wavelengths [micrometres].
-* *n_equations* -
-* *k_equations* -
+* *n_list_path* (str) - path to file including a space-separated or comma-separated list of real refractive index for a range of wavelengths in microns.
+* *k_list_path* (str) - path to file including a space-separated or comma-separated list of real refractive index for a range of wavelengths in microns.
+* *n_equations* (list of lists) - a list of lists corresponding to equations for the refractive index. Each sublist includes a name (str), wavelength range (list), and function.
+* *k_equations* (list of lists) - a list of lists corresponding to equations for the extinction coefficient. Each sublist includes a name (str), wavelength range (list), and function. 
 
 ### Methods
 
@@ -178,6 +178,25 @@ __init__(name, density, max_temp, abs_coeff = None, n_list_path = None, k_list_p
 ```
 * Constructor for ```Material``` class.
 * ```n_list_path``` and ```k_list_path``` are the filepaths to the list of real refractive index and extinction coefficient respectively.
+
+```python
+print_variables()
+```
+* Prints the values for each attribute of a material.
+* Method is useful for checking the properties of a material and identifying which equations to add/remove.
+
+```python
+add_equation(name, start_wavelength, end_wavelength, filepath, n_or_k):
+```
+* Save a function for calculating the refractive index or extinction coefficient to the material. Functions are saved according to a unique name.
+* A guide on creating this function is in the Material Equations section.
+
+```python
+rmv_equation(name, n_or_k)
+```
+* Delete equation from a material, according to the name.
+
+### Material Equations
 
 ## Creators
 **Andrew Ly**
