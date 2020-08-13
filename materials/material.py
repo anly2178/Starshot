@@ -146,6 +146,7 @@ class Material:
             # Check if in valid range for equation use
             if wavelength >= start_wavelength and wavelength <= end_wavelength:
                 n = equation_func(wavelength)
+                print(n)
                 found_equation = True
         if not found_equation:
             n = interpolate_from_list(self.n_list, wavelength)

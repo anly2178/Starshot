@@ -27,7 +27,23 @@ silica.print_variables()
 
 #Now comment out the code above, uncomment the code below, and re-run the script.
 #Here, silica is being loaded from the saved_materials directory.
+
 # silica = Material(name="SiO2")
 # silica.print_variables()
 
-#Silica is now available as a material!
+#Here's a plot of n and k against wavelength. Uncomment the block below.
+
+# import matplotlib.pyplot as plt
+# import numpy as np
+# n = []
+# k = []
+# wavelengths = np.linspace(1e-6, 25e-6, 100)
+# for wl in wavelengths:
+#     n.append(silica.get_n(wl))
+#     k.append(silica.get_k(wl))
+# plt.plot(wavelengths*1e6, n, color='b', label='n')
+# plt.plot(wavelengths*1e6, k, color='r', label='k')
+# plt.xlabel('Wavelength (microns)')
+# plt.ylabel('Complex refractive index')
+# plt.legend(loc='upper left')
+# plt.show()
