@@ -2,7 +2,7 @@ from Starshot.materials.material import Material
 
 #Initialise germania. Saves GeO2.pkl into saved_materials directory. Note that path is given to a file
 #containing refractive index/extinction coefficient vs wavelength.
-germania = Material(name="GeO2", density=2.196e3, max_temp=1000, abs_coeff=1e-6, n_list_path = 'n_germania.txt', k_list_path = 'k_germania.txt')
+germania = Material(name="GeO2", density=3.65e3, max_temp=1000, abs_coeff=1e-6, n_list_path = 'n_germania.txt', k_list_path = 'k_germania.txt')
 
 #Print variables.
 germania.print_variables()
