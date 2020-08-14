@@ -71,8 +71,7 @@ class MultilayerSail(Sail):
         speed vs distance and speed vs time graphs.
     """
     def __init__(   self, name=None, materials=None, mass=None, thickness=None,
-                    reflectance=None, target=0.2, max_Starchip_temp=1000,
-                    power=None, wavelength=1.064e-6):
+                    target=0.2, max_Starchip_temp=1000, power=None, wavelength=1.064e-6):
         """The constructor for MultilayerSail class
         Parameters
         ----------
@@ -111,7 +110,7 @@ class MultilayerSail(Sail):
         if mass is None:
             raise ValueError("Enter mass")
         area = mass / self.s_density
-        super().__init__(name, mass, area, reflectance, target, power, wavelength)
+        super().__init__(name, mass, area, reflectance=None, target, power, wavelength)
         # s_density = 0
         # for mat, t in zip(self._material_objects(), thickness):
         #     s_density += mat.get_density() * t

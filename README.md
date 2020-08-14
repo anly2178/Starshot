@@ -131,7 +131,7 @@ The ```Sail``` class is the superclass for all subclasses of sails, such as ```M
 | area | float | User input | Yes |
 | radius | float | Calculated | No |
 | s_density | float | Calculated | No |
-| reflectance | float | User input or calculated | If cannot be calculated, e.g. with transfer-matrix method |
+| reflectance | float | User input or calculated | Yes, if cannot be calculated, e.g. with transfer-matrix method |
 | transmittance | float | Calculated | No |
 | target | float | User input | Yes, but defaults to 0.2c if not given |
 | power | float | User input | Yes |
@@ -167,12 +167,31 @@ The ```MultilayerSail``` class is a subclass of ```Sail```. It includes sails wi
 
 *Note*: The ```MultilayerSail``` class inherits the attributes of the ```Sail``` class.
 
+| Attribute | Type | From | Required? |
+| --------- | ---- | ---- | --------- |
+| name | str | User input | Yes |
+| mass | float | User input | Either mass or area |
+| area | float | User input | Either mass or area |
+| radius | float | Calculated | No |
+| s_density | float | Calculated | No |
+| reflectance | float | Calculated | No |
+| transmittance | float | Calculated | No |
+| target | float | User input | Yes, but defaults to 0.2c if not given |
+| power | float | User input | Yes |
+| wavelength | float | User input | Yes, but defaults to 1064 nm |
+| W | float | Calculated | No |
+| diameter | float | Calculated | No |
+| angles_coeffs | list of tuples of three floats | Calculated | No |
+| materials | list of str | User input | Yes |
+| thickness | list of floats | User input | Yes |
+| max_Starchip_temp | float | User input | No, defaults to 1000 K |
+| absorptance | float | Calculated | No |
+
 ### Methods
 
 ```python
 __init__(   self, name=None, materials=None, mass=None, thickness=None,
-                  reflectance=None, abs_coeff=None, target=0.2,
-                  max_Starchip_temp=1000, power=None, wavelength=1.064e-6)
+                  abs_coeff=None, target=0.2, max_Starchip_temp=1000, power=None, wavelength=1.064e-6)
 ```
 
 * Constructor for  ```MultilayerSail``` class.
