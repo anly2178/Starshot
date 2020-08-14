@@ -21,9 +21,8 @@ The Breakthrough Starshot Initiative aims to accelerate an ultralight spacecraft
 
 ## Installation
 
-### Clone
-
 * Clone this repo to your local machine using [https://github.com/anly2178/Starshot.git](https://github.com/anly2178/Starshot.git)
+* Install the Python module [Dill](https://pypi.org/project/dill/)
 
 ### Setup
 
@@ -62,8 +61,6 @@ The user may name the script something else. It is important that the script
 is located parallel to the Starshot directory.
 
 * saved_materials is automatically created when the user initialises a Material object.
-
-* *Note*: The library may require the installation of [Dill](https://pypi.org/project/dill/).
 
 ## Usage
 
