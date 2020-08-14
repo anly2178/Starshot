@@ -5,6 +5,20 @@ A Python library for the Starshot initiative.
 ![](images/cool_image.png)
 * Credit: Atwater et al. (2018)
 
+## Description
+
+The Breakthrough Starshot Initiative aims to accelerate an ultralight spacecraft to 20% of the speed of light, reaching Proxima Centauri in approximately 20 years. The spacecraft would consist of a low-density ‘lightsail’ and a payload which contains the electronics responsible for transmitting data back to Earth (Atwater et al. 2018). The lightsail would be remotely propelled by radiation pressure, using an Earth-based laser array operating in the near-infrared spectral range.
+
+## Assumptions
+
+* Flat, circular lightsail
+* Mass of payload is equal to the mass of the lightsail; the optimal mass condition (Kulkarni 2018)
+* Circular laser array emits a Gaussian beam
+* Beam is focused so that the beam waist tracks the lightsail, and the beam waist is as small as diffraction allows
+* Beam strikes and reflects off lightsail orthogonally
+* Heat transfer between layers of multilayer sail is instantaneous
+* Special relativity is taken into account
+
 ## Installation
 
 ### Clone
@@ -200,6 +214,14 @@ rmv_equation(name, n_or_k)
 * Delete equation from a material, according to the name.
 
 ### Material Equations
+
+## Future Work
+
+Improvements can be made by relaxing the assumptions outlined earlier. Notably, the library should be compatible with:
+
+* lightsails of any shape/geometry
+* different (and more realistic) beam profiles
+* stabilisation dynamics and diffractive lightsails as a subclass
 
 ## Creators
 **Andrew Ly**
