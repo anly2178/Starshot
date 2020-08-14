@@ -2,6 +2,8 @@
 
 A Python library for the Starshot initiative.
 
+![](images/cool.png)
+
 ## Installation
 
 ### Clone
