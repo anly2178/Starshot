@@ -185,12 +185,16 @@ special cases. For example, glasses like SiO2, GeO2 can become quite viscous pas
 * *n_equations* (list of lists) - a list of lists corresponding to equations for the refractive index. Each sublist includes a name (str), wavelength range (list), and function.
 * *k_equations* (list of lists) - a list of lists corresponding to equations for the extinction coefficient. Each sublist includes a name (str), wavelength range (list), and function.
 
-| Attribute | name | density | max_temp | abs_coeff | n_list_path | k_list_path | n_equations | k_equations |
-| --------- |  |  |  |  |  |  |  |  |
-| From?     | User input | User input | User input | User input | User input | User input | User input| User input |
-| ----      |  |  |  |  |  |  |  |  |
-| Required? |
-| --------- | Yes | Yes | No | Yes, to find temperature | Either path or equation required | Either path or equation required | Either path or equation required | Either path or equation required |
+| Attribute | From | Required? |
+| --------- | ---- | --------- |
+| name | User input | Yes |
+| density | User input | Yes |
+| max_temp | User input | No |
+| abs_coeff | User input | Optional, to find temperature |
+| n_list_path | User input | Either path or equation required |
+| k_list_path | User input | Either path or equation required |
+| n_equations | User input | Either path or equation required |
+| k_equations | User input | Either path or equation required |
 
 ### Methods
 
