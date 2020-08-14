@@ -129,16 +129,16 @@ The ```Sail``` class is the superclass for all subclasses of sails, such as ```M
 | name | str | User input | Yes |
 | mass | float | User input | Yes |
 | area | float | User input | Yes |
-| radius | float | Calculated | n/a |
-| s_density | float | Calculated | n/a |
+| radius | float | Calculated | No |
+| s_density | float | Calculated | No |
 | reflectance | float | User input or calculated | If cannot be calculated, e.g. with transfer-matrix method |
-| transmittance | float | Calculated | n/a |
+| transmittance | float | Calculated | No |
 | target | float | User input | Yes, but defaults to 0.2c if not given |
 | power | float | User input | Yes |
 | wavelength | float | User input | Yes |
-| W | float | Calculated | n/a |
-| diameter | float | Calculated | n/a |
-| angles_coeffs | list of tuples of three floats | Calculated | n/a |
+| W | float | Calculated | No |
+| diameter | float | Calculated | No |
+| angles_coeffs | list of tuples of three floats | Calculated | No |
 
 ### Methods
 
