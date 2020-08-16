@@ -1,4 +1,4 @@
-# Starshot
+e# Starshot
 
 A Python library for the Starshot initiative.
 
@@ -16,13 +16,19 @@ The Breakthrough Starshot Initiative aims to accelerate an ultralight spacecraft
 * Circular laser array emits a Gaussian beam
 * Beam is focused so that the beam waist tracks the lightsail, and the beam waist is as small as diffraction allows
 * Beam strikes and reflects off lightsail orthogonally
+* Sail instantaneously reaches equilibrium temperature at every point of its journey
 * Heat transfer between layers of multilayer sail is instantaneous
+* For hemispherical emissivity calculations, since it is not possible to integrate spectral emissivity over all wavelengths (interval [0,inf)), it is instead calculated only over a 1-25 micrometre range by default. A different range can be defined by user input.
 * Special relativity is taken into account
 
 ## Installation
 
 * Clone this repo to your local machine using [https://github.com/anly2178/Starshot.git](https://github.com/anly2178/Starshot.git)
-* Install the Python module [Dill](https://pypi.org/project/dill/) (required for saving and loading)
+* Install the Python modules:
+  * [dill](https://pypi.org/project/dill/)
+  * [scipy](https://pypi.org/project/scipy/)
+  * [numpy](https://pypi.org/project/numpy/)
+  * [matplotlib](https://pypi.org/project/matplotlib/)
 
 ### Setup
 
@@ -202,6 +208,13 @@ calculate_mission()
 
 * Inherited from ```Sail``` class.  
 
+### Notes
+
+* Most calculations for ```MultilayerSail``` absorption, reflection and transmission coefficients are performed using the transfer matrix method (TMM)
+* When calculating the hemispherical emissivity from the directional emissivity, the integration is done by trapezoidal rule estimation to save time and computational effort
+* When calculating the spectral power density from hemispherical emissivity, the integration is done by trapezoidal rule estimation to save time and computational effort
+* Equilibrium temperature is estimated using [Brent’s method](https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.brentq.html) for finding roots.
+
 ## Material
 
 The ```Material``` class.
@@ -257,6 +270,15 @@ rmv_equation(name, n_or_k)
 * Delete equation from a material, according to the name.
 
 ### Material Equations
+
+The general procedure to writing a function (text) file which describes either the real refractive index or extinction coefficient versus wavelength is described below. A commented example file describing the real refractive index of silica (SiO2) is provided in the ```material_tests``` directory, named ```n_sio2_eqn.py```.
+
+* The file should have only ONE function which describes the coefficients at different wavelengths. There should be no additional code apart from this function.
+* The function must be written so it accepts only one argument named ‘wavelength’. This argument is a float, giving the wavelength in METRES at which the real refractive index or extinction coefficient should be calculated at.
+* Since the ‘wavelength’ argument expects the input given in metres while equations in literature tend to use different units such as micrometres or wavenumber, the function should include a conversion from metres to these other units where appropriate.
+* The function should be written using Python syntax.
+* Nested functions are acceptable, as long as these functions are within the scope of the main function.
+* Necessary imports should be written within the scope of the main function.
 
 ## Future Work
 
