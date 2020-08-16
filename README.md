@@ -1,4 +1,4 @@
-e# Starshot
+# Starshot
 
 A Python library for the Starshot initiative.
 
@@ -12,7 +12,7 @@ The Breakthrough Starshot Initiative aims to accelerate an ultralight spacecraft
 ## Assumptions
 
 * Flat, circular lightsail
-* Mass of payload is equal to the mass of the lightsail; the optimal mass condition (Kulkarni 2018)
+* Mass of payload is equal to the mass of the lightsail; the optimal mass condition ([Kulkarni 2018](https://iopscience.iop.org/article/10.3847/1538-3881/aaafd2))
 * Circular laser array emits a Gaussian beam
 * Beam is focused so that the beam waist tracks the lightsail, and the beam waist is as small as diffraction allows
 * Beam strikes and reflects off lightsail orthogonally
@@ -105,6 +105,8 @@ new_multi = MultilayerSail(name=insert_name, materials=insert_materials, mass=in
 ```python
 sail_name.calculate_mission()
 ```
+* Calculates the mission scenario, including distance, speed and time, using the relativistic solution given by [Kulkarni et al. (2018)](https://iopscience.iop.org/article/10.3847/1538-3881/aaafd2).
+* A folder is created with 2 txt files and 1 png file. ```trajectory.txt``` file includes distance, speed and time results. ```variables.txt``` file includes the variables of the mission. ```plots.png``` file includes speed vs distance and speed vs time graphs.
 
 *Note*: The ```DiffractiveSail``` class will be included when it is in a useful state.
 
@@ -117,7 +119,7 @@ The ```Sail``` class is the superclass for all subclasses of sails, such as ```M
 ### Attributes
 
 * *name* (str) - a unique name or code that identifies the sail. Defaults to None.
-* *mass* (float) [kg] - mass of lightsail (*excluding payload*). It is assumed that payload mass equals to lightsail mass as per optimal mass condition (Kulkarni 2018). Defaults to None.
+* *mass* (float) [kg] - mass of lightsail (*excluding payload*). It is assumed that payload mass equals to lightsail mass as per optimal mass condition ([Kulkarni 2018](https://iopscience.iop.org/article/10.3847/1538-3881/aaafd2)). Defaults to None.
 * *area* (float) [m^2] - surface area of lightsail on one side. Defaults to None.
 * *radius* (float) [m] - radius of lightsail.
 * *s_density* (float) [kg/m^2] - surface density of lightsail.
@@ -126,7 +128,7 @@ The ```Sail``` class is the superclass for all subclasses of sails, such as ```M
 * *target* (float) - target speed as fraction of speed of light. Defaults to 0.2c.
 * *power* (float) [W] - power of laser array. Defaults to None.
 * *wavelength* (float) [m] - laser wavelength, not Doppler-shifted. Defaults to 1.064e-6 m.
-* *W* (float) [sqrt(g)/m] - square root of 'reflectivity-adjusted-area-density' as defined by Ilic et al. (2018).
+* *W* (float) [sqrt(g)/m] - square root of 'reflectivity-adjusted-area-density' as defined by [Ilic et al. (2018)](https://pubs.acs.org/doi/10.1021/acs.nanolett.8b02035).
 * *diameter* (float) [m] - diameter of circular laser array.
 * *angles_coeffs* (list of tuples of three floats) - angle [degrees], reflection efficiency and transmission efficiency of each order.
 
@@ -298,3 +300,11 @@ Improvements can be made by relaxing the assumptions outlined earlier. Notably, 
 * [https://github.com/jwid8259](https://github.com/jwid8259)
 
 Supervised by Boris Kuhlmey, Martijn de Sterke, and Mohammad Rafat as part of a project for the University of Sydney.
+
+## References
+
+* Atwater, H. A., Davoyan, A. R., Ilic, O., Jariwala, D., Sherrott, M. C., Went, C. M., Whitney, W. S., and Wong, J. (2018). Materials challenges for the starshot lightsail. *Nature materials*, 17(10):861– 867.
+* Ilic, O., Went, C. M., and Atwater, H. A. (2018). Nanophotonic heterostructures for efficient propul- sion and radiative cooling of relativistic light sails. *Nano letters*, 18(9):5583–5589.
+* Kipping, D. (2017). Relativistic light sails. *The Astronomical Journal*, 153(6):277.
+* Kulkarni, N., Lubin, P., and Zhang, Q. (2018). Rel- ativistic spacecraft propelled by directed energy. *The Astronomical Journal*, 155(4):155.
+* Lubin, P. (2016). A roadmap to interstellar flight. *arXiv preprint arXiv:1604.01356*.
