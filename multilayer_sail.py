@@ -107,7 +107,7 @@ class MultilayerSail(Sail):
         self.thickness = thickness #m
         if thickness is None:
             raise ValueError("Enter thickness(es)")
-        self.s_density = self._find_SA_density() #Placeholder for area for now to prevent error
+        self.s_density = self._find_SA_density()
         if area is None and mass is None:
             raise ValueError("Enter mass and/or area")
         elif area is None:
@@ -473,13 +473,14 @@ class MultilayerSail(Sail):
     def _find_max_power(self):
         """Find the highest power the MultilayerSail can be subject to."""
         max_temp = min([mat.get_max_temp() for mat in self._material_objects()] + [self.max_Starchip_temp]) #max temp the sail can endure
-        print(max_temp)
+        print('Finding max power...')
+        print(f'Maximum temp the sail can be subject to = {max_temp} K')
         copied_sail = deepcopy(self) #To protect from changing variables accidentally
         #Define function to solve.
         def f(P, multisail, max_temp):
             multisail.power = P
             temp = multisail._find_eq_temps_given_abs_coeff()
-            print(temp)
+            print(f'At power = {P * 1e-9:.2f} GW, equilibrium temperature = {temp:.2f} K')
             return temp - max_temp
 
         max_power = scipy.optimize.newton(f, 100e9, args=(copied_sail, max_temp), tol=1e9)

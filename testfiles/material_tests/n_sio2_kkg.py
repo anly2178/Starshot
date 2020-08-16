@@ -1,12 +1,8 @@
 def n_silica(wavelength):
-
-    """ This function describes the real refractive index of silica from 1 to 50
-	micrometres. 
+    """ This function describes the real refractive index of silica from 1 to 50 micrometres.
         Source: Rei Kitamura, Laurent Pilon and Miroslaw Jonasz (2007).
         doi: 10.1364/AO.46.008118
-    """
-    
-    """ NOTE: This function actually describes two separate equations, but includes
+    NOTE: This function actually describes two separate equations, but includes
               functionality to switch between either function depending on the
 	      wavelength given as argument. Such implementations are acceptable for
 	      use in this library
@@ -20,10 +16,8 @@ def n_silica(wavelength):
     from numpy import sin, cos, pi
 
     def silica_g(wavenumber, is_kkg = False):
-	
-    	""" Nested function defining some functions required to find the complex
-            refractive index of silica. Wavenumber is in cm^-1 """
-
+        """Nested function defining some functions required to find the complex refractive index of silica.
+        Wavenumber is in cm^-1 """
         def D(x):
             D = [None]*len(x)
             i = 0
@@ -56,5 +50,5 @@ def n_silica(wavelength):
         g_kkg = silica_g(wavenumber, True)
         g = silica_g(wavenumber)
         n = np.sqrt(2.1232 + np.sum(g_kkg) + 1j*np.sum(g))
-    
+
     return n.real	# taking real component as result since this file should describe the real refractive index only
