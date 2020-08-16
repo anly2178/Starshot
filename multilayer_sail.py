@@ -7,6 +7,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 from numpy import sin, cos, pi
+from copy import deepcopy
 
 class MultilayerSail(Sail):
     """
@@ -122,7 +123,7 @@ class MultilayerSail(Sail):
         self.max_Starchip_temp = max_Starchip_temp #K
         self.absorptance = self._find_absorptance()
         if self.power is None:
-            self.power = self._find_power() #Estimate max power that sail can use.
+            self.power = self._find_max_power() #Estimate max power that sail can use.
         if self.reflectance is None:
             self.reflectance = self._find_reflectance()
         if self.transmittance is None:
@@ -132,6 +133,15 @@ class MultilayerSail(Sail):
         self.diameter = self._find_diameter()
         self._reorder_vars()
         self.print_variables()
+
+    def _reorder_vars(self):
+        """Reorder variables to make it print nicer"""
+        old_vars = vars(self)
+        new_order = ['name','mass','area','radius','materials','thickness','s_density',
+        'absorptance', 'reflectance','transmittance', 'angles_coeffs','target','power',
+        'wavelength', 'diameter', 'W','max_Starchip_temp']
+        new_vars = {lab: old_vars[lab] for lab in new_order}
+        self.__dict__ = new_vars
 
     def _material_objects(self):
         """Convert list of material tags to material objects"""
@@ -460,14 +470,22 @@ class MultilayerSail(Sail):
 
         return eq_temp
 
-    def _reorder_vars(self):
-        """Reorder variables to make it print nicer"""
-        old_vars = vars(self)
-        new_order = ['name','mass','area','radius','materials','thickness','s_density',
-        'absorptance', 'reflectance','transmittance', 'angles_coeffs','target','power',
-        'wavelength', 'diameter', 'W','max_Starchip_temp']
-        new_vars = {lab: old_vars[lab] for lab in new_order}
-        self.__dict__ = new_vars
+    def _find_max_power(self):
+        """Find the highest power the MultilayerSail can be subject to."""
+        max_temp = min([mat.get_max_temp() for mat in self._material_objects()] + [self.max_Starchip_temp]) #max temp the sail can endure
+        print(max_temp)
+        copied_sail = deepcopy(self) #To protect from changing variables accidentally
+        #Define function to solve.
+        def f(P, multisail, max_temp):
+            multisail.power = P
+            temp = multisail._find_eq_temps_given_abs_coeff()
+            print(temp)
+            return temp - max_temp
+
+        max_power = scipy.optimize.newton(f, 100e9, args=(copied_sail, max_temp), tol=1e9)
+        return max_power
+
+
 
 # ============================================================================
 # Going to cut off these functions here for now - I'm not too sure what they do

@@ -125,24 +125,6 @@ class Sail:
             print(variable, '=', value)
         print('')
 
-    def change_variables(self, **kwargs):
-        """Changes the variables of the sail, as specified using keyworded args.
-
-        Parameters
-        ----------
-        Keyworded optional arguments of Attributes as above
-
-        Returns
-        -------
-        None
-            Updates variables of sail, as specified by user.
-        """
-        allowed_keys = {'name', 'material', 'mass', 'thickness', 'area',
-                        'radius', 'density', 'abs_coeff', 'absorptance',
-                        'reflectance', 'transmittance', 'W', 'target', 'max_temp'}
-        self.__dict__.update((k, v) for k, v in kwargs.items() if k in allowed_keys)
-        self.print_variables()
-
     def calculate_mission(self):
         """Calculates the mission scenario, including distance vs speed vs time.
         A folder is created with 2 txt files and 1 png file.
@@ -246,3 +228,21 @@ class Sail:
         target = self.target
         W, _ = integrate.quad(dW, 0, target, args=(reflectance, s_density, wavelength))
         return W
+
+    # def change_variables(self, **kwargs):
+    #     """Changes the variables of the sail, as specified using keyworded args.
+    #
+    #     Parameters
+    #     ----------
+    #     Keyworded optional arguments of Attributes as above
+    #
+    #     Returns
+    #     -------
+    #     None
+    #         Updates variables of sail, as specified by user.
+    #     """
+    #     allowed_keys = {'name', 'material', 'mass', 'thickness', 'area',
+    #                     'radius', 'density', 'abs_coeff', 'absorptance',
+    #                     'reflectance', 'transmittance', 'W', 'target', 'max_temp'}
+    #     self.__dict__.update((k, v) for k, v in kwargs.items() if k in allowed_keys)
+    #     self.print_variables()

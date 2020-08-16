@@ -234,7 +234,7 @@ calculate_mission()
 * Most calculations for ```MultilayerSail``` absorption, reflection and transmission coefficients are performed using the transfer matrix method (TMM)
 * When calculating the hemispherical emissivity from the directional emissivity, the integration is done by trapezoidal rule estimation to save time and computational effort
 * When calculating the spectral power density from hemispherical emissivity, the integration is done by trapezoidal rule estimation to save time and computational effort
-* Equilibrium temperature is estimated using [Brent’s method](https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.brentq.html) for finding roots.
+* Highest equilibrium temperature is estimated using [Brent’s method](https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.brentq.html) for finding roots. However, in this calculation it is assumed that there are no diffractive losses.
 
 ## Material
 
