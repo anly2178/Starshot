@@ -1,3 +1,5 @@
+#Not very useful yet. This should be improved in the future! 
+
 from Starshot.sail import Sail
 
 class DiffractiveSail(Sail):

@@ -50,15 +50,25 @@ root
     ├── results.py
     ├── gaussbeam.py
     ├── motion.py
-    ├── materials
-    │   ├── README.txt
-    │   ├── __pycache__
-    │   ├── material.py
-    │   └── save_load_mat.py
-    └── tmm
-        ├── __pycache__
-        ├── tmm.py
-        └── make_transfer_matrix.py
+    ├── images
+    │   └── interpolator.py
+    └── testfiles
+        ├── material_tests
+        │   ├── README.md
+        │   ├── init_germania.py
+        │   ├── init_silica.py
+        │   ├── init_gap.py
+        │   ├── n_germania.txt
+        │   ├── k_germania.txt
+        │   ├── n_sio2_kkg.py
+        │   ├── k_sio2_kkg.py
+        │   ├── n_gap.txt
+        │   └── k_gap.txt
+        └── sail_tests
+            ├── README.md
+            ├── simple_test.py
+            └── multi_test.py
+
 ```
 * Starshot directory is downloaded from github.
 
