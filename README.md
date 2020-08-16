@@ -130,7 +130,7 @@ The ```Sail``` class is the superclass for all subclasses of sails, such as ```M
 * *wavelength* (float) [m] - laser wavelength, not Doppler-shifted. Defaults to 1.064e-6 m.
 * *W* (float) [sqrt(g)/m] - square root of 'reflectivity-adjusted-area-density' as defined by [Ilic et al. (2018)](https://pubs.acs.org/doi/10.1021/acs.nanolett.8b02035).
 * *diameter* (float) [m] - diameter of circular laser array.
-* *angles_coeffs* (list of tuples of three floats) - angle [degrees], reflection efficiency and transmission efficiency of each order.
+* *angles_coeffs* (list of tuples of three floats) - angle [degrees], reflection efficiency and transmission efficiency of each order. Created to make calculations more efficient for diffractive sails (when they are implemented.)
 
 | Attribute | Type | From | Required? |
 | --------- | ---- | ---- | --------- |

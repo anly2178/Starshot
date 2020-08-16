@@ -6,7 +6,7 @@ silica = Material(name="SiO2", density=2.196e3, max_temp=1000, abs_coeff=1e-6, n
 #Print variables.
 silica.print_variables()
 
-#Instead of a table of refractive index vs wavelength, we can add equations.
+#Instead of a table of refractive index vs wavelength, we can add equations. A guide on how to define these equations is written in n_sio2_kkg.py!!!
 silica.add_equation(name="n_kkg", range=(1e-6, 25e-6), filepath="n_sio2_kkg.py", n_or_k="n")
 silica.add_equation(name="k_kkg", range=(1e-6, 25e-6), filepath="k_sio2_kkg.py", n_or_k="k")
 

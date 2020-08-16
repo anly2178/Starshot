@@ -24,7 +24,7 @@ def make_dir(folder_name):
     final_directory = os.path.join(current_directory, folder_name)
     i = 1
     while os.path.exists(final_directory):
-        final_directory = os.path.join(current_directory, folder_name + str(i))
+        final_directory = os.path.join(current_directory, folder_name + '(' + str(i) + ')')
         i += 1
     os.makedirs(final_directory)
     return final_directory

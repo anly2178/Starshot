@@ -70,7 +70,7 @@ class MultilayerSail(Sail):
         includes the variables of the mission. The png file includes
         speed vs distance and speed vs time graphs.
     """
-    def __init__(   self, name=None, materials=None, mass=None, thickness=None,
+    def __init__(   self, name=None, materials=None, mass=None, thickness=None, area=None,
                     target=0.2, max_Starchip_temp=1000, power=None, wavelength=1.064e-6):
         """The constructor for MultilayerSail class
         Parameters
@@ -107,10 +107,14 @@ class MultilayerSail(Sail):
         if thickness is None:
             raise ValueError("Enter thickness(es)")
         self.s_density = self._find_SA_density() #Placeholder for area for now to prevent error
-        if mass is None:
-            raise ValueError("Enter mass")
-        area = mass / self.s_density
-        super().__init__(name, mass, area, reflectance=None, target, power, wavelength)
+        if area is None and mass is None:
+            raise ValueError("Enter mass and/or area")
+        elif area is None:
+            area = mass / self.s_density
+        elif mass is None:
+            mass = area * self.s_density
+        reflectance = None #To pass into sail constructor.
+        super().__init__(name, mass, area, reflectance, target, power, wavelength)
         # s_density = 0
         # for mat, t in zip(self._material_objects(), thickness):
         #     s_density += mat.get_density() * t
@@ -126,6 +130,7 @@ class MultilayerSail(Sail):
         self.angles_coeffs = [(0, self.reflectance, self.transmittance)]
         self.W = self._find_W()
         self.diameter = self._find_diameter()
+        self._reorder_vars()
         self.print_variables()
 
     def _material_objects(self):
@@ -454,6 +459,15 @@ class MultilayerSail(Sail):
                 solved = False
 
         return eq_temp
+
+    def _reorder_vars(self):
+        """Reorder variables to make it print nicer"""
+        old_vars = vars(self)
+        new_order = ['name','mass','area','radius','materials','thickness','s_density',
+        'absorptance', 'reflectance','transmittance', 'angles_coeffs','target','power',
+        'wavelength', 'diameter', 'W','max_Starchip_temp']
+        new_vars = {lab: old_vars[lab] for lab in new_order}
+        self.__dict__ = new_vars
 
 # ============================================================================
 # Going to cut off these functions here for now - I'm not too sure what they do
