@@ -1,16 +1,29 @@
 def n_silica(wavelength):
 
+    """ This function describes the real refractive index of silica from 1 to 50
+	micrometres. 
+        Source: Rei Kitamura, Laurent Pilon and Miroslaw Jonasz (2007).
+        doi: 10.1364/AO.46.008118
+    """
+    
+    """ NOTE: This function actually describes two separate equations, but includes
+              functionality to switch between either function depending on the
+	      wavelength given as argument. Such implementations are acceptable for
+	      use in this library
+    """
+
+    # NOTE: All imports are written WITHIN the scope of the function
+
     import scipy
     import scipy.integrate as integrate
     import numpy as np
     from numpy import sin, cos, pi
 
-    """ Nested function defining some functions required to find the complex
-        refractive index of silica. Wavenumber is in cm^-1 """
-
     def silica_g(wavenumber, is_kkg = False):
+	
+    	""" Nested function defining some functions required to find the complex
+            refractive index of silica. Wavenumber is in cm^-1 """
 
-        # Quickly defining another function that is requred later on
         def D(x):
             D = [None]*len(x)
             i = 0
@@ -30,19 +43,18 @@ def n_silica(wavelength):
             g = alpha*(np.exp(-4*np.log(2)*((wavenumber-wavenumber0)/sigma)**2) - np.exp(-4*np.log(2)*((wavenumber+wavenumber0)/sigma)**2))
         return g
 
-    """ Back to the main function """
-    # Assume k negligible
     if wavelength < 7e-6:
-        sellmeier_wl = (wavelength*1e6)**2
+        sellmeier_wl = (wavelength*1e6)**2	# NOTE: Conversion from metres to micrometres (as required for Sellmeier equation abstracted from literature)
         term_a = (0.6961663*sellmeier_wl)/(sellmeier_wl-(0.0684043)**2)
         term_b = (0.4079426*sellmeier_wl)/(sellmeier_wl-0.1162414**2)
         term_c = (0.8974794*sellmeier_wl)/(sellmeier_wl-9.896161**2)
         n = np.sqrt(1 + term_a + term_b + term_c)
-    # k no longer negligible
+
     elif wavelength >= 7e-6:
-        wavenumber = (1/wavelength)/100     # in cm^-1
+        wavenumber = (1/wavelength)/100     # NOTE: Necessary conversion from wavelength (m) to wavenumber (cm^-1)
         sum = 0
         g_kkg = silica_g(wavenumber, True)
         g = silica_g(wavenumber)
         n = np.sqrt(2.1232 + np.sum(g_kkg) + 1j*np.sum(g))
-    return n.real
+    
+    return n.real	# taking real component as result since this file should describe the real refractive index only

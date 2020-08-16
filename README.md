@@ -271,7 +271,7 @@ rmv_equation(name, n_or_k)
 
 ### Material Equations
 
-The general procedure to writing a function (text) file which describes either the real refractive index or extinction coefficient versus wavelength is described below. A commented example file describing the real refractive index of silica (SiO2) is provided in the ```material_tests``` directory, named ```n_sio2_eqn.py```.
+The general procedure to writing a function (text) file which describes either the real refractive index or extinction coefficient versus wavelength is described below. A commented example file describing the real refractive index of silica (SiO2) is provided in the ```material_tests``` directory, named ```n_sio2_kkg.py```.
 
 * The file should have only ONE function which describes the coefficients at different wavelengths. There should be no additional code apart from this function.
 * The function must be written so it accepts only one argument named ‘wavelength’. This argument is a float, giving the wavelength in METRES at which the real refractive index or extinction coefficient should be calculated at.
