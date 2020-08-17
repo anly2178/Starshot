@@ -33,3 +33,5 @@ multi_test2 = MultilayerSail(name='S3', materials=['SiO2','gap','SiO2'], mass=No
 #However, since the names of the sails are identical, the new directory has (1).
 #If more directories are produced with the same name, then (2), (3), (4), ... will be appended.
 multi_test2.calculate_mission()
+
+#It can be seen that the maximum power S3 can use is about 150 GW. 

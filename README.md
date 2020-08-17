@@ -77,6 +77,7 @@ root
             ├── README.md
             ├── simple_test.py
             └── multi_test.py
+            └── find_power_test.py
 
 ```
 * Starshot directory is downloaded from github.
@@ -86,6 +87,9 @@ The user may name the script something else. It is important that the script
 is located parallel to the Starshot directory.
 
 * saved_materials is automatically created when the user initialises a Material object.
+
+* testfiles directory contains commented tests/examples for the user.
+  * The user should duplicate the files in material_tests and sail_tests inside the root directory. Read the README's for more detail. 
 
 ## Usage
 
