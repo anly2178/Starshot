@@ -89,7 +89,7 @@ is located parallel to the Starshot directory.
 * saved_materials is automatically created when the user initialises a Material object.
 
 * testfiles directory contains commented tests/examples for the user.
-  * The user should duplicate the files in material_tests and sail_tests inside the root directory. Read the README's for more detail. 
+  * The user should duplicate the files in material_tests and sail_tests inside the root directory. Read the README's for more detail.
 
 ## Usage
 
@@ -98,7 +98,8 @@ is located parallel to the Starshot directory.
 ```python
 from Starshot.materials.material import Material
 
-new_material = Material(name=insert_name, density=insert_density, n_list=insert_n_list, k_list=insert_k_list)
+new_material = Material(name=insert_name, density=insert_density, max_temp=insert_max_temp,
+  abs_coeff=insert_abs_coeff, n_list_path=insert_n_list_path, k_list_path=insert_k_list_path)
 ```
 * For more detail, see the Material section.
 
@@ -118,7 +119,7 @@ new_sail = Sail(name=insert_name, mass=insert_mass, area=insert_area, reflectanc
 from Starshot.multilayer_sail import MultilayerSail
 
 new_multi = MultilayerSail(name=insert_name, materials=insert_materials, mass=insert_mass,
-  thickness=insert_thickness, reflectance=insert_reflectance, target=insert_target,
+  thickness=insert_thickness, area=insert_area, target=insert_target,
   max_Starchip_temp=insert_max_temp, power=insert_power, wavelength=insert_wavelength)
 ```
 * For more detail, see the Multilayer Sail section.
@@ -128,16 +129,14 @@ new_multi = MultilayerSail(name=insert_name, materials=insert_materials, mass=in
 ```python
 sail_name.calculate_mission()
 ```
-* Calculates the mission scenario, including distance, speed and time, using the relativistic solution given by [Kulkarni et al. (2018)](https://iopscience.iop.org/article/10.3847/1538-3881/aaafd2).
+* Calculates the mission scenario, including distance, speed and time, using the differential equation given by [Kulkarni et al. (2018)](https://iopscience.iop.org/article/10.3847/1538-3881/aaafd2), solved using Runge-Kutta method.
 * A folder is created with 2 txt files and 1 png file. ```trajectory.txt``` file includes distance, speed and time results. ```variables.txt``` file includes the variables of the mission. ```plots.png``` file includes speed vs distance and speed vs time graphs.
 
-*Note*: The ```DiffractiveSail``` class will be included when it is in a useful state.
+*Note*: Although there is a file for ```DiffractiveSail``` subclass, it has not been implemented yet.
 
 ## Sail
 
 The ```Sail``` class is the superclass for all subclasses of sails, such as ```MultilayerSail``` and ```DiffractiveSail```. Therefore, these subclasses inherit the ```Sail``` attributes and methods.
-* Sail is flat and circular. Generalising the shape is to be completed.
-* Gaussian beam is produced by circular laser array.
 
 ### Attributes
 
@@ -193,30 +192,32 @@ The ```MultilayerSail``` class is a subclass of ```Sail```. It includes sails wi
 
 * *materials* (list of str) - list of strings representing the materials in each layer, starting from the layer closest to the laser array. The tag for each material is its chemical formula, or as defined by the user.
 * *thickness* (list of floats) [m] - list of the thicknesses of each layer, starting from the layer closest to the laser array.
-* *max_Starchip_temp* (float) [K] - maximum temperature of payload. Defaults to 1000 K.
 * *absorptance* (float) - fraction of incident power absorbed by lightsail.
+* *max_Starchip_temp* (float) [K] - maximum temperature the payload can have. Defaults to 1000 K.
+* *temp_reached* (float) [K] - maximum temperature reached on the journey. If power is given, temp_reached is calculated by equating power absorbed and emitted. If power is not given, temp_reached is equal to the minimum of [max_Starchip_temp and materials' max_temp].
 
 *Note*: The ```MultilayerSail``` class inherits the attributes of the ```Sail``` class.
 
 | Attribute | Type | From | Required? |
 | --------- | ---- | ---- | --------- |
 | name | str | User input | Yes |
-| mass | float | User input | Either mass or area |
-| area | float | User input | Either mass or area |
+| mass | float | User input or calculated | At least one of either mass or area |
+| area | float | User input or calculated | At leat one of either mass or area |
 | radius | float | Calculated | No |
 | s_density | float | Calculated | No |
 | reflectance | float | Calculated | No |
 | transmittance | float | Calculated | No |
 | target | float | User input | Yes, but defaults to 0.2c if not given |
-| power | float | User input | Yes |
+| power | float | User input or calculated | No, a max power can be calculated from max temps |
 | wavelength | float | User input | Yes, but defaults to 1064 nm |
 | W | float | Calculated | No |
 | diameter | float | Calculated | No |
 | angles_coeffs | list of tuples of three floats | Calculated | No |
 | materials | list of str | User input | Yes |
 | thickness | list of floats | User input | Yes |
-| max_Starchip_temp | float | User input | No, defaults to 1000 K |
 | absorptance | float | Calculated | No |
+| max_Starchip_temp | float | User input | No, defaults to 1000 K |
+| temp_reached | float | Calculated | No |
 
 ### Methods
 
@@ -239,6 +240,7 @@ calculate_mission()
 * When calculating the hemispherical emissivity from the directional emissivity, the integration is done by trapezoidal rule estimation to save time and computational effort
 * When calculating the spectral power density from hemispherical emissivity, the integration is done by trapezoidal rule estimation to save time and computational effort
 * Highest equilibrium temperature is estimated using [Brent’s method](https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.brentq.html) for finding roots. However, in this calculation it is assumed that there are no diffractive losses.
+* The maximum power that a sail can be subject to is calculated using Newton's method (secant method).
 
 ## Material
 

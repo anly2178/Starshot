@@ -124,6 +124,9 @@ class MultilayerSail(Sail):
         self.absorptance = self._find_absorptance()
         if self.power is None:
             self.power = self._find_max_power() #Estimate max power that sail can use.
+            self.temp_reached = min([mat.get_max_temp() for mat in self._material_objects()] + [self.max_Starchip_temp])
+        else:
+            self.temp_reached = self._find_eq_temps_given_abs_coeff()
         if self.reflectance is None:
             self.reflectance = self._find_reflectance()
         if self.transmittance is None:
@@ -139,7 +142,7 @@ class MultilayerSail(Sail):
         old_vars = vars(self)
         new_order = ['name','mass','area','radius','materials','thickness','s_density',
         'absorptance', 'reflectance','transmittance', 'angles_coeffs','target','power',
-        'wavelength', 'diameter', 'W','max_Starchip_temp']
+        'wavelength', 'diameter', 'W','max_Starchip_temp', 'temp_reached']
         new_vars = {lab: old_vars[lab] for lab in new_order}
         self.__dict__ = new_vars
 
