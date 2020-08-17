@@ -1,6 +1,6 @@
 from pathlib import Path
 import dill as pickle
-from numpy import loadtxt
+from numpy import loadtxt, pi
 
 def mkmatdir():
     """Make saved_materials directory if it does not exist. Return Path object for directory."""
@@ -36,7 +36,7 @@ def load_material(name):
     except FileNotFoundError:
         raise ValueError(f"ValueError: '{name}' does not exist. Initialise Material object for '{name}'.")
 
-def make_list_from_file(filepath):
+def make_list_from_file(path_flag):
     """ Takes in the path of a CSV or txt or dat file with each entry organised as
         [wavelength],[n/k] and forms a list of tuples. If any tuples are a
         different size to any of the others, will raise a ValueError.
@@ -44,11 +44,20 @@ def make_list_from_file(filepath):
 
         Perhaps future implementation for tab separated files?
     """
+    filepath, flag = path_flag
     try:
         ls = loadtxt(filepath, delimiter=',') #comma-separated
     except ValueError:
         ls = loadtxt(filepath) #space-separated
-    return ls[ls[:,0].argsort()] #sorted increasing order by wavelength
+    if flag == 3:
+        for r, wl in enumerate(ls[:,0]):
+            ls[r,0] = 2*pi/wl
+    print(ls)
+    ls = ls[ls[:,0].argsort()]
+    if flag == 2:
+        ls[:, 0] *= 1e-6
+    return ls
+
 
 
 

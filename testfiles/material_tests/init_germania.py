@@ -1,8 +1,10 @@
 from Starshot.materials.material import Material
 
 #Initialise germania. Saves GeO2.pkl into saved_materials directory. Note that path is given to a file
-#containing refractive index/extinction coefficient vs wavelength.
-germania = Material(name="GeO2", density=3.65e3, max_temp=850, abs_coeff=1e-3, n_list_path = 'n_germania.txt', k_list_path = 'k_germania.txt')
+#containing refractive index/extinction coefficient vs wavelength. A flag is also given (1, 2 or 3).
+#Flag 2 is given since wavelengths are in microns.
+#1 is for metres, 3 is for wavenumber.
+germania = Material(name="GeO2", density=2.196e3, max_temp=1000, abs_coeff=1e-6, n_list_path = ('n_germania.txt', 2), k_list_path = ('k_germania.txt',2))
 
 #Print variables.
 germania.print_variables()

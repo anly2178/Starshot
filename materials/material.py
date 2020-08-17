@@ -30,10 +30,10 @@ from os import path
               by start_wavelength and end_wavelength. Range goes FROM
               start_wavelength TO end_wavelength:
                 range = [float {start_wavelength}, float {end_wavelength}]
-              BOTH wavelengths should be given in micrometres.
+              BOTH wavelengths should be given in metres.
 
 IMPORTANT NOTE: If using an equation, ensure the equation TAKES IN wavelengths
-                IN MICROMETRES as units. This is especially important when using
+                IN METRES as units. This is especially important when using
                 equations from papers which may use wavenumbers in their equations
                 in which case the user is expected to convert the units to
                 micrometres within the scope of their defined/loaded function
@@ -67,11 +67,11 @@ class Material:
             if abs_coeff is None:
                 raise ValueError('Enter abs_coeff')
             self.abs_coeff = abs_coeff
-            if n_list_path is None or not path.exists(n_list_path):
+            if n_list_path is None or not path.exists(n_list_path[0]):
                 self.n_list = None
             else:
                 self.n_list = make_list_from_file(n_list_path)
-            if k_list_path is None or not path.exists(k_list_path):
+            if k_list_path is None or not path.exists(k_list_path[0]):
                 self.k_list = None
             else:
                 self.k_list = make_list_from_file(k_list_path)

@@ -255,8 +255,8 @@ The ```Material``` class.
 * *max_temp* (float) [K] - the temperature beyond which the material is not structurally sound. For most materials, this would be the melting point, but may vary in
 special cases. For example, glasses like SiO2, GeO2 can become quite viscous past their glass transition temperature which lies lower than melting point.
 * *abs_coeff* (float) [cm^-1] - absorption coefficient of the material.
-* *n_list_path* (str) - path to file including a space-separated or comma-separated list of real refractive index for a range of wavelengths in microns.
-* *k_list_path* (str) - path to file including a space-separated or comma-separated list of real refractive index for a range of wavelengths in microns.
+* *n_list_path* (tuple of str and int) - tuple containing filepath and flag. See 'n_list and k_list' section below.
+* *k_list_path* (tuple of str and int) - tuple containing filepath and flag. See 'n_list and k_list' section below.
 * *n_equations* (list of lists) - a list of lists corresponding to equations for the refractive index. Each sublist includes a name (str), wavelength range (list), and function.
 * *k_equations* (list of lists) - a list of lists corresponding to equations for the extinction coefficient. Each sublist includes a name (str), wavelength range (list), and function.
 
@@ -264,10 +264,10 @@ special cases. For example, glasses like SiO2, GeO2 can become quite viscous pas
 | --------- | ---- | ---- | --------- |
 | name | str | User input | Yes |
 | density [kg/m^3] | float | User input | Yes |
-| max_temp [K] | float | User input | No |
-| abs_coeff [cm^-1] | float | User input | Optional, to find temperature |
-| n_list_path | str | User input | Either path or equation required |
-| k_list_path | str | User input | Either path or equation required |
+| max_temp [K] | float | User input | Yes |
+| abs_coeff [cm^-1] | float | User input | Yes |
+| n_list_path | tuple of str and list | User input | Either path or equation required |
+| k_list_path | tuple of str and list | User input | Either path or equation required |
 | n_equations | list of lists | User input, using add_equation() method | Either path or equation required |
 | k_equations | list of lists | User input, using add_equation() method | Either path or equation required |
 
@@ -301,7 +301,7 @@ Setters and getters. For example,
 set_density()
 get_density()
 ```
-* Used to change the value of material attributes. Automatically saves the changes. 
+* Used to change the value of material attributes. Automatically saves the changes.
 
 ### Material Equations
 
@@ -313,6 +313,16 @@ The general procedure to writing a function (text) file which describes either t
 * The function should be written using Python syntax.
 * Nested functions are acceptable, as long as these functions are within the scope of the main function.
 * Necessary imports should be written within the scope of the main function.
+
+### n_list and k_list
+
+* Arguments given to constructor are tuples with structure: (path, flag)
+* Files are space-separated or comma-separated list of real refractive index for a range of wavelengths in metres, microns or wavenumber.
+* First column is wavelengths, second column is the corresponding n or k value.
+* Wavelengths should be in metres, microns or wavenumber. If wavelengths are in:
+  * metres, ```flag=1```
+  * microns, ```flag=2```
+  * wavenumber, ```flag=3```
 
 ## Future Work
 
