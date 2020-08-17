@@ -82,15 +82,15 @@ class Sail:
         Sail
             Sail with variables specified by user
         """
-        self.name = name #Unique code that identifies the sail
         if name is None:
             raise ValueError("Enter name")
-        self.mass = mass #kg
+        self.name = name #Unique code that identifies the sail
         if mass is None:
             raise ValueError("Enter mass")
-        self.area = area #m^2
+        self.mass = mass #kg
         if area is None:
             raise ValueError("Enter area")
+        self.area = area #m^2
         self.radius = np.sqrt(area/np.pi) #m
         self.s_density = mass/area #kg/m^2
         self.reflectance = reflectance
@@ -141,6 +141,8 @@ class Sail:
         None
             Creates folder in current working directory.
         """
+        if self.power is None:
+            raise ValueError("Enter power")
         state, time = state_vs_t(self)
         beta, dist = state
         write_results(self, beta, dist, time)

@@ -104,9 +104,9 @@ class MultilayerSail(Sail):
         if materials is None:
             raise ValueError("Enter material(s)")
         self.materials = materials
-        self.thickness = thickness #m
         if thickness is None:
             raise ValueError("Enter thickness(es)")
+        self.thickness = thickness #m
         self.s_density = self._find_SA_density()
         if area is None and mass is None:
             raise ValueError("Enter mass and/or area")
@@ -150,8 +150,8 @@ class MultilayerSail(Sail):
         """Convert list of material tags to material objects"""
         try:
             mats = [load_material(mat) for mat in self.materials]
-        except ValueError as ve:
-            print(ve)
+        except ValueError:
+            raise ValueError('Check that materials have been initialised and saved in saved_materials')
         return mats
 
 
@@ -207,7 +207,7 @@ class MultilayerSail(Sail):
         float
             Absorptance of MultilayerSail
         """
-        if wavelength == None:
+        if wavelength is None:
             wavelength = self.wavelength
         structure_near_IR = []
         for material, thickness in zip(self._material_objects(), self.thickness):

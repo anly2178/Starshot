@@ -41,7 +41,7 @@ IMPORTANT NOTE: If using an equation, ensure the equation TAKES IN wavelengths
 
 class Material:
 
-    def __init__(self, name, density = None, max_temp = None, abs_coeff = None, n_list_path = None, k_list_path = None):
+    def __init__(self, name=None, density=None, max_temp=None, abs_coeff=None, n_list_path=None, k_list_path=None):
         """ Constructor requires at least the name and the density
         """
         if material_exists(name):
@@ -55,9 +55,17 @@ class Material:
             self.n_equations = mat.get_n_equations()
             self.k_equations = mat.get_k_equations()
         else:
+            if name is None:
+                raise ValueError('Enter name')
             self.name = name
+            if density is None:
+                raise ValueError('Enter density')
             self.density = density
+            if max_temp is None:
+                raise ValueError('Enter max_temp')
             self.max_temp = max_temp
+            if abs_coeff is None:
+                raise ValueError('Enter abs_coeff')
             self.abs_coeff = abs_coeff
             if n_list_path is None or not path.exists(n_list_path):
                 self.n_list = None

@@ -296,6 +296,13 @@ rmv_equation(name, n_or_k)
 ```
 * Delete equation from a material, according to the name.
 
+Setters and getters. For example,
+```python
+set_density()
+get_density()
+```
+* Used to change the value of material attributes. Automatically saves the changes. 
+
 ### Material Equations
 
 The general procedure to writing a function (text) file which describes either the real refractive index or extinction coefficient versus wavelength is described below. A commented example file describing the real refractive index of silica (SiO2) is provided in the ```material_tests``` directory, named ```n_sio2_kkg.py```.
