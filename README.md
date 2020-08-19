@@ -92,7 +92,7 @@ is located parallel to the Starshot directory.
 * saved_materials is automatically created when the user initialises a Material object.
 
 * testfiles directory contains commented tests/examples for the user.
-  * The user should duplicate the files in material_tests and sail_tests inside the root directory. Read the README's for more detail.
+  * The user should duplicate the files in material_tests and sail_tests inside the root directory. Read the READMEs in the testfile directories for more detail.
 
 ## Usage
 
