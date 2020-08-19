@@ -109,7 +109,7 @@ class Material:
         save_material(self)
         del_material(old_name)
 
-    def set_n_list(self, absolute_path):
+    def set_n_list(self, path_flag):
         """ Takes in a string which is the ABSOLUTE (relative should work too,
             but just to be safe) path of the file that contains the data for n.
 
@@ -121,7 +121,7 @@ class Material:
             and it seems refractiveindex.info tends to record in microns as well
             if any data is taken from there)
         """
-        self.n_list = make_list_from_file(absolute_path)
+        self.n_list = make_list_from_file(path_flag)
         save_material(self)
 
     def get_n(self, wavelength):
@@ -146,10 +146,10 @@ class Material:
     def get_n_list(self):
         return self.n_list
 
-    def set_k_list(self, absolute_path):
+    def set_k_list(self, path_flag):
         """ Same as above, but for k
         """
-        self.k_list = make_list_from_file(absolute_path)
+        self.k_list = make_list_from_file(path_flag)
         save_material(self)
 
     def get_k(self, wavelength):

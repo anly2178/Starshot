@@ -266,7 +266,7 @@ special cases. For example, glasses like SiO2, GeO2 can become quite viscous pas
 | Attribute | Type | From | Required? |
 | --------- | ---- | ---- | --------- |
 | name | str | User input | Yes |
-| density [kg/m^3] | float | User input | Yes |
+| density [kg/m^3] | float | User input | Yes, for saving. |
 | max_temp [K] | float | User input | Yes |
 | abs_coeff [cm^-1] | float | User input | Yes |
 | n_list_path | tuple of str and list | User input | Either path or equation required |
@@ -274,13 +274,18 @@ special cases. For example, glasses like SiO2, GeO2 can become quite viscous pas
 | n_equations | list of lists | User input, using add_equation() method | Either path or equation required |
 | k_equations | list of lists | User input, using add_equation() method | Either path or equation required |
 
+* *Note*: Only the name is required if the user is *loading* a material. i.e. density, max_temp, etc. are not required.
+
 ### Methods
 
 ```python
-__init__(name, density, max_temp, abs_coeff = None, n_list_path = None, k_list_path = None)
+__init__(name=None, density=None, max_temp=None, abs_coeff=None, n_list_path=None, k_list_path=None)
 ```
 * Constructor for ```Material``` class.
 * ```n_list_path``` and ```k_list_path``` are the filepaths to the list of real refractive index and extinction coefficient respectively.
+* Constructor can also be used to load a saved material, just by including the name.
+* Constructor can not be used to redefine a material/change its attributes. Setters and getters must be used!
+* The user can redefine a material usin the constructor by first deleting the pkl file corresponding to that material.
 
 ```python
 print_variables()
@@ -305,6 +310,7 @@ set_density()
 get_density()
 ```
 * Used to change the value of material attributes. Automatically saves the changes.
+* ```set_n_list``` receives a tuple argument which includes the file path and flag; similar for ```set_k_list```. See n_list and k_list section below.
 
 ### Material Equations
 
@@ -319,9 +325,10 @@ The general procedure to writing a function (text) file which describes either t
 
 ### n_list and k_list
 
-* Arguments given to constructor are tuples with structure: (path, flag)
+* Arguments given to constructor are tuples with structure: (path, flag) where path is the file path to the list and flag indicates the units.
 * Files are space-separated or comma-separated list of real refractive index for a range of wavelengths in metres, microns or wavenumber.
-* First column is wavelengths, second column is the corresponding n or k value.
+  * First column is wavelengths, second column is the corresponding n or k value.
+  * The order of wavelengths does not matter.
 * Wavelengths should be in metres, microns or wavenumber. If wavelengths are in:
   * metres, ```flag=1```
   * microns, ```flag=2```
@@ -335,6 +342,8 @@ Improvements can be made by relaxing the assumptions outlined earlier. Notably, 
 * lightsails of any shape/geometry
 * different (and more realistic) beam profiles
 * stabilisation dynamics and diffractive lightsails as a subclass
+
+Also, the plotting function can be made more versatile, and saving and loading of sails can be implemented. These should not be difficult.
 
 ## References
 

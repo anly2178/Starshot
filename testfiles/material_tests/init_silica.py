@@ -1,7 +1,7 @@
 from Starshot.materials.material import Material
 
 #Initialise silica. Saves SiO2.pkl into saved_materials directory.
-silica = Material(name="SiO2", density=2.196e3, max_temp=1000, abs_coeff=1e-6, n_list_path = None, k_list_path = None)
+silica = Material(name="SiO2", density=2.196e3, max_temp=1000, abs_coeff=1e-3, n_list_path = None, k_list_path = None)
 
 #Print variables.
 silica.print_variables()

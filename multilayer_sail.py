@@ -122,7 +122,9 @@ class MultilayerSail(Sail):
             self.power = self._find_max_power() #Estimate max power that sail can use.
             self.temp_reached = min([mat.get_max_temp() for mat in self._material_objects()] + [self.max_Starchip_temp])
         else:
+            print('Calculating temperature...')
             self.temp_reached = self._find_eq_temps_given_abs_coeff()
+            print(f'Temperature reached = {self.temp_reached}')
         if self.reflectance is None:
             self.reflectance = self._find_reflectance()
         if self.transmittance is None:

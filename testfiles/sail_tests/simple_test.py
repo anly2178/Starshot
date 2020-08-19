@@ -4,7 +4,7 @@
 from Starshot.sail import Sail
 
 #Initialise simple sail.
-simple_sail = Sail(name='simp', mass=0.001, area=10, reflectance=1,
+simple_sail = Sail(name='simple', mass=0.001, area=10, reflectance=1,
                 target=0.2, power=100e9, wavelength=1.2e-6)
 
 #Run calculate_mission. Creates a directory named after the sail, in the current working directory.
