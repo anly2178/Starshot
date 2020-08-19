@@ -109,22 +109,6 @@ class Material:
         save_material(self)
         del_material(old_name)
 
-    # def make_list_from_file(path):
-    #     """ Takes in the file path of a CSV with each entry organised as
-    #         [wavelength],[n/k] and forms a list of tuples. If any tuples are a
-    #         different size to any of the others, will raise a ValueError.
-    #         If the file is not a CSV, will also raise a ValueError.
-    #
-    #         Perhaps future implementation for tab separated files?
-    #     """
-    #     f = open(path, 'r')
-    #     entries = f.readlines()
-    #     f.close()
-    #     for entry in entries:
-    #         float(entry.strip().split(','))
-    #     list.sort(entries)      # Sort in ascending order in terms of wavelength
-    #     return entries
-
     def set_n_list(self, absolute_path):
         """ Takes in a string which is the ABSOLUTE (relative should work too,
             but just to be safe) path of the file that contains the data for n.
@@ -237,18 +221,3 @@ class Material:
         for var, value in self.__dict__.items():
             print(var, '=', value)
         print('')
-
-    # Possible implementation in future?
-    # def set_optical_constants(self, absolute_path):
-    #     """ Takes in a string which is the ABSOLUTE path of the file that contains
-    #         the data for BOTH n AND k. If the user has a separate file for each,
-    #         please see methods:
-    #             - set_n(self, absolute_path)
-    #             - set_k(self, absolute_path)
-    #
-    #         This file should be a CSV so that each entry is organised as:
-    #         [wavelength],[n],[k]
-    #
-    #         If any of the entries have a length that is not 3, raises a
-    #         ValueError. Ensure the wavelength is in
-    #     """

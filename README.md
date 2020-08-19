@@ -336,6 +336,14 @@ Improvements can be made by relaxing the assumptions outlined earlier. Notably, 
 * different (and more realistic) beam profiles
 * stabilisation dynamics and diffractive lightsails as a subclass
 
+## References
+
+* Atwater, H. A., Davoyan, A. R., Ilic, O., Jariwala, D., Sherrott, M. C., Went, C. M., Whitney, W. S., and Wong, J. (2018). Materials challenges for the starshot lightsail. *Nature materials*, 17(10):861– 867.
+* Ilic, O., Went, C. M., and Atwater, H. A. (2018). Nanophotonic heterostructures for efficient propul- sion and radiative cooling of relativistic light sails. *Nano letters*, 18(9):5583–5589.
+* Kipping, D. (2017). Relativistic light sails. *The Astronomical Journal*, 153(6):277.
+* Kulkarni, N., Lubin, P., and Zhang, Q. (2018). Rel- ativistic spacecraft propelled by directed energy. *The Astronomical Journal*, 155(4):155.
+* Lubin, P. (2016). A roadmap to interstellar flight. *arXiv preprint arXiv:1604.01356*.
+
 ## Creators
 **Andrew Ly**
 * [anly2178@uni.sydney.edu.au](anly2178@uni.sydney.edu.au)
@@ -346,11 +354,3 @@ Improvements can be made by relaxing the assumptions outlined earlier. Notably, 
 * [https://github.com/jwid8259](https://github.com/jwid8259)
 
 Supervised by Boris Kuhlmey, Martijn de Sterke, and Mohammad Rafat as part of a project for the University of Sydney.
-
-## References
-
-* Atwater, H. A., Davoyan, A. R., Ilic, O., Jariwala, D., Sherrott, M. C., Went, C. M., Whitney, W. S., and Wong, J. (2018). Materials challenges for the starshot lightsail. *Nature materials*, 17(10):861– 867.
-* Ilic, O., Went, C. M., and Atwater, H. A. (2018). Nanophotonic heterostructures for efficient propul- sion and radiative cooling of relativistic light sails. *Nano letters*, 18(9):5583–5589.
-* Kipping, D. (2017). Relativistic light sails. *The Astronomical Journal*, 153(6):277.
-* Kulkarni, N., Lubin, P., and Zhang, Q. (2018). Rel- ativistic spacecraft propelled by directed energy. *The Astronomical Journal*, 155(4):155.
-* Lubin, P. (2016). A roadmap to interstellar flight. *arXiv preprint arXiv:1604.01356*.

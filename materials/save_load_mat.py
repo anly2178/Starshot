@@ -59,10 +59,3 @@ def make_list_from_file(path_flag):
     if flag == 3:
         ls[:, 0] *= 1e-9
     return ls
-
-
-
-
-#Create saved_materials folder if it does not exist.
-#Create files for each material according to name in saved_materials
-#Navigate by stem name.
