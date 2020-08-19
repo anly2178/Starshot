@@ -67,16 +67,19 @@ root
         │   ├── init_germania.py
         │   ├── init_silica.py
         │   ├── init_gap.py
+        │   ├── init_alumina.py
         │   ├── n_germania.txt
         │   ├── k_germania.txt
         │   ├── n_sio2_kkg.py
         │   ├── k_sio2_kkg.py
         │   ├── n_gap.txt
-        │   └── k_gap.txt
+        │   ├── k_gap.txt
+        │   ├── n_alumina.txt
+        │   └── k_alumina.txt
         └── sail_tests
             ├── README.md
             ├── simple_test.py
-            └── multi_test.py
+            ├── multi_test.py
             └── find_power_test.py
 
 ```
@@ -322,7 +325,8 @@ The general procedure to writing a function (text) file which describes either t
 * Wavelengths should be in metres, microns or wavenumber. If wavelengths are in:
   * metres, ```flag=1```
   * microns, ```flag=2```
-  * wavenumber, ```flag=3```
+  * nanometres, ```flag=3```
+  * wavenumber, ```flag=4```
 
 ## Future Work
 

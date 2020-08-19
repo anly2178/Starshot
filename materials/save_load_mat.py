@@ -49,13 +49,15 @@ def make_list_from_file(path_flag):
         ls = loadtxt(filepath, delimiter=',') #comma-separated
     except ValueError:
         ls = loadtxt(filepath) #space-separated
-    if flag == 3:
+    if flag == 4:
         for r, wl in enumerate(ls[:,0]):
             ls[r,0] = 2*pi/wl
     print(ls)
     ls = ls[ls[:,0].argsort()]
     if flag == 2:
         ls[:, 0] *= 1e-6
+    if flag == 3:
+        ls[:, 0] *= 1e-9
     return ls
 
 
